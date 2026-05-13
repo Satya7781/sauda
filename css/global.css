@@ -1,0 +1,151 @@
+
+:root{
+  --bg:#FEFBF4;--bg2:#FFF7EA;--card:#FFFFFF;--card-border:#EDE5D5;
+  --accent:#B8680F;--accent-light:#FEF3E2;--accent2:#D4910B;
+  --seller-accent:#B8680F;--seller-accent-light:#FEF3E2;
+  --trust:#0D9488;--trust-light:#ECFDF5;--trust-bg:#F0FDFA;
+  --danger:#DC2626;--text:#1C1917;--text2:#78716C;--text3:#A8A29E;
+  --shadow:0 2px 16px rgba(160,140,100,0.07);--shadow-lg:0 8px 32px rgba(160,140,100,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:#F5F0E8;color:var(--text);overflow:hidden;height:100dvh}
+h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
+@media(min-width:520px){body{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#E8DDD0,#D4C8B8)}
+.app-shell{width:390px;height:844px;border-radius:44px;border:3px solid #D4C8B8;box-shadow:0 20px 80px rgba(0,0,0,0.15);overflow:hidden;position:relative}}
+@media(max-width:519px){.app-shell{width:100%;height:100dvh;position:relative}}
+.app-shell{background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+
+/* 滚动条 */
+.scroll-area{overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;min-height:0}
+.scroll-area::-webkit-scrollbar{width:0}
+
+/* 视图切换 */
+.view{display:none;flex:1;flex-direction:column;min-height:0}.view.active{display:flex;animation:viewIn .3s ease}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 底部导航 */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;height:68px;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--card-border);display:flex;align-items:center;justify-content:space-around;z-index:50;padding-bottom:env(safe-area-inset-bottom,0)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 14px;border-radius:12px;transition:all .2s;color:var(--text3)}
+.nav-item.active{color:var(--accent)}
+.nav-item.active i{transform:scale(1.1)}
+.nav-item span{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.nav-item i{font-size:22px;transition:transform .2s}
+.nav-item:active{transform:scale(.92)}
+
+/* Onboarding */
+.onboard{display:none;flex-direction:column;height:100%;width:100%;position:absolute;inset:0;z-index:100;background:var(--bg)}
+.onboard.active{display:flex;animation:viewIn .35s ease}
+.onboard-progress{height:3px;background:var(--card-border);border-radius:2px;overflow:hidden;margin:0 24px}
+.onboard-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .4s ease}
+.role-card{border:2px solid var(--card-border);border-radius:20px;padding:28px 20px;cursor:pointer;transition:all .2s;background:var(--card);text-align:center}
+.role-card:hover,.role-card.selected{border-color:var(--accent);background:var(--accent-light);transform:scale(1.02)}
+.role-card .icon-wrap{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px}
+.cat-chip{padding:10px 16px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--card-border);color:var(--text2);background:var(--card);display:flex;align-items:center;gap:8px}
+.cat-chip.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.cat-chip i{font-size:16px}
+.input-field{width:100%;padding:14px 16px;border:1.5px solid var(--card-border);border-radius:14px;font-size:15px;font-family:'DM Sans',sans-serif;background:var(--card);color:var(--text);outline:none;transition:border-color .2s}
+.input-field:focus{border-color:var(--accent)}
+.input-field::placeholder{color:var(--text3)}
+.btn-primary{width:100%;padding:16px;border:none;border-radius:16px;font-size:15px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:all .15s;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 20px rgba(184,104,15,0.25)}
+.btn-primary:active{transform:scale(.97)}.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{width:100%;padding:14px;border:1.5px solid var(--card-border);border-radius:14px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;background:var(--card);color:var(--text);transition:all .15s}
+.btn-secondary:active{transform:scale(.97)}
+
+/* 卡片 */
+.s-card{background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);transition:transform .15s}
+.s-card:active{transform:scale(.98)}
+
+/* 信任标签 */
+.vouch-tag{display:inline-flex;align-items:center;gap:5px;background:var(--trust-light);color:var(--trust);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700}
+
+/* 信任环 */
+.trust-ring{position:relative;width:72px;height:72px;flex-shrink:0}
+.trust-ring svg{transform:rotate(-90deg)}
+.trust-ring .score{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:20px;color:var(--trust)}
+
+/* 脉冲 */
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--trust);position:relative;flex-shrink:0}
+.pulse-dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:var(--trust);opacity:.4;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(2);opacity:0}}
+
+/* 麦克风 */
+.mic-btn{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-size:38px;cursor:pointer;position:relative;z-index:2;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 30px rgba(184,104,15,0.25)}
+.mic-btn:active{transform:scale(.9)}
+.mic-btn.recording{animation:micPulse 1.5s ease infinite;box-shadow:0 4px 50px rgba(184,104,15,0.4)}
+@keyframes micPulse{0%,100%{box-shadow:0 4px 30px rgba(184,104,15,0.3)}50%{box-shadow:0 4px 60px rgba(184,104,15,0.5)}}
+
+/* Shimmer */
+.shimmer{background:linear-gradient(90deg,transparent,rgba(184,104,15,0.06),transparent);background-size:200% 100%;animation:shimmer 1.5s ease infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.thinking-dot{display:inline-block;animation:thinkBounce .6s ease infinite}
+.thinking-dot:nth-child(2){animation-delay:.15s}
+.thinking-dot:nth-child(3){animation-delay:.3s}
+@keyframes thinkBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* 列表字段动画 */
+.listing-field{opacity:0;transform:translateY(8px);transition:all .4s ease}
+.listing-field.visible{opacity:1;transform:translateY(0)}
+
+/* 模态 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{width:100%;max-width:390px;max-height:88vh;background:var(--bg);border-radius:24px 24px 0 0;overflow-y:auto;animation:slideUp .35s cubic-bezier(.16,1,.3,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* Toast */
+.toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:12px 20px;z-index:200;transition:transform .4s cubic-bezier(.16,1,.3,1);white-space:nowrap;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* 分类卡片 */
+.category-card{border-radius:18px;padding:16px;cursor:pointer;transition:all .2s;border:1.5px solid var(--card-border);background:var(--card);display:flex;flex-direction:column;align-items:center;gap:8px;min-width:90px}
+.category-card:active{transform:scale(.95)}
+.category-card .cat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+
+/* 搜索 */
+.search-box{background:var(--card);border:1.5px solid var(--card-border);border-radius:14px;padding:12px 16px 12px 42px;color:var(--text);font-size:14px;width:100%;outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif}
+.search-box:focus{border-color:var(--accent)}
+.search-box::placeholder{color:var(--text3)}
+
+/* 筛选标签 */
+.filter-chip{padding:7px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;border:1.5px solid var(--card-border);color:var(--text2);background:var(--card)}
+.filter-chip.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+
+/* Aadhaar扫描动画 */
+.scan-line{position:absolute;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--trust),transparent);animation:scanMove 2s ease infinite}
+@keyframes scanMove{0%{top:20%}50%{top:80%}100%{top:20%}}
+
+/* 完成庆祝 */
+@keyframes celebrate{0%{transform:scale(0) rotate(-10deg);opacity:0}50%{transform:scale(1.15) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.celebrate{animation:celebrate .6s cubic-bezier(.16,1,.3,1)}
+
+/* Product image */
+.product-img{border-radius:0;position:relative;transition:transform .2s}
+.product-img:hover{transform:scale(1.02)}
+.product-img img{transition:opacity .3s ease}
+.product-img-sm{border-radius:10px;position:relative}
+.product-img-sm img{transition:opacity .3s ease}
+
+/* Feed card entrance animation */
+.feed-card{opacity:0;transform:translateY(12px);animation:feedCardIn .4s ease forwards}
+@keyframes feedCardIn{to{opacity:1;transform:translateY(0)}}
+
+/* Seller role overrides */
+[data-role="seller"]{--accent:#0D9488;--accent-light:#ECFDF5;--accent2:#14B8A6;--seller-accent:#B8680F;--seller-accent-light:#FEF3E2}
+[data-role="seller"] .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 20px rgba(13,148,136,0.25)}
+[data-role="seller"] .nav-item.active{color:var(--accent)}
+[data-role="seller"] .filter-chip.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+
+/* Seller dashboard cards */
+.seller-stat{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:16px;text-align:center}
+.seller-stat .stat-value{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;color:var(--text)}
+.seller-stat .stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-top:2px}
+.seller-order{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:transform .15s}
+.seller-order:active{transform:scale(.98)}
+.seller-order .order-status{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:6px}
+.seller-order .order-status.new{background:#FEF3C7;color:#92400E}
+.seller-order .order-status.confirmed{background:var(--trust-light);color:var(--trust)}
+.seller-order .order-status.delivered{background:#ECFDF5;color:#0D9488}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+

@@ -1,0 +1,40 @@
+// ============================================================
+// NAVIGATION — Sauda
+// ============================================================
+
+function navigateTo(view) {
+  state.currentView = view;
+  document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('active'); });
+  document.getElementById('view-' + view).classList.add('active');
+
+  var navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(function (n) {
+    n.classList.toggle('active', n.dataset.view === view);
+  });
+
+  if (view === 'categories') renderCategoryGrid();
+  if (view === 'seller-dashboard') renderSellerDashboard();
+}
+
+function setupBottomNav() {
+  var navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      navigateTo(item.dataset.view);
+    });
+    item.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') navigateTo(item.dataset.view);
+    });
+  });
+}
+
+function updateBottomNavForRole() {
+  var nav = document.querySelector('.bottom-nav');
+  var role = state.userRole || 'buyer';
+  nav.setAttribute('data-role', role);
+  document.querySelectorAll('.nav-item').forEach(function (item) {
+    var show = item.dataset.show;
+    if (!show) { item.style.display = ''; return; }
+    item.style.display = (show === role) ? '' : 'none';
+  });
+}

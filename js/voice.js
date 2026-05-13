@@ -1,0 +1,256 @@
+// ============================================================
+// VOICE RECORDING — Sauda
+// ============================================================
+
+var recognition = null;
+var waveformAnim = null;
+
+function initVoice() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SR) {
+    recognition = new SR();
+    recognition.lang = 'hi-IN';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = function (e) {
+      var t = '';
+      for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+      document.getElementById('transcription-text').textContent = t;
+    };
+    recognition.onend = function () {
+      if (state.isRecording) stopRecording();
+    };
+    recognition.onerror = function () {
+      if (state.isRecording) stopRecording();
+    };
+  }
+}
+
+function startRecording() {
+  state.isRecording = true;
+  var btn = document.getElementById('mic-btn');
+  btn.classList.add('recording');
+  btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  document.getElementById('mic-hint').textContent = 'Sun raha hoon...';
+  document.getElementById('transcription-area').style.display = 'none';
+  document.getElementById('ai-status').style.display = 'none';
+  document.getElementById('generated-listing').style.display = 'none';
+  startWaveform();
+  if (recognition) recognition.start();
+  else simulateTranscription();
+}
+
+function stopRecording() {
+  state.isRecording = false;
+  var btn = document.getElementById('mic-btn');
+  btn.classList.remove('recording');
+  btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  document.getElementById('mic-hint').textContent = 'Mic tap karein — Hindi mein bolein';
+  stopWaveform();
+  var t = document.getElementById('transcription-text').textContent;
+  if (t) {
+    document.getElementById('transcription-area').style.display = 'block';
+    processWithAI(t);
+  }
+  if (recognition) {
+    try { recognition.stop(); } catch (e) { }
+  }
+}
+
+function simulateTranscription() {
+  state.isRecording = true;
+  var btn = document.getElementById('mic-btn');
+  btn.classList.add('recording');
+  btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  document.getElementById('mic-hint').textContent = 'Sun raha hoon...';
+  document.getElementById('transcription-area').style.display = 'none';
+  document.getElementById('ai-status').style.display = 'none';
+  document.getElementById('generated-listing').style.display = 'none';
+  startWaveform();
+  var demo = 'Banarasi silk saree ₹2500 piece';
+  var el = document.getElementById('transcription-text');
+  var ci = 0;
+  var iv = setInterval(function () {
+    if (ci < demo.length) {
+      el.textContent = demo.slice(0, ci + 1);
+      ci++;
+    } else {
+      clearInterval(iv);
+      setTimeout(function () {
+        state.isRecording = false;
+        btn.classList.remove('recording');
+        btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        document.getElementById('mic-hint').textContent = 'Mic tap karein — Hindi mein bolein';
+        stopWaveform();
+        document.getElementById('transcription-area').style.display = 'block';
+        processWithAI(demo);
+      }, 400);
+    }
+  }, 70);
+}
+
+function processWithAI(t) {
+  var st = document.getElementById('ai-status');
+  st.style.display = 'block';
+  var at = document.getElementById('ai-status-text');
+  setTimeout(function () {
+    at.innerHTML = 'Listing taiyaar kar raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span>';
+  }, 1200);
+  setTimeout(function () {
+    st.style.display = 'none';
+    showGeneratedListing(t);
+  }, 2600);
+}
+
+function showGeneratedListing(t) {
+  var ext = extractFromSpeech(t);
+  document.getElementById('gen-category').textContent = ext.category.toUpperCase();
+  document.getElementById('gen-category').style.background = (CATEGORIES.find(function (c) { return c.id === ext.category; }) || { bg: 'var(--accent-light)' }).bg;
+  document.getElementById('gen-category').style.color = (CATEGORIES.find(function (c) { return c.id === ext.category; }) || { color: 'var(--accent)' }).color;
+  document.getElementById('gen-title').textContent = ext.title + (ext.titleHi ? ' (' + ext.titleHi + ')' : '');
+  document.getElementById('gen-price').textContent = '₹' + ext.price + ' / ' + ext.unit;
+  document.getElementById('gen-stock').textContent = ext.stock + ' available';
+  document.getElementById('generated-listing').style.display = 'block';
+  document.querySelectorAll('.listing-field').forEach(function (f) {
+    var d = parseInt(f.dataset.delay) || 0;
+    setTimeout(function () { f.classList.add('visible'); }, d + 100);
+  });
+}
+
+function extractFromSpeech(text) {
+  var t = text.toLowerCase();
+  var price = 0;
+  var pm = t.match(/[₹\s](\d+)/);
+  if (pm) price = parseInt(pm[1]);
+
+  var unit = 'pcs';
+  if (t.indexOf('gaddi') !== -1 || t.indexOf('bundle') !== -1) unit = 'gaddi';
+  else if (t.indexOf('kg') !== -1 || t.indexOf('kilo') !== -1) unit = 'kg';
+  else if (t.indexOf('litre') !== -1) unit = 'litre';
+  else if (t.indexOf('dozen') !== -1 || t.indexOf('darjan') !== -1) unit = 'dozen';
+  else if (t.indexOf('piece') !== -1 || t.indexOf('pcs') !== -1) unit = 'piece';
+  else if (t.indexOf('set') !== -1) unit = 'set';
+  else if (t.indexOf('session') !== -1) unit = 'session';
+  else if (t.indexOf('visit') !== -1) unit = 'visit';
+
+  var title = 'Product';
+  var titleHi = '';
+  var category = 'kirana';
+
+  if (t.indexOf('saree') !== -1 || t.indexOf('sadi') !== -1) { title = 'Banarasi Silk Saree'; titleHi = 'Banarasi Saree'; category = 'clothes'; price = price || 2500; }
+  else if (t.indexOf('kurta') !== -1) { title = 'Cotton Kurta'; titleHi = 'Suthan Kurta'; category = 'clothes'; price = price || 450; }
+  else if (t.indexOf('suit') !== -1 || t.indexOf('anarkali') !== -1) { title = 'Anarkali Suit'; titleHi = 'Anarkali Suit'; category = 'clothes'; price = price || 1200; }
+  else if (t.indexOf('dupatta') !== -1) { title = 'Designer Dupatta'; titleHi = 'Designar Dupatta'; category = 'clothes'; price = price || 350; }
+  else if (t.indexOf('lehenga') !== -1) { title = 'Designer Lehenga'; titleHi = 'Designar Lehenga'; category = 'clothes'; price = price || 3500; }
+  else if (t.indexOf('blouse') !== -1 || t.indexOf('stitching') !== -1 || t.indexOf('silai') !== -1) { title = 'Custom Blouse Stitching'; titleHi = 'Blouse Silai'; category = 'clothes'; price = price || 250; }
+  else if (t.indexOf('palazzo') !== -1) { title = 'Palazzo Set'; titleHi = 'Palajo Set'; category = 'clothes'; price = price || 600; }
+  else if (t.indexOf('palak') !== -1 || t.indexOf('spinach') !== -1) { title = 'Fresh Palak'; titleHi = 'Taza Palak'; category = 'sabzi'; price = price || 20; }
+  else if (t.indexOf('gobi') !== -1 || t.indexOf('cabbage') !== -1) { title = 'Gobi'; titleHi = 'Bandh Gobi'; category = 'sabzi'; price = price || 40; }
+  else if (t.indexOf('tamatar') !== -1 || t.indexOf('tomato') !== -1) { title = 'Tamatar'; titleHi = 'Desi Tamatar'; category = 'sabzi'; price = price || 30; }
+  else if (t.indexOf('doodh') !== -1 || t.indexOf('milk') !== -1) { title = 'Doodh'; titleHi = 'Taza Doodh'; category = 'dairy'; price = price || 60; }
+  else if (t.indexOf('dahi') !== -1) { title = 'Dahi'; titleHi = 'Makhan Dahi'; category = 'dairy'; price = price || 50; }
+  else if (t.indexOf('paneer') !== -1) { title = 'Paneer'; titleHi = 'Taza Paneer'; category = 'dairy'; price = price || 90; }
+  else if (t.indexOf('atta') !== -1 || t.indexOf('flour') !== -1) { title = 'Atta'; titleHi = 'Aashirvaad Atta'; category = 'kirana'; price = price || 45; }
+  else if (t.indexOf('aam') !== -1 || t.indexOf('mango') !== -1) { title = 'Aam'; titleHi = 'Ratnagiri Aam'; category = 'fruit'; price = price || 80; }
+  else if (t.indexOf('kela') !== -1 || t.indexOf('banana') !== -1) { title = 'Kela'; titleHi = 'Bhuvel Kela'; category = 'fruit'; price = price || 40; }
+  else if (t.indexOf('mobile') !== -1 || t.indexOf('cover') !== -1 || t.indexOf('earphone') !== -1) { title = 'Mobile Accessories'; titleHi = 'Mobile Saman'; category = 'electronics'; price = price || 299; }
+  else if (t.indexOf('mehendi') !== -1 || t.indexOf('facial') !== -1 || t.indexOf('beauty') !== -1) { title = 'Beauty Service'; titleHi = 'Beauty Seva'; category = 'beauty'; price = price || 300; }
+  else if (t.indexOf('repair') !== -1 || t.indexOf('plumbing') !== -1 || t.indexOf('ac') !== -1) { title = 'Repair Service'; titleHi = 'Repair Seva'; category = 'services'; price = price || 500; }
+  else {
+    var words = text.split(/\s+/).filter(function (w) { return !w.match(/[₹\d]/); });
+    if (words.length > 0) title = words.slice(0, 2).join(' ');
+  }
+
+  if (!price) price = Math.floor(Math.random() * 500) + 50;
+  return { title: title, titleHi: titleHi, price: price, unit: unit, category: category, stock: Math.floor(Math.random() * 25) + 5 };
+}
+
+function startWaveform() {
+  var canvas = document.getElementById('waveform-canvas');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = 300 * dpr;
+  canvas.height = 300 * dpr;
+  ctx.scale(dpr, dpr);
+  var cx = 150, cy = 150, bars = 64;
+  var barData = new Float32Array(bars);
+  var time = 0;
+
+  function draw() {
+    if (!state.isRecording) return;
+    ctx.clearRect(0, 0, 300, 300);
+    time += 0.05;
+    for (var i = 0; i < bars; i++) {
+      var a = (i / bars) * Math.PI * 2 - Math.PI / 2;
+      var noise = Math.sin(time * 3 + i * 0.5) * 0.3 + Math.sin(time * 7 + i * 1.2) * 0.2 + Math.random() * 0.3;
+      barData[i] += (Math.max(0.05, Math.abs(noise)) - barData[i]) * 0.3;
+      var ir = 52;
+      var or = ir + barData[i] * 38;
+      var x1 = cx + Math.cos(a) * ir;
+      var y1 = cy + Math.sin(a) * ir;
+      var x2 = cx + Math.cos(a) * or;
+      var y2 = cy + Math.sin(a) * or;
+      var al = 0.15 + barData[i] * 0.85;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = 'rgba(184,104,15,' + al.toFixed(2) + ')';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+    var grad = ctx.createRadialGradient(cx, cy, 36, cx, cy, 60);
+    grad.addColorStop(0, 'rgba(184,104,15,0.05)');
+    grad.addColorStop(1, 'rgba(184,104,15,0)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    waveformAnim = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function stopWaveform() {
+  if (waveformAnim) cancelAnimationFrame(waveformAnim);
+  var c = document.getElementById('waveform-canvas');
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 300, 300);
+}
+
+document.getElementById('mic-btn').addEventListener('click', function () {
+  state.isRecording ? stopRecording() : startRecording();
+});
+
+document.getElementById('demo-voice-btn').addEventListener('click', simulateTranscription);
+
+document.getElementById('publish-btn').addEventListener('click', function () {
+  var title = document.getElementById('gen-title').textContent;
+  var priceText = document.getElementById('gen-price').textContent;
+  var category = document.getElementById('gen-category').textContent.toLowerCase();
+  var pm = priceText.match(/₹(\d+)\s*\/\s*(\w+)/);
+  var price = pm ? parseInt(pm[1]) : 0;
+  var unit = pm ? pm[2] : 'pcs';
+  state.productFeed.unshift({
+    id: Date.now(),
+    title: title.split(' (')[0],
+    titleHi: title.indexOf('(') !== -1 ? (title.match(/\(([^)]+)\)/) || [])[1] || '' : '',
+    price: price,
+    unit: unit,
+    seller: 'neeta',
+    category: category,
+    stock: 25
+  });
+  showToast('Listing publish ho gayi! Dukaan mein dikhegi.');
+  document.getElementById('generated-listing').style.display = 'none';
+  document.getElementById('transcription-area').style.display = 'none';
+  document.getElementById('ai-status').style.display = 'none';
+  document.getElementById('transcription-text').textContent = '';
+  document.querySelectorAll('.listing-field').forEach(function (f) { f.classList.remove('visible'); });
+  setTimeout(function () {
+    navigateTo(state.userRole === 'seller' ? 'seller-dashboard' : 'feed');
+  }, 600);
+  if (state.currentView === 'seller-dashboard') renderSellerDashboard();
+  else renderFeed();
+});

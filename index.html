@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Sauda — Bharose ka Sauda</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.6.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+<div class="app-shell" id="app">
+
+<!-- ============================================================ -->
+<!-- ONBOARDING -->
+<!-- ============================================================ -->
+<div class="onboard active" id="onboard-0">
+  <div class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+    <div class="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 celebrate" style="background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 30px rgba(184,104,15,0.3)">
+      <i class="fa-solid fa-handshake text-white text-3xl"></i>
+    </div>
+    <h1 class="text-3xl font-extrabold mb-2" style="color:var(--text)">Sauda</h1>
+    <p class="text-base font-medium mb-1" style="color:var(--accent)">Bharose ka Sauda</p>
+    <p class="text-sm leading-relaxed mt-3" style="color:var(--text2)">Apne mohalle ke trusted sellers,<br>apni aawaz se connect karo.</p>
+    <div class="flex items-center gap-2 mt-6 px-4 py-2.5 rounded-full" style="background:var(--trust-light)">
+      <i class="fa-solid fa-shield-halved text-xs" style="color:var(--trust)"></i>
+      <span class="text-xs font-bold" style="color:var(--trust)">Trust is a relationship, not a rating</span>
+    </div>
+  </div>
+  <div class="px-6 pb-8">
+    <button class="btn-primary" onclick="goOnboard(1)">Shuru Karein</button>
+    <button class="btn-secondary mt-3" onclick="skipOnboard()" style="font-size:12px;color:var(--text3)">Skip for now</button>
+  </div>
+</div>
+
+<!-- Step 1: Role Selection -->
+<div class="onboard" id="onboard-1">
+  <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:16%"></div></div></div>
+  <div class="flex-1 flex flex-col px-6 pt-8">
+    <button onclick="goOnboard(0)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+    <h2 class="text-xl font-bold mb-1">Aap kaun hain?</h2>
+    <p class="text-xs mb-6" style="color:var(--text2)">Choose your role to get started</p>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="role-card" onclick="selectRole('buyer',this)">
+        <div class="icon-wrap" style="background:#FFF1F2;color:#E11D48"><i class="fa-solid fa-bag-shopping"></i></div>
+        <h3 class="text-sm font-bold mb-1">Buyer</h3>
+        <p class="text-[10px]" style="color:var(--text3)">Mohalle se best deals dhundho</p>
+      </div>
+      <div class="role-card" onclick="selectRole('seller',this)">
+        <div class="icon-wrap" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid fa-store"></i></div>
+        <h3 class="text-sm font-bold mb-1">Seller</h3>
+        <p class="text-[10px]" style="color:var(--text3)">Apni dukaan online laao</p>
+      </div>
+    </div>
+  </div>
+  <div class="px-6 pb-8"><button class="btn-primary" id="role-next-btn" disabled onclick="goOnboard(2)">Aage Badhein</button></div>
+</div>
+
+<!-- Step 2: Name & Phone -->
+<div class="onboard" id="onboard-2">
+  <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:33%"></div></div></div>
+  <div class="flex-1 flex flex-col px-6 pt-8">
+    <button onclick="goOnboard(1)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+    <h2 class="text-xl font-bold mb-1">Apna naam batayein</h2>
+    <p class="text-xs mb-6" style="color:var(--text2)">We need this to build your trust profile</p>
+    <div class="space-y-4">
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">FULL NAME</label><input class="input-field" id="inp-name" placeholder="e.g. Priya Sharma" autocomplete="off"></div>
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">PHONE NUMBER</label><div class="flex gap-3"><input class="input-field" style="width:80px" value="+91" readonly><input class="input-field flex-1" id="inp-phone" placeholder="9876543210" type="tel" maxlength="10"></div></div>
+    </div>
+  </div>
+  <div class="px-6 pb-8"><button class="btn-primary" id="name-next-btn" disabled onclick="goOnboard(3)">Aage Badhein</button></div>
+</div>
+
+<!-- Step 3: Location -->
+<div class="onboard" id="onboard-3">
+  <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:50%"></div></div></div>
+  <div class="flex-1 flex flex-col px-6 pt-8">
+    <button onclick="goOnboard(2)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+    <h2 class="text-xl font-bold mb-1">Apna mohalla batayein</h2>
+    <p class="text-xs mb-6" style="color:var(--text2)">So we can show nearby trusted sellers</p>
+    <button class="btn-secondary mb-4 flex items-center justify-center gap-2" onclick="autoDetectLocation()"><i class="fa-solid fa-location-crosshairs" style="color:var(--accent)"></i> Auto-detect Location</button>
+    <div id="location-detected" style="display:none" class="p-3 rounded-xl mb-4 flex items-center gap-3" style="background:var(--trust-light)">
+      <i class="fa-solid fa-check-circle" style="color:var(--trust)"></i>
+      <span class="text-sm font-medium" id="location-text"></span>
+    </div>
+    <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">OR ENTER MANUALLY</label><input class="input-field" id="inp-location" placeholder="e.g. Sultanpuri, Delhi"></div>
+  </div>
+  <div class="px-6 pb-8"><button class="btn-primary" onclick="goOnboard(4)">Aage Badhein</button></div>
+</div>
+
+<!-- Step 4a: Seller Shop Details -->
+<div class="onboard" id="onboard-4a">
+  <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:66%"></div></div></div>
+  <div class="flex-1 flex flex-col px-6 pt-8 scroll-area">
+    <button onclick="goOnboard(3)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+    <h2 class="text-xl font-bold mb-1">Apni dukaan ki details</h2>
+    <p class="text-xs mb-5" style="color:var(--text2)">Tell us about your shop</p>
+    <div class="space-y-4">
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">SHOP NAME</label><input class="input-field" id="inp-shop" placeholder="e.g. Laxmi Saree Center"></div>
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">CATEGORY (Select all that apply)</label>
+        <div class="flex flex-wrap gap-2" id="seller-cat-chips"></div>
+      </div>
+    </div>
+  </div>
+  <div class="px-6 pb-8"><button class="btn-primary" onclick="goOnboard(5)">Aage Badhein</button></div>
+</div>
+
+<!-- Step 4b: Buyer Interests -->
+<div class="onboard" id="onboard-4b">
+  <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:66%"></div></div></div>
+  <div class="flex-1 flex flex-col px-6 pt-8 scroll-area">
+    <button onclick="goOnboard(3)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+    <h2 class="text-xl font-bold mb-1">Kya kya kharidte hain?</h2>
+    <p class="text-xs mb-5" style="color:var(--text2)">Select your interests for personalized feed</p>
+    <div class="flex flex-wrap gap-2" id="buyer-cat-chips"></div>
+  </div>
+  <div class="px-6 pb-8"><button class="btn-primary" onclick="goOnboard(5)">Aage Badhein</button></div>
+</div>
+
+<!-- Step 5: Aadhaar Verify -->
+<div class="onboard" id="onboard-5">
+  <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:83%"></div></div></div>
+  <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+    <button onclick="goOnboard(4)" class="self-start mb-4 text-sm font-medium absolute top-16 left-6" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
+    <div id="aadhaar-before">
+      <div class="w-20 h-20 rounded-3xl flex items-center justify-center mb-4 mx-auto" style="background:var(--trust-light)">
+        <i class="fa-solid fa-id-card text-3xl" style="color:var(--trust)"></i>
+      </div>
+      <h2 class="text-lg font-bold mb-1">Aadhaar Verification</h2>
+      <p class="text-xs mb-6" style="color:var(--text2)">Build trust with verified identity<br>This takes just 30 seconds</p>
+      <div class="p-5 rounded-2xl mb-6 text-left" style="background:var(--bg2);border:1px solid var(--card-border)">
+        <label class="text-xs font-bold block mb-2" style="color:var(--text2)">AADHAAR NUMBER</label>
+        <input class="input-field" id="inp-aadhaar" placeholder="XXXX XXXX XXXX" maxlength="14">
+      </div>
+      <button class="btn-primary" onclick="verifyAadhaar()">Verify Karein</button>
+      <button class="btn-secondary mt-3" onclick="goOnboard(6)" style="font-size:12px;color:var(--text3)">Skip for now</button>
+    </div>
+    <div id="aadhaar-scanning" style="display:none">
+      <div class="w-24 h-24 rounded-3xl flex items-center justify-center mb-4 mx-auto relative overflow-hidden" style="background:var(--trust-light)">
+        <i class="fa-solid fa-fingerprint text-4xl" style="color:var(--trust)"></i>
+        <div class="scan-line"></div>
+      </div>
+      <h2 class="text-lg font-bold mb-1">Verifying...</h2>
+      <p class="text-xs" style="color:var(--text2)">Please wait while we verify your identity</p>
+    </div>
+    <div id="aadhaar-done" style="display:none">
+      <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4 mx-auto celebrate" style="background:var(--trust-light)">
+        <i class="fa-solid fa-check text-3xl" style="color:var(--trust)"></i>
+      </div>
+      <h2 class="text-lg font-bold mb-1" style="color:var(--trust)">Verified!</h2>
+      <p class="text-xs mb-4" style="color:var(--text2)">Your identity has been confirmed</p>
+      <button class="btn-primary" onclick="goOnboard(6)">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Step 6: Done! -->
+<div class="onboard" id="onboard-6">
+  <div class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+    <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6 celebrate" style="background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 30px rgba(184,104,15,0.3)">
+      <i class="fa-solid fa-hands-clapping text-white text-4xl"></i>
+    </div>
+    <h1 class="text-2xl font-extrabold mb-2">Swagat hai!</h1>
+    <p class="text-sm" style="color:var(--text2)">Welcome to Sauda, <span id="welcome-name">Friend</span></p>
+    <p class="text-xs mt-3 px-4" style="color:var(--text3)">Ab aap apne mohalle ke trusted sellers se connect kar sakte hain</p>
+    <div class="mt-6 p-4 rounded-2xl text-left" style="background:var(--trust-light);border:1px solid rgba(13,148,136,0.15)">
+      <p class="text-xs font-bold mb-2" style="color:var(--trust)">YOUR TRUST JOURNEY BEGINS</p>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-xs" style="color:var(--trust)"></i><span class="text-xs" style="color:var(--text2)">Profile created</span></div>
+        <div class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-xs" style="color:var(--trust)"></i><span class="text-xs" style="color:var(--text2)">Location set</span></div>
+        <div class="flex items-center gap-2" id="aadhaar-check-item"><i class="fa-solid fa-circle text-xs" style="color:var(--text3)"></i><span class="text-xs" style="color:var(--text3)">Aadhaar verified</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="px-6 pb-8"><button class="btn-primary" onclick="completeOnboarding()">Sauda Shuru Karein</button></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MAIN APP -->
+<!-- ============================================================ -->
+<div id="main-app" style="display:none;flex:1;display:flex;flex-direction:column;height:100%;position:relative">
+
+  <!-- ===== FEED VIEW ===== -->
+  <div id="view-feed" class="view active">
+    <header class="px-5 pt-5 pb-3 sticky top-0 z-10" style="background:var(--bg)">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest" style="color:var(--text3)" id="feed-greeting">Namaste</p>
+          <h1 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Mohalla Market</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="relative w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:var(--card);border:1px solid var(--card-border)" onclick="openNotifications()">
+            <i class="fa-regular fa-bell text-sm" style="color:var(--text2)"></i>
+            <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center" id="notif-badge" style="background:var(--accent);border:2px solid var(--bg);display:none;font-size:8px;color:#fff;font-weight:700;text-align:center;line-height:1;padding:0 3px"></span>
+          </div>
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold" id="feed-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
+        </div>
+      </div>
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-xs" style="color:var(--text3)"></i>
+        <input type="text" class="search-box" placeholder="Apne mohalle mein dhundho..." id="search-input" aria-label="Search">
+      </div>
+    </header>
+    <div class="scroll-area flex-1 pb-20">
+      <!-- Category Cards -->
+      <div class="px-5 pt-2 pb-1"><p class="text-xs font-bold uppercase tracking-wider mb-3" style="color:var(--text3)">Categories</p></div>
+      <div class="flex gap-3 px-5 pb-4 overflow-x-auto" style="scrollbar-width:none" id="category-cards"></div>
+
+      <!-- Group Deal -->
+      <div class="mx-5 mb-4 p-4 rounded-2xl relative overflow-hidden cursor-pointer" style="background:linear-gradient(135deg,var(--accent-light),#FFF7EA);border:1.5px solid rgba(184,104,15,0.15)" onclick="openGroupDeal()">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] font-extrabold tracking-wider mb-1" style="color:var(--accent)">GROUP DEAL</p>
+            <p class="text-sm font-bold">3 log milke — 20% sasta</p>
+            <p class="text-[11px] mt-1" style="color:var(--text2)">Banarasi Silk Saree — Laxmi Saree Center</p>
+          </div>
+          <div class="flex -space-x-2">
+            <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[9px] font-bold" style="background:#EC4899;border-color:var(--bg);color:#fff">P</div>
+            <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[9px] font-bold" style="background:#3B82F6;border-color:var(--bg);color:#fff">A</div>
+            <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[9px] font-bold" style="background:var(--accent);border-color:var(--bg);color:#fff">+1</div>
+          </div>
+        </div>
+        <div class="mt-3 flex items-center gap-2">
+          <div class="flex-1 h-1.5 rounded-full" style="background:var(--card-border)">
+            <div class="h-full rounded-full" style="width:66%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+          </div>
+          <span class="text-[10px] font-bold" style="color:var(--accent)">2/3 joined</span>
+        </div>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="flex gap-2 px-5 pb-3 overflow-x-auto" style="scrollbar-width:none" id="filter-chips"></div>
+
+      <!-- Product Feed -->
+      <div class="px-5 space-y-3" id="product-feed"></div>
+    </div>
+  </div>
+
+  <!-- ===== SELLER DASHBOARD VIEW ===== -->
+  <div id="view-seller-dashboard" class="view">
+    <header class="px-5 pt-5 pb-3 sticky top-0 z-10" style="background:var(--bg)">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest" style="color:var(--text3)" id="dashboard-greeting">Namaste, Dukaandaar</p>
+          <h1 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Meri Dukaan</h1>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="relative w-9 h-9 rounded-full flex items-center justify-center cursor-pointer" style="background:var(--card);border:1px solid var(--card-border)" onclick="openNotifications()">
+            <i class="fa-regular fa-bell text-sm" style="color:var(--text2)"></i>
+            <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style="background:var(--seller-accent);border:2px solid var(--bg)"></span>
+          </div>
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold" id="dashboard-avatar" style="background:linear-gradient(135deg,var(--seller-accent),#D4910B);color:#fff">A</div>
+        </div>
+      </div>
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-xs" style="color:var(--text3)"></i>
+        <input type="text" class="search-box" placeholder="Apni listings mein dhundho..." id="seller-search-input" aria-label="Search listings">
+      </div>
+    </header>
+    <div class="scroll-area flex-1 pb-20" id="seller-dashboard-content"></div>
+  </div>
+
+  <!-- ===== CATEGORIES VIEW ===== -->
+  <div id="view-categories" class="view">
+    <header class="px-5 pt-5 pb-3 sticky top-0 z-10" style="background:var(--bg)">
+      <h1 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Browse Categories</h1>
+      <p class="text-xs" style="color:var(--text2)">Sab kuch apne mohalle se</p>
+    </header>
+    <div class="scroll-area flex-1 pb-20 px-5">
+      <div class="grid grid-cols-2 gap-3 mt-2" id="category-grid"></div>
+      <div class="mt-5" id="category-products"></div>
+    </div>
+  </div>
+
+  <!-- ===== VOICE VIEW ===== -->
+  <div id="view-voice" class="view">
+    <header class="px-5 pt-5 pb-2">
+      <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Bol ke Becho</h2>
+      <p class="text-xs" style="color:var(--text2)">Apni aawaz mein listing banao</p>
+    </header>
+    <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
+      <canvas id="waveform-canvas" width="300" height="300"></canvas>
+      <button class="mic-btn" id="mic-btn" aria-label="Voice record"><i class="fa-solid fa-microphone"></i></button>
+      <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="mic-hint">Mic tap karein — Hindi mein bolein</p>
+    </div>
+    <div class="px-5 mb-2" id="transcription-area" style="display:none">
+      <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
+        <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
+        <p class="text-sm leading-relaxed" id="transcription-text"></p>
+      </div>
+    </div>
+    <div class="px-5 mb-2" id="ai-status" style="display:none">
+      <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
+        <p class="text-sm font-semibold" style="color:var(--accent)" id="ai-status-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+      </div>
+    </div>
+    <div class="px-5 pb-4" id="generated-listing" style="display:none">
+      <div class="s-card p-5">
+        <div class="listing-field" data-delay="0"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold mb-3" style="background:var(--accent-light);color:var(--accent)" id="gen-category">—</span></div>
+        <div class="listing-field" data-delay="100"><h3 class="text-lg font-bold mb-1" id="gen-title">—</h3></div>
+        <div class="listing-field" data-delay="200"><p class="text-2xl font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="gen-price">—</p></div>
+        <div class="listing-field" data-delay="300"><div class="flex items-center gap-2 mt-3 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="gen-stock">—</span></div></div>
+        <div class="listing-field" data-delay="400"><button class="w-full mt-4 py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-btn">Listing Publish Karein</button></div>
+      </div>
+    </div>
+    <div class="px-5 pb-5 text-center">
+      <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="demo-voice-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Hindi Voice Simulation</button>
+    </div>
+  </div>
+
+  <!-- ===== PROFILE VIEW ===== -->
+  <div id="view-profile" class="view">
+    <header class="px-5 pt-5 pb-3">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold" id="profile-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
+        <div class="flex-1">
+          <h2 class="text-lg font-extrabold" id="profile-name" style="font-family:'Space Grotesk',sans-serif">Aap</h2>
+          <p class="text-xs" style="color:var(--text2)" id="profile-location">Sultanpuri, Delhi</p>
+          <div class="flex items-center gap-1.5 mt-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[10px] font-bold" style="color:var(--trust)" id="profile-role">Active</span></div>
+        </div>
+      </div>
+    </header>
+    <div class="scroll-area flex-1 pb-20 px-5">
+      <!-- Trust Score Card -->
+      <div class="s-card p-4 mb-3 flex items-center gap-4">
+        <div class="trust-ring">
+          <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#EDE5D5" stroke-width="5"/><circle cx="36" cy="36" r="30" fill="none" stroke="var(--trust)" stroke-width="5" stroke-dasharray="188.5" stroke-dashoffset="18.85" stroke-linecap="round"/></svg>
+          <div class="score">90</div>
+        </div>
+        <div>
+          <p class="text-sm font-bold">Trust Score</p>
+          <p class="text-xs" style="color:var(--text2)" id="profile-connections">5 trusted connections</p>
+          <div class="flex gap-1.5 mt-2 flex-wrap" id="profile-badges"></div>
+        </div>
+      </div>
+      <!-- VouchChain CTA -->
+      <div class="s-card p-4 mb-3 cursor-pointer" onclick="openVouchChainModal()" style="border-color:rgba(13,148,136,0.15);background:var(--trust-light)">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--trust);color:#fff"><i class="fa-solid fa-diagram-project"></i></div>
+            <div><p class="text-sm font-bold" style="color:var(--trust)">VouchChain</p><p class="text-[10px]" style="color:var(--text2)">Dekho kaun kisko trust karta hai</p></div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs" style="color:var(--trust)"></i>
+        </div>
+      </div>
+      <!-- Menu Items -->
+      <div class="space-y-2" id="profile-menu">
+        <div class="s-card p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><i class="fa-solid fa-shield-halved" style="color:var(--trust)"></i><span class="text-sm">Aadhaar Verified</span></div><i class="fa-solid fa-check-circle" style="color:var(--trust)" id="aadhaar-status-icon"></i></div>
+        <div class="s-card p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><i class="fa-solid fa-handshake" style="color:var(--accent)"></i><span class="text-sm">Vouches Given</span></div><span class="text-sm font-bold" style="color:var(--accent)">5</span></div>
+        <div class="s-card p-4 flex items-center justify-between cursor-pointer" onclick="openOrderHistory()"><div class="flex items-center gap-3"><i class="fa-solid fa-bag-shopping" style="color:var(--trust)"></i><span class="text-sm">My Orders</span></div><span class="text-sm font-bold" id="my-orders-count" style="color:var(--trust)">0</span></div>
+        <div class="s-card p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><i class="fa-solid fa-store" style="color:var(--text2)"></i><span class="text-sm">My Listings</span></div><span class="text-sm font-bold" id="my-listings-count">0</span></div>
+        <div class="s-card p-4 flex items-center justify-between cursor-pointer" onclick="openSavedSellers()"><div class="flex items-center gap-3"><i class="fa-solid fa-heart" style="color:#E11D48"></i><span class="text-sm">Saved Sellers</span></div><span class="text-sm font-bold" id="saved-sellers-count" style="color:#E11D48">0</span></div>
+        <div class="s-card p-4 flex items-center justify-between cursor-pointer" onclick="resetApp()"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger)"></i><span class="text-sm" style="color:var(--danger)">Reset Demo</span></div></div>
+      </div>
+      <p class="text-center text-[10px] mt-6" style="color:var(--text3)">Sauda v0.2 — Bharose ka Sauda</p>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-item active" data-view="feed" data-show="buyer" tabindex="0" role="button"><i class="fa-solid fa-store"></i><span>Mohalla</span></div>
+    <div class="nav-item" data-view="seller-dashboard" data-show="seller" tabindex="0" role="button"><i class="fa-solid fa-shop"></i><span>Dukaan</span></div>
+    <div class="nav-item" data-view="categories" tabindex="0" role="button"><i class="fa-solid fa-gem"></i><span>Categories</span></div>
+    <div class="nav-item" data-view="voice" tabindex="0" role="button"><i class="fa-solid fa-microphone"></i><span>Bol</span></div>
+    <div class="nav-item" data-view="profile" tabindex="0" role="button"><i class="fa-solid fa-user"></i><span>Profile</span></div>
+  </nav>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="product-modal"><div class="modal-sheet" id="product-sheet"></div></div>
+
+<!-- SELLER MODAL -->
+<div class="modal-overlay" id="seller-modal"><div class="modal-sheet" id="seller-sheet"></div></div>
+
+<!-- VOUCHCHAIN MODAL -->
+<div class="modal-overlay" id="vouch-modal"><div class="modal-sheet" id="vouch-sheet" style="max-height:92vh"></div></div>
+
+<!-- SAUDA SUCCESS MODAL -->
+<div class="modal-overlay" id="success-modal">
+  <div class="modal-sheet p-8 text-center flex flex-col items-center" id="success-sheet" style="height: auto; max-height: 80vh; max-width: 390px;">
+    <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6" id="success-icon-wrap" style="background:var(--trust-light); box-shadow:0 8px 30px rgba(13,148,136,0.25); transform:scale(0); opacity:0; transition:all 0.5s cubic-bezier(0.16,1,0.3,1)">
+      <i class="fa-solid fa-handshake-angle text-4xl" style="color:var(--trust)"></i>
+    </div>
+    <h2 class="text-2xl font-extrabold mb-1" id="success-title" style="font-family:'Space Grotesk',sans-serif; opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.1s">Sauda Pakka!</h2>
+    <p class="text-sm px-4 mb-6" style="color:var(--text2); opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.2s">Aapki request bhej di gayi hai.<br>Trust network ke through deal secure hai.</p>
+    
+    <div class="w-full p-4 rounded-2xl mb-6 text-left" id="success-card" style="background:var(--bg2);border:1px solid var(--card-border); opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.3s">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden" id="success-product-img" style="background-color: var(--card-border)"></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold truncate" id="success-product-title">Product Name</p>
+          <p class="text-[10px]" style="color:var(--text3)" id="success-seller-name">Seller</p>
+        </div>
+        <span class="text-base font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="success-price">₹0</span>
+      </div>
+      <div class="mt-3 pt-3 border-t flex items-center gap-2" style="border-color:var(--card-border)">
+        <i class="fa-solid fa-shield-halved text-xs" style="color:var(--trust)"></i>
+        <span class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--trust)">VOUCHCHAIN SECURED</span>
+      </div>
+    </div>
+    
+    <button class="w-full py-4 rounded-xl text-sm font-bold" id="success-btn" style="background:var(--bg2);color:var(--text);border:1.5px solid var(--card-border);cursor:pointer;opacity:0; transition:all 0.5s ease 0.4s" onclick="closeSuccessModal()">Marketplace Mein Wapas Jayein</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="modal-overlay" id="notif-modal"><div class="modal-sheet" id="notif-sheet" style="max-height:70vh"></div></div>
+
+<!-- GROUP DEAL MODAL -->
+<div class="modal-overlay" id="group-deal-modal"><div class="modal-sheet" id="group-deal-sheet"></div></div>
+
+<!-- ORDER HISTORY MODAL -->
+<div class="modal-overlay" id="order-modal"><div class="modal-sheet" id="order-sheet" style="max-height:80vh"></div></div>
+
+<!-- SAVED SELLERS MODAL -->
+<div class="modal-overlay" id="saved-modal"><div class="modal-sheet" id="saved-sheet" style="max-height:80vh"></div></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/onboard.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/feed.js"></script>
+<script src="js/seller.js"></script>
+<script src="js/categories.js"></script>
+<script src="js/voice.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/vouchchain.js"></script>
+<script src="js/success.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
+
