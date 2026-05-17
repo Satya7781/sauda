@@ -7,7 +7,7 @@ function navigateTo(view) {
   document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('active'); });
   document.getElementById('view-' + view).classList.add('active');
 
-  var navItems = document.querySelectorAll('.nav-item');
+  var navItems = document.querySelectorAll('.nav-item, .desktop-link');
   navItems.forEach(function (n) {
     n.classList.toggle('active', n.dataset.view === view);
   });
@@ -16,8 +16,8 @@ function navigateTo(view) {
   if (view === 'seller-dashboard') renderSellerDashboard();
 }
 
-function setupBottomNav() {
-  var navItems = document.querySelectorAll('.nav-item');
+function setupNav() {
+  var navItems = document.querySelectorAll('.nav-item, .desktop-link');
   navItems.forEach(function (item) {
     item.addEventListener('click', function () {
       navigateTo(item.dataset.view);
@@ -28,11 +28,18 @@ function setupBottomNav() {
   });
 }
 
-function updateBottomNavForRole() {
-  var nav = document.querySelector('.bottom-nav');
+function updateNavForRole() {
   var role = state.userRole || 'buyer';
-  nav.setAttribute('data-role', role);
-  document.querySelectorAll('.nav-item').forEach(function (item) {
+  
+  // Update Bottom Nav
+  var bottomNav = document.querySelector('.bottom-nav');
+  if (bottomNav) bottomNav.setAttribute('data-role', role);
+  
+  // Update Desktop Nav
+  var desktopNav = document.querySelector('.desktop-nav');
+  if (desktopNav) desktopNav.setAttribute('data-role', role);
+
+  document.querySelectorAll('.nav-item, .desktop-link').forEach(function (item) {
     var show = item.dataset.show;
     if (!show) { item.style.display = ''; return; }
     item.style.display = (show === role) ? '' : 'none';

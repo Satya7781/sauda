@@ -6,7 +6,9 @@ var state = {
   currentView: 'feed',
   isRecording: false,
   activeFilter: 'all',
-  productFeed: PRODUCTS.slice(),
+  productFeed: [],
+  categories: [],
+  sellers: {},
   selectedSeller: null,
   selectedCategory: null,
   userRole: null,
@@ -31,11 +33,21 @@ function saveState() {
   localStorage.setItem('sauda_aadhaar', state.aadhaarVerified ? '1' : '0');
 }
 
-function loadState() {
+async function loadState() {
   state.userName = localStorage.getItem('sauda_name') || 'Aap';
   state.userRole = localStorage.getItem('sauda_role') || 'buyer';
   state.userLocation = localStorage.getItem('sauda_location') || 'Sultanpuri, Delhi';
   state.aadhaarVerified = localStorage.getItem('sauda_aadhaar') === '1';
+
+  // Fetch data from backend
+  const products = await API.fetchProducts();
+  const categories = await API.fetchCategories();
+  
+  if (products.length) state.productFeed = products;
+  if (categories.length) {
+    state.categories = categories;
+    // Sync global CATEGORIES if possible, but better to use state.categories
+  }
 }
 
 function isOnboardingDone() {

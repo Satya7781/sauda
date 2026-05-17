@@ -13,6 +13,27 @@
 <body>
 <div class="app-shell" id="app">
 
+<!-- Desktop Navigation (Visible on md+ screens) -->
+<header class="desktop-nav">
+  <div class="desktop-logo" onclick="navigateTo('feed')">
+    <i class="fa-solid fa-handshake"></i>
+    <span class="text-xl">Sauda</span>
+  </div>
+  <nav class="desktop-links">
+    <div class="desktop-link active" data-view="feed" data-show="buyer">Marketplace</div>
+    <div class="desktop-link" data-view="seller-dashboard" data-show="seller">Meri Dukaan</div>
+    <div class="desktop-link" data-view="categories">Categories</div>
+    <div class="desktop-link" data-view="voice">Bol ke Becho</div>
+  </nav>
+  <div class="desktop-profile" onclick="navigateTo('profile')">
+    <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold mr-2" id="desktop-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
+    <div class="text-left">
+      <p class="text-[10px] font-bold text-gray-400 uppercase leading-none">Profile</p>
+      <p class="text-xs font-bold" id="desktop-name" style="color:var(--text)">Aap</p>
+    </div>
+  </div>
+</header>
+
 <!-- ============================================================ -->
 <!-- ONBOARDING -->
 <!-- ============================================================ -->
@@ -181,6 +202,7 @@
 <!-- MAIN APP -->
 <!-- ============================================================ -->
 <div id="main-app" style="display:none;flex:1;display:flex;flex-direction:column;height:100%;position:relative">
+  <div class="content-wrapper flex-1 flex flex-col">
 
   <!-- ===== FEED VIEW ===== -->
   <div id="view-feed" class="view active">
@@ -358,7 +380,9 @@
     </div>
   </div>
 
-  <!-- Bottom Nav -->
+  </div>
+
+  <!-- Bottom Nav (Visible on Mobile) -->
   <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
     <div class="nav-item active" data-view="feed" data-show="buyer" tabindex="0" role="button"><i class="fa-solid fa-store"></i><span>Mohalla</span></div>
     <div class="nav-item" data-view="seller-dashboard" data-show="seller" tabindex="0" role="button"><i class="fa-solid fa-shop"></i><span>Dukaan</span></div>
@@ -421,6 +445,7 @@
 <div class="toast" id="toast"></div>
 </div>
 
+<script src="js/api.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/data.js"></script>
 <script src="js/state.js"></script>

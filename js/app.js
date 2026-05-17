@@ -2,15 +2,15 @@
 // APP BOOT & INIT — Sauda
 // ============================================================
 
-function initMainApp() {
-  loadState();
+async function initMainApp() {
+  await loadState();
   var name = state.userName || 'Aap';
   var role = state.userRole || 'buyer';
   var aadhaar = state.aadhaarVerified;
 
   document.documentElement.setAttribute('data-role', role);
   document.getElementById('app').setAttribute('data-role', role);
-  updateBottomNavForRole();
+  updateNavForRole();
 
   if (role === 'seller') {
     var sellerObj = SELLERS[state.sellerId || 'neeta'];
@@ -30,6 +30,8 @@ function initMainApp() {
   document.getElementById('profile-location').textContent = state.userLocation;
   document.getElementById('profile-role').textContent = role === 'seller' ? 'Active Seller' : 'Active Buyer';
   document.getElementById('profile-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('desktop-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('desktop-name').textContent = name;
   document.getElementById('profile-connections').textContent = '5 trusted connections';
   document.getElementById('my-listings-count').textContent = role === 'seller' ? getSellerProducts().length : '0';
   document.getElementById('my-orders-count').textContent = (state.orders || []).length;
@@ -60,9 +62,9 @@ function initMainApp() {
   updateNotificationBadge();
 }
 
-function boot() {
+async function boot() {
   if (isOnboardingDone()) {
-    loadState();
+    await loadState();
     document.querySelectorAll('.onboard').forEach(function (o) { o.classList.remove('active'); });
     document.getElementById('main-app').style.display = 'flex';
     initMainApp();
@@ -70,7 +72,7 @@ function boot() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  setupBottomNav();
+  setupNav();
   setupFeedSearch();
   boot();
 });

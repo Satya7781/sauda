@@ -55,14 +55,14 @@ function autoDetectLocation() {
 
 function renderSellerCatChips() {
   var c = document.getElementById('seller-cat-chips');
-  c.innerHTML = CATEGORIES.map(function (cat) {
+  c.innerHTML = state.categories.map(function (cat) {
     return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + cat.name + '</div>';
   }).join('');
 }
 
 function renderBuyerCatChips() {
   var c = document.getElementById('buyer-cat-chips');
-  c.innerHTML = CATEGORIES.map(function (cat) {
+  c.innerHTML = state.categories.map(function (cat) {
     return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + cat.name + '</div>';
   }).join('');
 }

@@ -4,7 +4,7 @@
 
 function renderCategoryCards() {
   var c = document.getElementById('category-cards');
-  c.innerHTML = CATEGORIES.map(function (cat) {
+  c.innerHTML = state.categories.map(function (cat) {
     return '<div class="category-card" onclick="navigateTo(\'categories\');selectCategory(\'' + cat.id + '\')">' +
       '<div class="cat-icon" style="background:' + cat.bg + '"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i></div>' +
       '<span class="text-[11px] font-bold">' + cat.name + '</span></div>';
@@ -14,7 +14,7 @@ function renderCategoryCards() {
 function renderFilterChips() {
   var c = document.getElementById('filter-chips');
   c.innerHTML = '<button class="filter-chip active" data-filter="all">Sabhi</button>' +
-    CATEGORIES.map(function (cat) {
+    state.categories.map(function (cat) {
       return '<button class="filter-chip" data-filter="' + cat.id + '"><i class="fa-solid ' + cat.icon + ' text-[9px] mr-1" style="color:' + cat.color + '"></i>' + cat.name + '</button>';
     }).join('');
 
@@ -41,7 +41,7 @@ function renderFeed() {
   container.innerHTML = filtered.map(function (p, i) {
     var seller = SELLERS[p.seller];
     var voucher = USERS[seller.vouchedBy];
-    var cat = CATEGORIES.find(function (c) { return c.id === p.category; });
+    var cat = state.categories.find(function (c) { return c.id === p.category; });
 
     return '<div class="s-card flex overflow-hidden cursor-pointer feed-card" onclick="openProductDetail(' + p.id + ')" role="button" tabindex="0" style="animation-delay:' + (i * 0.06) + 's">' +
       productImageHTML(p, 100, 120) +
@@ -129,13 +129,13 @@ document.getElementById('group-deal-modal').addEventListener('click', function (
 
 function setupFeedSearch() {
   var searchInput = document.getElementById('search-input');
-  searchInput.addEventListener('input', function (e) {
-    var q = e.target.value.toLowerCase();
-    state.productFeed = PRODUCTS.filter(function (p) {
-      return p.title.toLowerCase().indexOf(q) !== -1 ||
-        p.titleHi.toLowerCase().indexOf(q) !== -1 ||
-        SELLERS[p.seller].shop.toLowerCase().indexOf(q) !== -1;
-    });
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', async function (e) {
+    var q = e.target.value;
+    // Fetch products using the search query from backend
+    state.productFeed = await API.fetchProducts({ search: q });
+    
     if (state.currentView === 'feed') renderFeed();
     if (state.currentView === 'seller-dashboard') renderSellerFeed();
   });
