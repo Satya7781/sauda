@@ -1,16 +1,20 @@
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import time
+import os
 import database as db_mod
 
 app = FastAPI(title="Sauda API")
 
-# Enable CORS
+# Enable CORS (configurable via ALLOWED_ORIGINS env var, defaults to "*")
+allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -174,6 +178,47 @@ def onboard_user(data: dict, db: Session = Depends(get_db)):
     db.commit()
     return {"id": user_id, "message": "Onboarding successful"}
 
+# Serve static assets in production/unified mode
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Mount folders if they exist
+css_path = os.path.join(BASE_DIR, "css")
+js_path = os.path.join(BASE_DIR, "js")
+images_path = os.path.join(BASE_DIR, "images")
+
+if os.path.exists(css_path):
+    app.mount("/css", StaticFiles(directory=css_path), name="css")
+if os.path.exists(js_path):
+    app.mount("/js", StaticFiles(directory=js_path), name="js")
+if os.path.exists(images_path):
+    app.mount("/images", StaticFiles(directory=images_path), name="images")
+
+# Serve index.html as the home page and fallback
+@app.get("/")
+def serve_home():
+    index_path = os.path.join(BASE_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Sauda Frontend Not Found"}
+
+# Catch-all route to serve index.html for SPA frontend routing if accessed directly
+# Note: Place this after all API routes to avoid intercepting them
+@app.get("/{catchall:path}")
+def serve_fallback(catchall: str):
+    # If the user tries to fetch an API, don't return index.html
+    if catchall.startswith("api/"):
+        raise HTTPException(status_code=404, detail="API route not found")
+    
+    index_path = os.path.join(BASE_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    raise HTTPException(status_code=404, detail="Page not found")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", "8000"))
+    is_development = os.environ.get("ENV", "production").lower() == "development"
+    
+    uvicorn.run("main:app", host=host, port=port, reload=is_development)
