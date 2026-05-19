@@ -314,36 +314,137 @@
   <!-- ===== VOICE VIEW ===== -->
   <div id="view-voice" class="view">
     <header class="px-5 pt-5 pb-2">
-      <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Bol ke Becho</h2>
-      <p class="text-xs" style="color:var(--text2)">Apni aawaz mein listing banao</p>
+      <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Naya Listing Banao</h2>
+      <p class="text-xs" style="color:var(--text2)">Bol ke ya likhakar</p>
+      <!-- Mode Selector -->
+      <div class="flex gap-2 mt-4">
+        <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--accent-light);color:var(--accent);border:2px solid var(--accent);cursor:pointer" id="mode-voice-btn" onclick="switchMode('voice')"><i class="fa-solid fa-microphone mr-1"></i>Bol ke Becho</button>
+        <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--card);color:var(--text2);border:2px solid transparent;cursor:pointer" id="mode-manual-btn" onclick="switchMode('manual')"><i class="fa-solid fa-keyboard mr-1"></i>Likhakar</button>
+      </div>
     </header>
-    <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
-      <canvas id="waveform-canvas" width="300" height="300"></canvas>
-      <button class="mic-btn" id="mic-btn" aria-label="Voice record"><i class="fa-solid fa-microphone"></i></button>
-      <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="mic-hint">Mic tap karein — Hindi mein bolein</p>
-    </div>
-    <div class="px-5 mb-2" id="transcription-area" style="display:none">
-      <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
-        <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
-        <p class="text-sm leading-relaxed" id="transcription-text"></p>
+    <!-- VOICE MODE -->
+    <div id="voice-mode" class="flex-1 flex flex-col" style="display:flex">
+      <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
+        <canvas id="waveform-canvas" width="300" height="300"></canvas>
+        <button class="mic-btn" id="mic-btn" aria-label="Voice record"><i class="fa-solid fa-microphone"></i></button>
+        <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="mic-hint">Mic tap karein — Hindi mein bolein</p>
+      </div>
+      <div class="px-5 mb-2" id="transcription-area" style="display:none">
+        <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
+          <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
+          <p class="text-sm leading-relaxed" id="transcription-text"></p>
+        </div>
+      </div>
+      <div class="px-5 mb-2" id="ai-status" style="display:none">
+        <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
+          <p class="text-sm font-semibold" style="color:var(--accent)" id="ai-status-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+        </div>
+      </div>
+      <div class="px-5 pb-4" id="generated-listing" style="display:none">
+        <div class="s-card p-5">
+          <div class="listing-field" data-delay="0"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold mb-3" style="background:var(--accent-light);color:var(--accent)" id="gen-category">—</span></div>
+          <div class="listing-field" data-delay="100"><h3 class="text-lg font-bold mb-1" id="gen-title">—</h3></div>
+          <div class="listing-field" data-delay="200"><p class="text-2xl font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="gen-price">—</p></div>
+          <div class="listing-field" data-delay="300"><div class="flex items-center gap-2 mt-3 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="gen-stock">—</span></div></div>
+          <div class="listing-field" data-delay="400"><button class="w-full mt-4 py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-btn">Listing Publish Karein</button></div>
+        </div>
+      </div>
+      <div class="px-5 pb-5 text-center">
+        <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="demo-voice-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Hindi Voice Simulation</button>
       </div>
     </div>
-    <div class="px-5 mb-2" id="ai-status" style="display:none">
-      <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
-        <p class="text-sm font-semibold" style="color:var(--accent)" id="ai-status-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+    <!-- MANUAL MODE -->
+    <div id="manual-mode" class="flex-1 flex flex-col" style="display:none">
+      <div class="scroll-area flex-1 px-5 pt-4 pb-4">
+        <div class="space-y-4">
+          <!-- Item Title -->
+          <div>
+            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (TITLE)</label>
+            <input type="text" class="input-field" id="manual-title" placeholder="e.g. Banarasi Silk Saree" style="width:100%">
+          </div>
+          <!-- Item Title Hindi -->
+          <div>
+            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (HINDI)</label>
+            <input type="text" class="input-field" id="manual-title-hi" placeholder="e.g. Banarasi Saree" style="width:100%">
+          </div>
+          <!-- Category -->
+          <div>
+            <label class="text-xs font-bold block mb-2" style="color:var(--text2)">CATEGORY</label>
+            <select class="input-field" id="manual-category" style="width:100%">
+              <option value="">Select Category</option>
+              <option value="clothes">Clothes</option>
+              <option value="sabzi">Sabzi (Vegetables)</option>
+              <option value="fruit">Fruit</option>
+              <option value="dairy">Dairy</option>
+              <option value="kirana">Kirana</option>
+              <option value="electronics">Electronics</option>
+              <option value="beauty">Beauty</option>
+              <option value="services">Services</option>
+            </select>
+          </div>
+          <!-- Price -->
+          <div>
+            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">PRICE (₹)</label>
+            <input type="number" class="input-field" id="manual-price" placeholder="e.g. 500" style="width:100%">
+          </div>
+          <!-- Unit -->
+          <div>
+            <label class="text-xs font-bold block mb-2" style="color:var(--text2)">UNIT</label>
+            <select class="input-field" id="manual-unit" style="width:100%">
+              <option value="pcs">Piece(s)</option>
+              <option value="kg">Kilogram (kg)</option>
+              <option value="litre">Litre</option>
+              <option value="dozen">Dozen</option>
+              <option value="set">Set</option>
+              <option value="gaddi">Bundle</option>
+              <option value="session">Session</option>
+            </select>
+          </div>
+          <!-- Stock -->
+          <div>
+            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">STOCK AVAILABLE</label>
+            <input type="number" class="input-field" id="manual-stock" placeholder="e.g. 10" style="width:100%" value="10">
+          </div>
+        </div>
+      </div>
+      <div class="px-5 pb-5">
+        <button class="w-full py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-manual-btn">Listing Publish Karein</button>
       </div>
     </div>
-    <div class="px-5 pb-4" id="generated-listing" style="display:none">
-      <div class="s-card p-5">
-        <div class="listing-field" data-delay="0"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold mb-3" style="background:var(--accent-light);color:var(--accent)" id="gen-category">—</span></div>
-        <div class="listing-field" data-delay="100"><h3 class="text-lg font-bold mb-1" id="gen-title">—</h3></div>
-        <div class="listing-field" data-delay="200"><p class="text-2xl font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="gen-price">—</p></div>
-        <div class="listing-field" data-delay="300"><div class="flex items-center gap-2 mt-3 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="gen-stock">—</span></div></div>
-        <div class="listing-field" data-delay="400"><button class="w-full mt-4 py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-btn">Listing Publish Karein</button></div>
+  </div>
+
+  <!-- ===== QUICK ADD ITEM MODAL ===== -->
+  <div class="modal-overlay" id="quick-add-modal" onclick="this.style.display='none'">
+    <div class="modal-sheet" style="width:90%;max-width:380px" onclick="event.stopPropagation()">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="flex-1 px-3 py-2 text-xs font-bold rounded-lg" style="background:var(--accent-light);color:var(--accent);border:none;cursor:pointer" onclick="switchQuickMode('manual')"><i class="fa-solid fa-pen mr-1"></i>Manual</button>
       </div>
-    </div>
-    <div class="px-5 pb-5 text-center">
-      <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="demo-voice-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Hindi Voice Simulation</button>
+      <div id="quick-manual-form">
+        <input type="text" class="input-field" id="quick-title" placeholder="Item Name" style="margin-bottom:8px">
+        <input type="text" class="input-field" id="quick-title-hi" placeholder="Item Name (Hindi)" style="margin-bottom:8px">
+        <select class="input-field" id="quick-category" style="margin-bottom:8px">
+          <option value="">Select Category</option>
+          <option value="clothes">Clothes</option>
+          <option value="sabzi">Sabzi</option>
+          <option value="fruit">Fruit</option>
+          <option value="dairy">Dairy</option>
+          <option value="kirana">Kirana</option>
+          <option value="electronics">Electronics</option>
+          <option value="beauty">Beauty</option>
+          <option value="services">Services</option>
+        </select>
+        <input type="number" class="input-field" id="quick-price" placeholder="Price (₹)" style="margin-bottom:8px">
+        <select class="input-field" id="quick-unit" style="margin-bottom:8px">
+          <option value="pcs">Piece(s)</option>
+          <option value="kg">Kilogram (kg)</option>
+          <option value="litre">Litre</option>
+          <option value="dozen">Dozen</option>
+          <option value="set">Set</option>
+          <option value="gaddi">Bundle</option>
+        </select>
+        <input type="number" class="input-field" id="quick-stock" placeholder="Stock" value="10" style="margin-bottom:12px">
+        <button class="w-full py-2.5 rounded-lg" style="background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:bold;font-size:13px" onclick="publishQuickManualItem()"><i class="fa-solid fa-check mr-1"></i>Add Item</button>
+      </div>
     </div>
   </div>
 

@@ -232,15 +232,84 @@ document.getElementById('publish-btn').addEventListener('click', function () {
   var pm = priceText.match(/₹(\d+)\s*\/\s*(\w+)/);
   var price = pm ? parseInt(pm[1]) : 0;
   var unit = pm ? pm[2] : 'pcs';
-  state.productFeed.unshift({
-    id: Date.now(),
+  publishProductItem({
     title: title.split(' (')[0],
     titleHi: title.indexOf('(') !== -1 ? (title.match(/\(([^)]+)\)/) || [])[1] || '' : '',
     price: price,
     unit: unit,
-    seller: 'neeta',
     category: category,
     stock: 25
+  });
+});
+
+// ============================================================
+// MANUAL FORM HANDLING
+// ============================================================
+
+function switchMode(mode) {
+  if (mode === 'voice') {
+    document.getElementById('voice-mode').style.display = 'flex';
+    document.getElementById('manual-mode').style.display = 'none';
+    document.getElementById('mode-voice-btn').style.background = 'var(--accent-light)';
+    document.getElementById('mode-voice-btn').style.color = 'var(--accent)';
+    document.getElementById('mode-voice-btn').style.borderColor = 'var(--accent)';
+    document.getElementById('mode-manual-btn').style.background = 'var(--card)';
+    document.getElementById('mode-manual-btn').style.color = 'var(--text2)';
+    document.getElementById('mode-manual-btn').style.borderColor = 'transparent';
+  } else {
+    document.getElementById('voice-mode').style.display = 'none';
+    document.getElementById('manual-mode').style.display = 'flex';
+    document.getElementById('mode-manual-btn').style.background = 'var(--accent-light)';
+    document.getElementById('mode-manual-btn').style.color = 'var(--accent)';
+    document.getElementById('mode-manual-btn').style.borderColor = 'var(--accent)';
+    document.getElementById('mode-voice-btn').style.background = 'var(--card)';
+    document.getElementById('mode-voice-btn').style.color = 'var(--text2)';
+    document.getElementById('mode-voice-btn').style.borderColor = 'transparent';
+  }
+}
+
+document.getElementById('publish-manual-btn').addEventListener('click', function () {
+  var title = document.getElementById('manual-title').value.trim();
+  var titleHi = document.getElementById('manual-title-hi').value.trim();
+  var category = document.getElementById('manual-category').value;
+  var price = parseInt(document.getElementById('manual-price').value) || 0;
+  var unit = document.getElementById('manual-unit').value;
+  var stock = parseInt(document.getElementById('manual-stock').value) || 10;
+
+  if (!title || !category || !price) {
+    showToast('Kripya sab details fill karein');
+    return;
+  }
+
+  publishProductItem({
+    title: title,
+    titleHi: titleHi,
+    price: price,
+    unit: unit,
+    category: category,
+    stock: stock
+  });
+
+  // Clear form
+  document.getElementById('manual-title').value = '';
+  document.getElementById('manual-title-hi').value = '';
+  document.getElementById('manual-category').value = '';
+  document.getElementById('manual-price').value = '';
+  document.getElementById('manual-unit').value = 'pcs';
+  document.getElementById('manual-stock').value = '10';
+});
+
+// Publish product to feed
+function publishProductItem(itemData) {
+  state.productFeed.unshift({
+    id: Date.now(),
+    title: itemData.title,
+    titleHi: itemData.titleHi || '',
+    price: itemData.price,
+    unit: itemData.unit,
+    seller: state.sellerId || 'neeta',
+    category: itemData.category,
+    stock: itemData.stock
   });
   showToast('Listing publish ho gayi! Dukaan mein dikhegi.');
   document.getElementById('generated-listing').style.display = 'none';
@@ -253,4 +322,4 @@ document.getElementById('publish-btn').addEventListener('click', function () {
   }, 600);
   if (state.currentView === 'seller-dashboard') renderSellerDashboard();
   else renderFeed();
-});
+}

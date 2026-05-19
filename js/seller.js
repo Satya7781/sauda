@@ -51,7 +51,10 @@ function renderSellerDashboard() {
 
     '<div class="flex items-center justify-between px-1 mb-2">' +
     '<p class="text-xs font-bold uppercase tracking-wider" style="color:var(--text3)">Meri Listings</p>' +
-    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="navigateTo(\'voice\')"><i class="fa-solid fa-plus mr-1"></i>Naya Listing</button>' +
+    '<div class="flex gap-1">' +
+    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="navigateTo(\'voice\')"><i class="fa-solid fa-microphone mr-1"></i>Voice</button>' +
+    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="openQuickManualModal()"><i class="fa-solid fa-pen mr-1"></i>Manual</button>' +
+    '</div>' +
     '</div>' +
 
     '<div class="space-y-2" id="seller-feed">' +
@@ -96,6 +99,66 @@ function renderSellerFeed() {
       '</div>' +
       '</div></div>';
   }).join('');
+}
+
+// ============================================================
+// QUICK ADD ITEM MODAL
+// ============================================================
+
+function openQuickManualModal() {
+  var modal = document.getElementById('quick-add-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function switchQuickMode(mode) {
+  // Currently only manual mode is supported in quick modal
+  if (mode === 'manual') {
+    var fm = document.getElementById('quick-manual-form');
+    if (fm) fm.style.display = 'block';
+  }
+}
+
+function publishQuickManualItem() {
+  var title = document.getElementById('quick-title').value.trim();
+  var titleHi = document.getElementById('quick-title-hi').value.trim();
+  var category = document.getElementById('quick-category').value;
+  var price = parseInt(document.getElementById('quick-price').value) || 0;
+  var unit = document.getElementById('quick-unit').value || 'pcs';
+  var stock = parseInt(document.getElementById('quick-stock').value) || 10;
+
+  if (!title || !category || !price) {
+    showToast('Kripya title, category aur price fill karein');
+    return;
+  }
+
+  // Add to feed
+  state.productFeed.unshift({
+    id: Date.now(),
+    title: title,
+    titleHi: titleHi || title,
+    price: price,
+    unit: unit,
+    seller: state.sellerId || 'neeta',
+    category: category,
+    stock: stock
+  });
+
+  showToast('Item add ho gayi! Dukaan mein dikhegi.');
+
+  // Clear modal
+  document.getElementById('quick-title').value = '';
+  document.getElementById('quick-title-hi').value = '';
+  document.getElementById('quick-category').value = '';
+  document.getElementById('quick-price').value = '';
+  document.getElementById('quick-unit').value = 'pcs';
+  document.getElementById('quick-stock').value = '10';
+
+  // Close modal
+  var modal = document.getElementById('quick-add-modal');
+  if (modal) modal.style.display = 'none';
+
+  // Refresh dashboard
+  renderSellerDashboard();
 }
 
 function getSellerStats() {
