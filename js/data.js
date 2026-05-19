@@ -30,6 +30,11 @@ var PRODUCT_IMAGES = {
   24: 'product-24.jpg',  // Threading
   25: 'product-25.jpg',  // AC Repair
   26: 'product-26.jpg',  // Plumbing
+  27: 'product-27.jpg',  // Full Time Maid
+  28: 'product-28.jpg',  // Part Time Maid
+  29: 'product-29.jpg',  // Cook
+  30: 'product-30.jpg',  // Baby Caretaker
+  31: 'product-31.jpg',  // Elderly Caretaker
 };
 
 const CATEGORIES = [
@@ -40,7 +45,7 @@ const CATEGORIES = [
   { id: 'kirana', name: 'Kirana', nameEn: 'Grocery', icon: 'fa-basket-shopping', color: '#7C3AED', bg: '#F5F3FF', count: 2 },
   { id: 'electronics', name: 'Electronics', nameEn: 'Electronics', icon: 'fa-mobile-screen', color: '#1D4ED8', bg: '#EFF6FF', count: 3 },
   { id: 'beauty', name: 'Beauty', nameEn: 'Beauty', icon: 'fa-spa', color: '#BE185D', bg: '#FDF2F8', count: 3 },
-  { id: 'services', name: 'Seva', nameEn: 'Services', icon: 'fa-wrench', color: '#A16207', bg: '#FEFCE8', count: 2 },
+  { id: 'services', name: 'Seva', nameEn: 'Services', icon: 'fa-wrench', color: '#A16207', bg: '#FEFCE8', count: 7 },
 ];
 
 const USERS = {
@@ -63,6 +68,7 @@ const SELLERS = {
   rajesh: { id: 'rajesh', name: 'Rajesh Kumar', shop: 'Rajesh Mobile Corner', initials: 'RM', color: '#1D4ED8', locality: 'Sultanpuri', yearsActive: 4, aadhaarVerified: true, trustedNeighbors: 10, vouchedBy: 'vikram', vouchRelation: 'Shop neighbor — 4 saal', category: 'electronics', isLive: true, distance: '450m' },
   poonam: { id: 'poonam', name: 'Poonam Sharma', shop: 'Poonam Beauty Parlour', initials: 'PS2', color: '#BE185D', locality: 'Sultanpuri', yearsActive: 7, aadhaarVerified: true, trustedNeighbors: 20, vouchedBy: 'sunita', vouchRelation: 'Sister-in-law — 7 saal', category: 'beauty', isLive: true, distance: '300m' },
   deepak: { id: 'deepak', name: 'Deepak Verma', shop: 'Deepak Repair Center', initials: 'DV', color: '#A16207', locality: 'Sultanpuri', yearsActive: 11, aadhaarVerified: true, trustedNeighbors: 16, vouchedBy: 'amit', vouchRelation: 'Gym buddy — 3 saal', category: 'services', isLive: true, distance: '500m' },
+  household: { id: 'household', name: 'Ghar Ka Saathi', shop: 'Ghar Ka Saathi', initials: 'GK', color: '#059669', locality: 'Sultanpuri', yearsActive: 5, aadhaarVerified: true, trustedNeighbors: 18, vouchedBy: 'meena', vouchRelation: 'Verified agency — 5 saal', category: 'services', isLive: true, distance: '200m' },
 };
 
 const PRODUCTS = [
@@ -92,6 +98,11 @@ const PRODUCTS = [
   { id: 24, title: 'Threading', titleHi: 'Threading', price: 50, unit: 'session', seller: 'poonam', category: 'beauty', stock: 20 },
   { id: 25, title: 'AC Repair', titleHi: 'AC Repair', price: 500, unit: 'visit', seller: 'deepak', category: 'services', stock: 5 },
   { id: 26, title: 'Plumbing', titleHi: 'Nal Repair', price: 300, unit: 'visit', seller: 'deepak', category: 'services', stock: 8 },
+  { id: 27, title: 'Full Time Maid', titleHi: 'Purana kalak Naukarani', price: 8000, unit: 'month', seller: 'household', category: 'services', stock: 3 },
+  { id: 28, title: 'Part Time Maid', titleHi: 'Part Time Naukarani', price: 4000, unit: 'month', seller: 'household', category: 'services', stock: 5 },
+  { id: 29, title: 'Cook', titleHi: 'Rasiya', price: 6000, unit: 'month', seller: 'household', category: 'services', stock: 2 },
+  { id: 30, title: 'Baby Caretaker', titleHi: 'Baccho ki dekhbhal', price: 5000, unit: 'month', seller: 'household', category: 'services', stock: 2 },
+  { id: 31, title: 'Elderly Caretaker', titleHi: 'B Zurgo ki dekhbhal', price: 5500, unit: 'month', seller: 'household', category: 'services', stock: 2 },
 ];
 
 

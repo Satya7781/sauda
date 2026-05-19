@@ -74,7 +74,8 @@ def get_products(
             "id": p.id, "title": p.title, "titleHi": p.title_hi,
             "titleEn": p.title_en, "titleMr": p.title_mr,
             "price": p.price, "unit": p.unit, "seller": p.seller_id,
-            "category": p.category_id, "stock": p.stock
+            "category": p.category_id, "stock": p.stock,
+            "imageUrl": p.image_url
         } for p in products
     ]
 
@@ -87,7 +88,8 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
         "id": p.id, "title": p.title, "titleHi": p.title_hi,
         "titleEn": p.title_en, "titleMr": p.title_mr,
         "price": p.price, "unit": p.unit, "seller": p.seller_id,
-        "category": p.category_id, "stock": p.stock
+        "category": p.category_id, "stock": p.stock,
+        "imageUrl": p.image_url
     }
 
 # SELLERS

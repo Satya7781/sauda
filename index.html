@@ -417,8 +417,11 @@
   <div class="modal-overlay" id="quick-add-modal" onclick="this.style.display='none'">
     <div class="modal-sheet" style="width:90%;max-width:380px" onclick="event.stopPropagation()">
       <div style="display:flex;gap:8px;margin-bottom:16px">
-        <button class="flex-1 px-3 py-2 text-xs font-bold rounded-lg" style="background:var(--accent-light);color:var(--accent);border:none;cursor:pointer" onclick="switchQuickMode('manual')"><i class="fa-solid fa-pen mr-1"></i>Manual</button>
+        <button class="flex-1 px-3 py-2 text-xs font-bold rounded-lg" id="quick-manual-btn" style="background:var(--accent-light);color:var(--accent);border:none;cursor:pointer" onclick="switchQuickMode('manual')"><i class="fa-solid fa-pen mr-1"></i>Manual</button>
+        <button class="flex-1 px-3 py-2 text-xs font-bold rounded-lg" id="quick-voice-btn" style="background:var(--bg2);color:var(--text2);border:none;cursor:pointer" onclick="switchQuickMode('voice')"><i class="fa-solid fa-microphone mr-1"></i>Voice</button>
       </div>
+      
+      <!-- Manual Form -->
       <div id="quick-manual-form">
         <input type="text" class="input-field" id="quick-title" placeholder="Item Name" style="margin-bottom:8px">
         <input type="text" class="input-field" id="quick-title-hi" placeholder="Item Name (Hindi)" style="margin-bottom:8px">
@@ -444,6 +447,50 @@
         </select>
         <input type="number" class="input-field" id="quick-stock" placeholder="Stock" value="10" style="margin-bottom:12px">
         <button class="w-full py-2.5 rounded-lg" style="background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:bold;font-size:13px" onclick="publishQuickManualItem()"><i class="fa-solid fa-check mr-1"></i>Add Item</button>
+      </div>
+
+      <!-- Voice Form -->
+      <div id="quick-voice-form" style="display:none">
+        <div class="text-center p-6">
+          <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" style="background:var(--accent-light)">
+            <i class="fa-solid fa-microphone text-3xl" style="color:var(--accent)"></i>
+          </div>
+          <p class="text-sm font-bold mb-2">Apna item bolo</p>
+          <p class="text-xs mb-4" style="color:var(--text3)">Jaise: "3 kilo aloo, 50 rupee kilo"</p>
+          <button class="px-6 py-3 rounded-full text-sm font-bold" style="background:var(--accent);color:#fff;border:none;cursor:pointer" onclick="startQuickVoiceListing()"><i class="fa-solid fa-microphone mr-2"></i>Bolein</button>
+        </div>
+        <div id="quick-voice-result" style="display:none">
+          <div class="s-card p-3 mb-3">
+            <p class="text-xs font-bold mb-2" style="color:var(--text3)">APKA ITEM:</p>
+            <p class="text-sm font-bold" id="quick-voice-text"></p>
+          </div>
+          <div id="quick-voice-parsed">
+            <input type="text" class="input-field" id="quick-voice-title" placeholder="Item Name" style="margin-bottom:8px">
+            <input type="text" class="input-field" id="quick-voice-title-hi" placeholder="Item Name (Hindi)" style="margin-bottom:8px">
+            <select class="input-field" id="quick-voice-category" style="margin-bottom:8px">
+              <option value="">Select Category</option>
+              <option value="clothes">Clothes</option>
+              <option value="sabzi">Sabzi</option>
+              <option value="fruit">Fruit</option>
+              <option value="dairy">Dairy</option>
+              <option value="kirana">Kirana</option>
+              <option value="electronics">Electronics</option>
+              <option value="beauty">Beauty</option>
+              <option value="services">Services</option>
+            </select>
+            <input type="number" class="input-field" id="quick-voice-price" placeholder="Price (₹)" style="margin-bottom:8px">
+            <select class="input-field" id="quick-voice-unit" style="margin-bottom:8px">
+              <option value="pcs">Piece(s)</option>
+              <option value="kg">Kilogram (kg)</option>
+              <option value="litre">Litre</option>
+              <option value="dozen">Dozen</option>
+              <option value="set">Set</option>
+              <option value="gaddi">Bundle</option>
+            </select>
+            <input type="number" class="input-field" id="quick-voice-stock" placeholder="Stock" value="10" style="margin-bottom:12px">
+          </div>
+          <button class="w-full py-2.5 rounded-lg" style="background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:bold;font-size:13px" onclick="publishQuickVoiceItem()"><i class="fa-solid fa-check mr-1"></i>Add Item</button>
+        </div>
       </div>
     </div>
   </div>

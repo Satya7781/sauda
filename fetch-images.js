@@ -36,6 +36,12 @@ const PRODUCTS = [
   { id: 24, title: 'Threading',          query: 'beauty parlour women' },
   { id: 25, title: 'AC Repair',           query: 'air conditioner service' },
   { id: 26, title: 'Plumbing',            query: 'plumber repair tool' },
+  // Household Services - Maids
+  { id: 27, title: 'Full Time Maid',      query: 'housekeeper woman uniform' },
+  { id: 28, title: 'Part Time Maid',      query: 'cleaning woman home' },
+  { id: 29, title: 'Cook',                query: 'indian cook chef woman' },
+  { id: 30, title: 'Baby Caretaker',      query: 'babysitter child care' },
+  { id: 31, title: 'Elderly Caretaker',   query: 'elderly care helper' },
 ];
 
 async function downloadImage(page, url, filepath) {

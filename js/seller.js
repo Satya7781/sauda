@@ -111,11 +111,85 @@ function openQuickManualModal() {
 }
 
 function switchQuickMode(mode) {
-  // Currently only manual mode is supported in quick modal
+  var manualBtn = document.getElementById('quick-manual-btn');
+  var voiceBtn = document.getElementById('quick-voice-btn');
+  var manualForm = document.getElementById('quick-manual-form');
+  var voiceForm = document.getElementById('quick-voice-form');
+  
   if (mode === 'manual') {
-    var fm = document.getElementById('quick-manual-form');
-    if (fm) fm.style.display = 'block';
+    manualBtn.style.background = 'var(--accent-light)';
+    manualBtn.style.color = 'var(--accent)';
+    voiceBtn.style.background = 'var(--bg2)';
+    voiceBtn.style.color = 'var(--text2)';
+    manualForm.style.display = 'block';
+    voiceForm.style.display = 'none';
+  } else if (mode === 'voice') {
+    manualBtn.style.background = 'var(--bg2)';
+    manualBtn.style.color = 'var(--text2)';
+    voiceBtn.style.background = 'var(--accent-light)';
+    voiceBtn.style.color = 'var(--accent)';
+    manualForm.style.display = 'none';
+    voiceForm.style.display = 'block';
   }
+}
+
+function startQuickVoiceListing() {
+  // Simulate voice recording - in production would use Web Speech API
+  var result = document.getElementById('quick-voice-result');
+  var parsed = document.getElementById('quick-voice-parsed');
+  document.getElementById('quick-voice-text').textContent = '"3 kilo aloo, 80 rupee kilo"';
+  
+  // Pre-fill with parsed values
+  document.getElementById('quick-voice-title').value = 'Aloo';
+  document.getElementById('quick-voice-title-hi').value = 'आलू';
+  document.getElementById('quick-voice-category').value = 'sabzi';
+  document.getElementById('quick-voice-price').value = '80';
+  document.getElementById('quick-voice-unit').value = 'kg';
+  document.getElementById('quick-voice-stock').value = '50';
+  
+  result.style.display = 'block';
+  showToast('Voice se item detect kiya!');
+}
+
+function publishQuickVoiceItem() {
+  var title = document.getElementById('quick-voice-title').value.trim();
+  var titleHi = document.getElementById('quick-voice-title-hi').value.trim();
+  var category = document.getElementById('quick-voice-category').value;
+  var price = parseInt(document.getElementById('quick-voice-price').value) || 0;
+  var unit = document.getElementById('quick-voice-unit').value || 'pcs';
+  var stock = parseInt(document.getElementById('quick-voice-stock').value) || 10;
+
+  if (!title || !category || !price) {
+    showToast('Kripya title, category aur price fill karein');
+    return;
+  }
+
+  state.productFeed.unshift({
+    id: Date.now(),
+    title: title,
+    titleHi: titleHi || title,
+    price: price,
+    unit: unit,
+    seller: state.sellerId || 'neeta',
+    category: category,
+    stock: stock
+  });
+
+  showToast('Item add ho gayi! Voice se add kiya.');
+
+  // Clear and close
+  document.getElementById('quick-voice-result').style.display = 'none';
+  document.getElementById('quick-voice-title').value = '';
+  document.getElementById('quick-voice-title-hi').value = '';
+  document.getElementById('quick-voice-category').value = '';
+  document.getElementById('quick-voice-price').value = '';
+  document.getElementById('quick-voice-unit').value = 'pcs';
+  document.getElementById('quick-voice-stock').value = '10';
+
+  var modal = document.getElementById('quick-add-modal');
+  if (modal) modal.style.display = 'none';
+
+  renderSellerDashboard();
 }
 
 function publishQuickManualItem() {
