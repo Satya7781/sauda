@@ -63,8 +63,8 @@ async function initMainApp() {
 }
 
 async function boot() {
+  await loadState();
   if (isOnboardingDone()) {
-    await loadState();
     document.querySelectorAll('.onboard').forEach(function (o) { o.classList.remove('active'); });
     document.getElementById('main-app').style.display = 'flex';
     initMainApp();
