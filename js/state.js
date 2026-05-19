@@ -39,14 +39,33 @@ async function loadState() {
   state.userLocation = localStorage.getItem('sauda_location') || 'Sultanpuri, Delhi';
   state.aadhaarVerified = localStorage.getItem('sauda_aadhaar') === '1';
 
-  // Fetch data from backend
+  // Fetch data from backend or fallback to mock data
   const products = await API.fetchProducts();
   const categories = await API.fetchCategories();
   
-  if (products.length) state.productFeed = products;
+  if (products.length) {
+    state.productFeed = products;
+  } else {
+    // Fallback to mock data
+    state.productFeed = PRODUCTS.map(function(p) {
+      return {
+        id: p.id,
+        title: p.title,
+        titleHi: p.titleHi,
+        price: p.price,
+        unit: p.unit,
+        seller: p.seller,
+        category: p.category,
+        stock: p.stock
+      };
+    });
+  }
+  
   if (categories.length) {
     state.categories = categories;
-    // Sync global CATEGORIES if possible, but better to use state.categories
+  } else {
+    // Fallback to mock data
+    state.categories = CATEGORIES;
   }
 }
 

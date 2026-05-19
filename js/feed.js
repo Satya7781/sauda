@@ -132,9 +132,33 @@ function setupFeedSearch() {
   if (!searchInput) return;
 
   searchInput.addEventListener('input', async function (e) {
-    var q = e.target.value;
-    // Fetch products using the search query from backend
-    state.productFeed = await API.fetchProducts({ search: q });
+    var q = e.target.value.toLowerCase();
+    // Try API first, fallback to mock data
+    var products = await API.fetchProducts({ search: q });
+    
+    if (products.length) {
+      state.productFeed = products;
+    } else if (q) {
+      // Search in mock data
+      state.productFeed = PRODUCTS.filter(function(p) {
+        return p.title.toLowerCase().includes(q) || 
+               (p.titleHi && p.titleHi.toLowerCase().includes(q));
+      });
+    } else {
+      // Reset to full mock data
+      state.productFeed = PRODUCTS.map(function(p) {
+        return {
+          id: p.id,
+          title: p.title,
+          titleHi: p.titleHi,
+          price: p.price,
+          unit: p.unit,
+          seller: p.seller,
+          category: p.category,
+          stock: p.stock
+        };
+      });
+    }
     
     if (state.currentView === 'feed') renderFeed();
     if (state.currentView === 'seller-dashboard') renderSellerFeed();
