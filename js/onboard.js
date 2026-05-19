@@ -55,6 +55,13 @@ function autoDetectLocation() {
 
 function renderSellerCatChips() {
   var c = document.getElementById('seller-cat-chips');
+  if (!c) return;
+  
+  // Ensure categories are loaded
+  if (!state.categories || state.categories.length === 0) {
+    state.categories = CATEGORIES || [];
+  }
+  
   c.innerHTML = state.categories.map(function (cat) {
     return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + cat.name + '</div>';
   }).join('');
@@ -62,6 +69,13 @@ function renderSellerCatChips() {
 
 function renderBuyerCatChips() {
   var c = document.getElementById('buyer-cat-chips');
+  if (!c) return;
+  
+  // Ensure categories are loaded
+  if (!state.categories || state.categories.length === 0) {
+    state.categories = CATEGORIES || [];
+  }
+  
   c.innerHTML = state.categories.map(function (cat) {
     return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + cat.name + '</div>';
   }).join('');
