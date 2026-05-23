@@ -13,7 +13,9 @@ This file contains concise instructions for deploying the backend to Render and 
   - `ENV=production`
   - `DATABASE_URL` — set to your managed Postgres URL (e.g. `postgres://USER:PASS@HOST:PORT/DB`). If you use Render Postgres, Render provides this.
   - `ALLOWED_ORIGINS` — set space/comma-separated origins (e.g. `https://your-frontend.vercel.app,https://your-service.onrender.com`), or `*` for development.
-- Persistent DB: do NOT use SQLite in production. Use Render Postgres and set `DATABASE_URL`.
+  - Persistent DB: do NOT use SQLite in production. Use Render Postgres and set `DATABASE_URL`.
+
+  - NOTE: This repository supports local SQLite for development by default. To use SQLite in containers, set `DATABASE_URL=sqlite:///./sauda.db` and make sure the container's working directory is writable or mount a host volume to persist `sauda.db` across restarts. SQLite is not suitable for multi-instance production deployments.
 
 Files of interest:
 - `backend/main.py` — FastAPI app; static folders (`/css`, `/js`, `/images`) are mounted automatically.
