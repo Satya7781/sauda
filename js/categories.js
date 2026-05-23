@@ -6,10 +6,11 @@ function renderCategoryGrid() {
   var c = document.getElementById('category-grid');
   c.innerHTML = CATEGORIES.map(function (cat) {
     var isSelected = state.selectedCategory === cat.id;
+    var itemCount = state.productFeed.filter(function (p) { return p.category === cat.id; }).length || PRODUCTS.filter(function (p) { return p.category === cat.id; }).length;
     return '<div class="s-card p-4 cursor-pointer flex flex-col items-center gap-3" onclick="selectCategory(\'' + cat.id + '\')" style="' + (isSelected ? 'border-color:' + cat.color + ';background:' + cat.bg : '') + '">' +
       '<div class="w-14 h-14 rounded-2xl flex items-center justify-center" style="background:' + cat.bg + '"><i class="fa-solid ' + cat.icon + ' text-xl" style="color:' + cat.color + '"></i></div>' +
       '<div class="text-center"><p class="text-xs font-bold">' + cat.name + '</p><p class="text-[10px]" style="color:var(--text3)">' + cat.nameEn + '</p></div>' +
-      '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:' + cat.bg + ';color:' + cat.color + '">' + PRODUCTS.filter(function (p) { return p.category === cat.id; }).length + ' items</span>' +
+      '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:' + cat.bg + ';color:' + cat.color + '">' + itemCount + ' items</span>' +
       '</div>';
   }).join('');
 }
@@ -29,7 +30,7 @@ function selectCategory(catId) {
     '<div class="mt-2 mb-3">' +
     '<div class="flex items-center gap-3 mb-3">' +
     '<div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:' + cat.bg + '"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i></div>' +
-    '<div><h3 class="text-base font-bold">' + cat.name + ' — ' + cat.nameEn + '</h3><p class="text-[10px]" style="color:var(--text3)">' + sellersCount + ' sellers, ' + prods.length + ' products</p></div>' +
+    '<div><h3 class="text-base font-bold">' + cat.name + ' — ' + cat.nameEn + '</h3><p class="text-[10px]" style="color:var(--text3)">' + sellersCount + ' sellers • ' + prods.length + ' products' + '</p></div>' +
     '</div></div>' +
     prods.map(function (p) {
       var s = SELLERS[p.seller];

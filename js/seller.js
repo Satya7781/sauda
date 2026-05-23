@@ -30,30 +30,30 @@ function renderSellerDashboard() {
     '</div>' +
     '<div class="flex items-center gap-2">' +
     '<div class="pulse-dot" style="width:7px;height:7px"></div>' +
-    '<span class="text-[10px] font-bold" style="color:var(--trust)">LIVE</span>' +
+    '<span class="text-[10px] font-bold" style="color:var(--trust)">'+__('live')+'</span>' +
     '</div>' +
     '</div>' +
     '<div class="grid grid-cols-3 gap-3">' +
     '<div class="text-center p-3 rounded-xl" style="background:rgba(255,255,255,0.7)">' +
     '<p class="text-2xl font-extrabold" style="color:var(--seller-accent);font-family:\'Space Grotesk\',sans-serif">' + totalProducts + '</p>' +
-    '<p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">Listings</p>' +
+    '<p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">'+__('listings_stat')+'</p>' +
     '</div>' +
     '<div class="text-center p-3 rounded-xl" style="background:rgba(255,255,255,0.7)">' +
     '<p class="text-2xl font-extrabold" style="color:var(--trust)">' + todayOrders + '</p>' +
-    '<p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">Aaj Orders</p>' +
+    '<p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">'+__('aaj_orders')+'</p>' +
     '</div>' +
     '<div class="text-center p-3 rounded-xl" style="background:rgba(255,255,255,0.7)">' +
     '<p class="text-sm font-extrabold" style="color:var(--seller-accent);font-family:\'Space Grotesk\',sans-serif">₹' + totalRevenue + '</p>' +
-    '<p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">Revenue</p>' +
+    '<p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">'+__('revenue')+'</p>' +
     '</div>' +
     '</div>' +
     '</div>' +
 
     '<div class="flex items-center justify-between px-1 mb-2">' +
-    '<p class="text-xs font-bold uppercase tracking-wider" style="color:var(--text3)">Meri Listings</p>' +
+    '<p class="text-xs font-bold uppercase tracking-wider" style="color:var(--text3)">'+__('meri_listings')+'</p>' +
     '<div class="flex gap-1">' +
-    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="navigateTo(\'voice\')"><i class="fa-solid fa-microphone mr-1"></i>Voice</button>' +
-    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="openQuickManualModal()"><i class="fa-solid fa-pen mr-1"></i>Manual</button>' +
+    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="navigateTo(\'voice\')"><i class="fa-solid fa-microphone mr-1"></i>'+__('voice')+'</button>' +
+    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="openQuickManualModal()"><i class="fa-solid fa-pen mr-1"></i>'+__('manual')+'</button>' +
     '</div>' +
     '</div>' +
 
@@ -70,7 +70,7 @@ function renderSellerDashboard() {
         '</div>' +
         '<div class="flex items-center justify-between mt-2">' +
         '<span class="text-base font-extrabold" style="color:var(--seller-accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
-        '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--trust-light);color:var(--trust)">' + p.stock + ' in stock</span>' +
+        '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--trust-light);color:var(--trust)">' + p.stock + __('in_stock') + '</span>' +
         '</div>' +
         '</div></div>';
     }).join('') +
@@ -95,7 +95,7 @@ function renderSellerFeed() {
       '</div>' +
       '<div class="flex items-center justify-between mt-2">' +
       '<span class="text-base font-extrabold" style="color:var(--seller-accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
-      '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--trust-light);color:var(--trust)">' + p.stock + ' in stock</span>' +
+      '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:var(--trust-light);color:var(--trust)">' + p.stock + __('in_stock') + '</span>' +
       '</div>' +
       '</div></div>';
   }).join('');
@@ -148,7 +148,7 @@ function startQuickVoiceListing() {
   document.getElementById('quick-voice-stock').value = '50';
   
   result.style.display = 'block';
-  showToast('Voice se item detect kiya!');
+  showToast(__('voice_item_detected'));
 }
 
 function publishQuickVoiceItem() {
@@ -160,7 +160,7 @@ function publishQuickVoiceItem() {
   var stock = parseInt(document.getElementById('quick-voice-stock').value) || 10;
 
   if (!title || !category || !price) {
-    showToast('Kripya title, category aur price fill karein');
+    showToast(__('kripya_fill'));
     return;
   }
 
@@ -175,7 +175,7 @@ function publishQuickVoiceItem() {
     stock: stock
   });
 
-  showToast('Item add ho gayi! Voice se add kiya.');
+  showToast(__('item_added_voice'));
 
   // Clear and close
   document.getElementById('quick-voice-result').style.display = 'none';
@@ -201,7 +201,7 @@ function publishQuickManualItem() {
   var stock = parseInt(document.getElementById('quick-stock').value) || 10;
 
   if (!title || !category || !price) {
-    showToast('Kripya title, category aur price fill karein');
+    showToast(__('kripya_fill'));
     return;
   }
 
@@ -217,7 +217,7 @@ function publishQuickManualItem() {
     stock: stock
   });
 
-  showToast('Item add ho gayi! Dukaan mein dikhegi.');
+  showToast(__('item_added_manual'));
 
   // Clear modal
   document.getElementById('quick-title').value = '';

@@ -7,7 +7,7 @@ function openVouchChainModal() {
   sheet.innerHTML =
     '<div class="p-5">' +
     '<div class="flex items-center justify-between mb-4">' +
-    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">VouchChain</h3><p class="text-[10px]" style="color:var(--text3)">Bharose ka rishta, rating nahi</p></div>' +
+    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">' + __('vouchchain') + '</h3><p class="text-[10px]" style="color:var(--text3)">' + __('vouchchain_sub') + '</p></div>' +
     '<button onclick="closeVouchModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>' +
     '</div>' +
     '<div style="position:relative;width:100%;height:360px" id="vouch-graph-wrap"><canvas id="vouch-graph-canvas"></canvas></div>' +
@@ -48,7 +48,7 @@ function renderVouchGraph() {
 
   var cx = W / 2, cy = H / 2, innerR = Math.min(W, H) * 0.24, outerR = Math.min(W, H) * 0.42;
   var firstDegree = ['priya', 'amit', 'sunita', 'vikram', 'meena'];
-  var gNodes = [{ id: 'you', x: cx, y: cy, r: 26, label: 'Aap', color: '#B8680F', degree: 0 }];
+  var gNodes = [{ id: 'you', x: cx, y: cy, r: 26, label: __('you'), color: '#B8680F', degree: 0 }];
 
   firstDegree.forEach(function (uid, i) {
     var a = (i / firstDegree.length) * Math.PI * 2 - Math.PI / 2;
@@ -157,7 +157,7 @@ function renderVouchGraph() {
       if (n.degree === 2) {
         ctx.fillStyle = dim ? 'rgba(13,148,136,0.15)' : 'rgba(13,148,136,0.6)';
         ctx.font = "500 7px 'DM Sans',sans-serif";
-        ctx.fillText('TAP', n.x, n.y + n.r + 22);
+        ctx.fillText(__('tap_hint'), n.x, n.y + n.r + 22);
       }
       ctx.globalAlpha = 1;
     });

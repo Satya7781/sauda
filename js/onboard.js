@@ -26,7 +26,7 @@ function goOnboard(step) {
     }
   }
   if (step === 2) updateNameBtn();
-  if (step === 6) document.getElementById('welcome-name').textContent = state.userName || 'Friend';
+  if (step === 6) document.getElementById('welcome-name').textContent = state.userName || __('friend');
 }
 
 function selectRole(role, el) {
@@ -48,9 +48,9 @@ function autoDetectLocation() {
   el.style.background = 'var(--trust-light)';
   el.style.border = '1px solid rgba(13,148,136,0.15)';
   el.style.borderRadius = '12px';
-  document.getElementById('location-text').textContent = 'Sultanpuri, Delhi — Detected';
-  state.userLocation = 'Sultanpuri, Delhi';
-  document.getElementById('inp-location').value = 'Sultanpuri, Delhi';
+    document.getElementById('location-text').textContent = 'Lalghati, Bhopal — Detected';
+    state.userLocation = 'Lalghati, Bhopal';
+    document.getElementById('inp-location').value = 'Lalghati, Bhopal';
 }
 
 function renderSellerCatChips() {

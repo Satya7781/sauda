@@ -37,7 +37,7 @@ function openProductDetail(pid) {
     '<div class="flex items-baseline gap-2 mb-4">' +
     '<span class="text-2xl font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
     '<span class="text-sm" style="color:var(--text3)">/ ' + p.unit + '</span>' +
-    (s.isLive ? '<div class="flex items-center gap-1 ml-auto"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[10px] font-bold" style="color:var(--trust)">LIVE</span></div>' : '') +
+    (s.isLive ? '<div class="flex items-center gap-1 ml-auto"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[10px] font-bold" style="color:var(--trust)">'+__('live')+'</span></div>' : '') +
     '</div>' +
 
     '<div class="s-card p-4 mb-3 flex items-center gap-3 cursor-pointer" onclick="closeProductModal();setTimeout(function(){openSellerModal(\'' + p.seller + '\')},200)">' +
@@ -51,17 +51,17 @@ function openProductDetail(pid) {
 
     '<div class="p-3 rounded-xl mb-4 flex items-center gap-2" style="background:var(--trust-light);border:1px solid rgba(13,148,136,0.12)">' +
     '<i class="fa-solid fa-user-check text-xs" style="color:var(--trust)"></i>' +
-    '<p class="text-xs" style="color:var(--trust)"><strong>' + v.name + '</strong> ne vouch kiya — ' + s.vouchRelation + '</p>' +
+    '<p class="text-xs" style="color:var(--trust)"><strong>' + v.name + '</strong> ' + __('ne_vouch_kiya') + ' — ' + s.vouchRelation + '</p>' +
     '</div>' +
 
     '<div class="flex items-center gap-2 mb-4 text-xs" style="color:var(--text3)">' +
-    '<span><i class="fa-solid fa-boxes-stacked mr-1"></i>' + p.stock + ' available</span>' +
+    '<span><i class="fa-solid fa-boxes-stacked mr-1"></i>' + p.stock + __('available') + '</span>' +
     '<span class="mx-1">•</span>' +
     '<span><i class="fa-solid fa-location-dot mr-1"></i>' + s.distance + '</span>' +
     '</div>' +
 
     '<button class="btn-primary" onclick="confirmOrder(' + p.id + ')">' +
-    '<i class="fa-solid fa-handshake mr-2"></i>Sauda Karein' +
+    '<i class="fa-solid fa-handshake mr-2"></i>' + __('sauda_karein') +
     '</button>' +
     '</div>';
 
@@ -103,27 +103,27 @@ function openSellerModal(sid) {
     '<div class="trust-ring"><svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#EDE5D5" stroke-width="5"/><circle cx="36" cy="36" r="30" fill="none" stroke="var(--trust)" stroke-width="5" stroke-dasharray="' + (2 * Math.PI * 30) + '" stroke-dashoffset="' + (2 * Math.PI * 30 * (1 - ts / 100)) + '" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/></svg><div class="score">' + Math.round(ts) + '</div></div>' +
     '<div class="flex-1"><p class="text-sm font-bold mb-1.5">Trust Score</p><div class="flex flex-wrap gap-1.5">' +
     (s.aadhaarVerified ? '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-shield-halved text-[7px]"></i>Aadhaar</div>' : '') +
-    '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-clock text-[7px]"></i>' + s.yearsActive + ' saal</div>' +
-    '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-people-group text-[7px]"></i>' + s.trustedNeighbors + ' neighbors</div>' +
+    '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-clock text-[7px]"></i>' + s.yearsActive + __('saal') + '</div>' +
+    '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-people-group text-[7px]"></i>' + s.trustedNeighbors + __('neighbors') + '</div>' +
     (s.isLive ? '<div class="vouch-tag text-[9px]" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid fa-circle text-[5px]"></i>Live Now</div>' : '') +
     '</div></div></div></div>' +
 
     '<div class="p-4 rounded-2xl mb-3" style="background:var(--trust-light);border:1.5px solid rgba(13,148,136,0.12)">' +
-    '<p class="text-[9px] font-extrabold uppercase tracking-wider mb-3" style="color:var(--trust)">VOUCHCHAIN — TRUST PATH</p>' +
+    '<p class="text-[9px] font-extrabold uppercase tracking-wider mb-3" style="color:var(--trust)">' + __('vouchchain_trust_path') + '</p>' +
     '<canvas id="trust-path-canvas" width="350" height="160"></canvas>' +
     '<div class="mt-3 p-3 rounded-xl" style="background:rgba(13,148,136,0.06)">' +
-    '<p class="text-xs" style="color:var(--trust)"><i class="fa-solid fa-link mr-1"></i><strong>' + v.name + '</strong> (' + v.relation + ') ne vouch kiya</p>' +
+    '<p class="text-xs" style="color:var(--trust)"><i class="fa-solid fa-link mr-1"></i><strong>' + v.name + '</strong> (' + v.relation + ') ' + __('ne_vouch_kiya') + '</p>' +
     '<p class="text-[10px] mt-1" style="color:var(--text3)">' + s.vouchRelation + '</p>' +
     '</div></div>' +
 
-    '<p class="text-[10px] font-extrabold uppercase tracking-wider mb-2" style="color:var(--text3)">LISTINGS (' + prods.length + ')</p>' +
+    '<p class="text-[10px] font-extrabold uppercase tracking-wider mb-2" style="color:var(--text3)">' + __('listings_header') + ' (' + prods.length + ')</p>' +
     '<div class="space-y-2 mb-4">' +
     prods.map(function (p) {
       return '<div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg2);border:1px solid var(--card-border)">' +
         productImageHTMLSmall(p) +
         '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + p.title + '</p><p class="text-[10px]" style="color:var(--text3)">' + p.titleHi + ' — ' + p.unit + '</p></div>' +
         '<span class="text-sm font-extrabold flex-shrink-0" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
-        '<button class="px-3 py-1.5 rounded-lg text-xs font-bold" style="background:var(--trust-light);color:var(--trust);border:none;cursor:pointer" onclick="confirmOrder(\'' + p.id + '\')">Sauda</button>' +
+        '<button class="px-3 py-1.5 rounded-lg text-xs font-bold" style="background:var(--trust-light);color:var(--trust);border:none;cursor:pointer" onclick="confirmOrder(\'' + p.id + '\')">' + __('sauda') + '</button>' +
         '</div>';
     }).join('') +
     '</div></div>';

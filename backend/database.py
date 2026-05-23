@@ -75,6 +75,15 @@ class Vouch(Base):
     to_user_id = Column(String, ForeignKey("users.id"))
     relation = Column(String)
 
+class SellerEntry(Base):
+    __tablename__ = "seller_directory"
+    id = Column(Integer, primary_key=True, index=True)
+    locality = Column(String, index=True)
+    shop = Column(String)
+    category_id = Column(String, ForeignKey("categories.id"))
+    registered = Column(Boolean, default=False)
+    seller_id = Column(String, nullable=True)
+
 class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)

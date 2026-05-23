@@ -2,9 +2,12 @@
 // API SERVICE — Sauda
 // ============================================================
 
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? (window.location.port === '3000' ? 'http://localhost:8000/api' : '/api')
-  : '/api';
+// Frontend on :8080, backend on :8000 — detect and proxy correctly
+var locPort = window.location.port;
+var locHost = window.location.hostname;
+var isLocal = locHost === 'localhost' || locHost === '127.0.0.1';
+// If we're on any local dev port (3000, 8080, etc.), point API at :8000
+var API_BASE_URL = isLocal ? ('http://' + locHost + ':8000/api') : '/api';
 
 const API = {
   async fetchCategories() {
@@ -69,6 +72,48 @@ const API = {
       return await resp.json();
     } catch (e) {
       console.error('Failed to fetch orders:', e);
+      return [];
+    }
+  },
+
+  async fetchSellers() {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/sellers`);
+      return await resp.json();
+    } catch (e) {
+      console.error('Failed to fetch sellers:', e);
+      return [];
+    }
+  },
+
+  async fetchUsers() {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/users`);
+      return await resp.json();
+    } catch (e) {
+      console.error('Failed to fetch users:', e);
+      return [];
+    }
+  },
+
+  async fetchDirectory(params = {}) {
+    try {
+      const query = new URLSearchParams(params).toString();
+      const resp = await fetch(`${API_BASE_URL}/directory?${query}`);
+      return await resp.json();
+    } catch (e) {
+      console.error('Failed to fetch directory:', e);
+      return [];
+    }
+  },
+
+  async fetchPlaces(query) {
+    try {
+      const resp = await fetch(`${API_BASE_URL}/places/search?q=${encodeURIComponent(query)}`);
+      const data = await resp.json();
+      return data.places || [];
+    } catch (e) {
+      console.error('Failed to fetch places:', e);
       return [];
     }
   },

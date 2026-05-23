@@ -1,11 +1,11 @@
-from database import SessionLocal, init_db, Category, User, Seller, Product, Vouch
+from database import SessionLocal, init_db, Category, User, Seller, Product, Vouch, SellerEntry
 import time
 
 def seed_data():
     db = SessionLocal()
     init_db()
 
-    # Seed Categories
+    # ── Categories ──
     categories_data = [
         {"id": "clothes", "name": "Kapde", "name_en": "Clothes", "icon": "fa-shirt", "color": "#BE123C", "bg": "#FFF1F2", "count": 7},
         {"id": "sabzi", "name": "Sabzi", "name_en": "Vegetables", "icon": "fa-leaf", "color": "#15803D", "bg": "#F0FDF4", "count": 3},
@@ -20,32 +20,32 @@ def seed_data():
         if not db.query(Category).filter(Category.id == cat["id"]).first():
             db.add(Category(**cat))
 
-    # Seed Users
+    # ── Users (buyers + sellers) ──
     users_data = [
-        {"id": "you", "name": "Aap", "initials": "A", "color": "#B8680F", "locality": "Sultanpuri", "relation": "You", "role": "buyer"},
-        {"id": "priya", "name": "Priya Sharma", "initials": "PS", "color": "#EC4899", "locality": "Sultanpuri", "relation": "Padosan (Neighbor)", "role": "buyer"},
-        {"id": "amit", "name": "Amit Verma", "initials": "AV", "color": "#3B82F6", "locality": "Sultanpuri", "relation": "Colleague", "role": "buyer"},
-        {"id": "sunita", "name": "Sunita Devi", "initials": "SD", "color": "#8B5CF6", "locality": "Sultanpuri", "relation": "Building Aunty", "role": "buyer"},
-        {"id": "vikram", "name": "Vikram Singh", "initials": "VS", "color": "#F97316", "locality": "Sultanpuri", "relation": "Dost (Friend)", "role": "buyer"},
-        {"id": "meena", "name": "Meena Aunty", "initials": "MA", "color": "#14B8A6", "locality": "Sultanpuri", "relation": "Landlady", "role": "buyer"},
+        {"id": "you", "name": "Aap", "initials": "A", "color": "#B8680F", "locality": "Lalghati, Bhopal", "relation": "You", "role": "buyer"},
+        {"id": "priya", "name": "Priya Sharma", "initials": "PS", "color": "#EC4899", "locality": "Lalghati, Bhopal", "relation": "Padosan (Neighbor)", "role": "buyer"},
+        {"id": "amit", "name": "Amit Verma", "initials": "AV", "color": "#3B82F6", "locality": "Lalghati, Bhopal", "relation": "Colleague", "role": "buyer"},
+        {"id": "sunita", "name": "Sunita Devi", "initials": "SD", "color": "#8B5CF6", "locality": "Lalghati, Bhopal", "relation": "Building Aunty", "role": "buyer"},
+        {"id": "vikram", "name": "Vikram Singh", "initials": "VS", "color": "#F97316", "locality": "Lalghati, Bhopal", "relation": "Dost (Friend)", "role": "buyer"},
+        {"id": "meena", "name": "Meena Aunty", "initials": "MA", "color": "#14B8A6", "locality": "Lalghati, Bhopal", "relation": "Landlady", "role": "buyer"},
         # Sellers as users
-        {"id": "ramesh_user", "name": "Ramesh Kumar", "initials": "RK", "color": "#15803D", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "suresh_user", "name": "Suresh Patel", "initials": "SP", "color": "#0E7490", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "kavita_user", "name": "Kavita Joshi", "initials": "KJ", "color": "#7C3AED", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "mohan_user", "name": "Mohan Lal", "initials": "ML", "color": "#C2410C", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "neeta_user", "name": "Neeta Gupta", "initials": "NG", "color": "#BE123C", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "arjun_user", "name": "Arjun Malhotra", "initials": "AM", "color": "#E11D48", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "seema_user", "name": "Seema Devi", "initials": "SD", "color": "#DB2777", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "rajesh_user", "name": "Rajesh Kumar", "initials": "RM", "color": "#1D4ED8", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "poonam_user", "name": "Poonam Sharma", "initials": "PS2", "color": "#BE185D", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "deepak_user", "name": "Deepak Verma", "initials": "DV", "color": "#A16207", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
-        {"id": "household_user", "name": "Ghar Ka Saathi", "initials": "GK", "color": "#059669", "locality": "Sultanpuri", "relation": "Seller", "role": "seller"},
+        {"id": "ramesh_user", "name": "Ramesh Kumar", "initials": "RK", "color": "#15803D", "locality": "Lalghati, Bhopal", "relation": "Seller", "role": "seller"},
+        {"id": "suresh_user", "name": "Suresh Patel", "initials": "SP", "color": "#0E7490", "locality": "Lalghati, Bhopal", "relation": "Seller", "role": "seller"},
+        {"id": "kavita_user", "name": "Kavita Joshi", "initials": "KJ", "color": "#7C3AED", "locality": "Lalghati, Bhopal", "relation": "Seller", "role": "seller"},
+        {"id": "mohan_user", "name": "Mohan Lal", "initials": "ML", "color": "#C2410C", "locality": "Indiranagar, Lucknow", "relation": "Seller", "role": "seller"},
+        {"id": "neeta_user", "name": "Neeta Gupta", "initials": "NG", "color": "#BE123C", "locality": "Lalghati, Bhopal", "relation": "Seller", "role": "seller"},
+        {"id": "arjun_user", "name": "Arjun Malhotra", "initials": "AM", "color": "#E11D48", "locality": "Indiranagar, Lucknow", "relation": "Seller", "role": "seller"},
+        {"id": "seema_user", "name": "Seema Devi", "initials": "SD", "color": "#DB2777", "locality": "Lalghati, Bhopal", "relation": "Seller", "role": "seller"},
+        {"id": "rajesh_user", "name": "Rajesh Kumar", "initials": "RM", "color": "#1D4ED8", "locality": "Kharadi, Pune", "relation": "Seller", "role": "seller"},
+        {"id": "poonam_user", "name": "Poonam Sharma", "initials": "PS2", "color": "#BE185D", "locality": "Kharadi, Pune", "relation": "Seller", "role": "seller"},
+        {"id": "deepak_user", "name": "Deepak Verma", "initials": "DV", "color": "#A16207", "locality": "T. Nagar, Chennai", "relation": "Seller", "role": "seller"},
+        {"id": "household_user", "name": "Ghar Ka Saathi", "initials": "GK", "color": "#059669", "locality": "Lalghati, Bhopal", "relation": "Seller", "role": "seller"},
     ]
     for u in users_data:
         if not db.query(User).filter(User.id == u["id"]).first():
             db.add(User(**u))
 
-    # Seed Sellers
+    # ── Sellers ──
     sellers_data = [
         {"id": "ramesh", "user_id": "ramesh_user", "shop_name": "Ramesh Sabzi Wala", "years_active": 8, "trusted_neighbors": 15, "vouched_by": "priya", "vouch_relation": "Regular customer — 3 saal", "category_id": "sabzi", "is_live": True, "distance": "400m"},
         {"id": "suresh", "user_id": "suresh_user", "shop_name": "Suresh Dairy Farm", "years_active": 12, "trusted_neighbors": 22, "vouched_by": "sunita", "vouch_relation": "Family friend — 7 saal", "category_id": "dairy", "is_live": True, "distance": "600m"},
@@ -63,7 +63,7 @@ def seed_data():
         if not db.query(Seller).filter(Seller.id == s["id"]).first():
             db.add(Seller(**s))
 
-    # Seed Products
+    # ── Products ──
     products_data = [
         {"id": 1, "title": "Fresh Palak", "title_en": "Fresh Spinach", "title_hi": "ताजा पालक", "title_mr": "ताजी पालक", "price": 20, "unit": "gaddi", "seller_id": "ramesh", "category_id": "sabzi", "stock": 25, "image_url": "product-1.jpg"},
         {"id": 2, "title": "Gobi", "title_en": "Cabbage", "title_hi": "बंद गोभी", "title_mr": "कोबी", "price": 40, "unit": "pcs", "seller_id": "ramesh", "category_id": "sabzi", "stock": 15, "image_url": "product-2.jpg"},
@@ -91,9 +91,8 @@ def seed_data():
         {"id": 24, "title": "Threading", "title_en": "Threading", "title_hi": "थ्रेडिंग", "title_mr": "थ्रेडिंग", "price": 50, "unit": "session", "seller_id": "poonam", "category_id": "beauty", "stock": 20, "image_url": "product-24.jpg"},
         {"id": 25, "title": "AC Repair", "title_en": "AC Repair", "title_hi": "एसी रिपेयर", "title_mr": "एसी रिपेयर", "price": 500, "unit": "visit", "seller_id": "deepak", "category_id": "services", "stock": 5, "image_url": "product-25.jpg"},
         {"id": 26, "title": "Plumbing", "title_en": "Plumbing Service", "title_hi": "नल रिपेयर", "title_mr": "नळदुरुस्ती", "price": 300, "unit": "visit", "seller_id": "deepak", "category_id": "services", "stock": 8, "image_url": "product-26.jpg"},
-        # Household Services - Maids
-        {"id": 27, "title": "Full Time Maid", "title_en": "Full Time Domestic Helper", "title_hi": "पूर्णकालिक नौकरानी", "title_mr": "पूर्णवेळ मैदानी", "price": 8000, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 3, "image_url": "product-27.jpg"},
-        {"id": 28, "title": "Part Time Maid", "title_en": "Part Time Domestic Helper", "title_hi": "पार्ट टाइम नौकरानी", "title_mr": "पार्ट टाइम मैदानी", "price": 4000, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 5, "image_url": "product-28.jpg"},
+        {"id": 27, "title": "Full Time Maid", "title_en": "Full Time Maid", "title_hi": "पूर्णकालिक नौकरानी", "title_mr": "पूर्णवेळ मैदानी", "price": 8000, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 3, "image_url": "product-27.jpg"},
+        {"id": 28, "title": "Part Time Maid", "title_en": "Part Time Maid", "title_hi": "पार्ट टाइम नौकरानी", "title_mr": "पार्ट टाइम मैदानी", "price": 4000, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 5, "image_url": "product-28.jpg"},
         {"id": 29, "title": "Cook", "title_en": "Home Cook", "title_hi": "रसोइया", "title_mr": "शेफ", "price": 6000, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 2, "image_url": "product-29.jpg"},
         {"id": 30, "title": "Baby Caretaker", "title_en": "Babysitter", "title_hi": "बच्चों की देखभाल", "title_mr": "बेबी सिटर", "price": 5000, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 2, "image_url": "product-30.jpg"},
         {"id": 31, "title": "Elderly Caretaker", "title_en": "Elderly Caregiver", "title_hi": "बुजुर्गों की देखभाल", "title_mr": "वृद्धांकिता", "price": 5500, "unit": "month", "seller_id": "household", "category_id": "services", "stock": 2, "image_url": "product-31.jpg"},
@@ -102,7 +101,7 @@ def seed_data():
         if not db.query(Product).filter(Product.id == p["id"]).first():
             db.add(Product(**p))
 
-    # Seed Vouches
+    # ── Vouches ──
     vouches_data = [
         {"from_user_id": "you", "to_user_id": "priya", "relation": "Padosan — 5 saal"},
         {"from_user_id": "you", "to_user_id": "amit", "relation": "Colleague — 3 saal"},
@@ -121,13 +120,114 @@ def seed_data():
         {"from_user_id": "meena", "to_user_id": "seema_user", "relation": "Relative — 9 saal"},
     ]
     for v in vouches_data:
-        # Avoid duplicate vouches (simplified)
         if not db.query(Vouch).filter(Vouch.from_user_id == v["from_user_id"], Vouch.to_user_id == v["to_user_id"]).first():
             db.add(Vouch(**v))
 
+    # ── Seller Directory (all known shops, registered + unregistered) ──
+    directory_data = [
+        # Lalghati, Bhopal
+        {"locality": "Lalghati, Bhopal", "shop": "Ramesh Sabzi Wala", "category_id": "sabzi", "registered": True, "seller_id": "ramesh"},
+        {"locality": "Lalghati, Bhopal", "shop": "Suresh Dairy Farm", "category_id": "dairy", "registered": True, "seller_id": "suresh"},
+        {"locality": "Lalghati, Bhopal", "shop": "Joshi Kirana Store", "category_id": "kirana", "registered": True, "seller_id": "kavita"},
+        {"locality": "Lalghati, Bhopal", "shop": "Laxmi Saree Center", "category_id": "clothes", "registered": True, "seller_id": "neeta"},
+        {"locality": "Lalghati, Bhopal", "shop": "Seema Stitching", "category_id": "clothes", "registered": True, "seller_id": "seema"},
+        {"locality": "Lalghati, Bhopal", "shop": "Ghar Ka Saathi", "category_id": "services", "registered": True, "seller_id": "household"},
+        {"locality": "Lalghati, Bhopal", "shop": "Gupta Cloth House", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Sharma Saree Centre", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Bansal Readymade Store", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Tiwari Sabzi Bhandar", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Verma General Store", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Shahjahan Dairy", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Sahu Mobile Point", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Gupta Beauty Salon", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Patel Fruit Corner", "category_id": "fruit", "registered": False, "seller_id": None},
+        {"locality": "Lalghati, Bhopal", "shop": "Rai Electrical Repair", "category_id": "services", "registered": False, "seller_id": None},
+        # Indiranagar, Lucknow
+        {"locality": "Indiranagar, Lucknow", "shop": "Mohan Fruit Wala", "category_id": "fruit", "registered": True, "seller_id": "mohan"},
+        {"locality": "Indiranagar, Lucknow", "shop": "Fashion Hub", "category_id": "clothes", "registered": True, "seller_id": "arjun"},
+        {"locality": "Indiranagar, Lucknow", "shop": "Srivastava Saree Gallery", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Chauhan Kirana Store", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Pandey Sabzi Mandi", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Verma Dairy Products", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Kapoor Mobile Zone", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Malhotra Beauty Point", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Yadav Repair Shop", "category_id": "services", "registered": False, "seller_id": None},
+        {"locality": "Indiranagar, Lucknow", "shop": "Tiwari Fruit Market", "category_id": "fruit", "registered": False, "seller_id": None},
+        # Kharadi, Pune
+        {"locality": "Kharadi, Pune", "shop": "Rajesh Mobile Corner", "category_id": "electronics", "registered": True, "seller_id": "rajesh"},
+        {"locality": "Kharadi, Pune", "shop": "Poonam Beauty Parlour", "category_id": "beauty", "registered": True, "seller_id": "poonam"},
+        {"locality": "Kharadi, Pune", "shop": "Joshi Cloth House", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Patil Sabzi Depot", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Kulkarni Dairy", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Deshmukh Grocery", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Shinde Electronics", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Mane Beauty Center", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Jadhav Repair Works", "category_id": "services", "registered": False, "seller_id": None},
+        {"locality": "Kharadi, Pune", "shop": "Gavde Fresh Fruits", "category_id": "fruit", "registered": False, "seller_id": None},
+        # T. Nagar, Chennai
+        {"locality": "T. Nagar, Chennai", "shop": "Deepak Repair Center", "category_id": "services", "registered": True, "seller_id": "deepak"},
+        {"locality": "T. Nagar, Chennai", "shop": "Murugan Textiles", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Kumar Cloth Store", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Rajan Fancy Sarees", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Subramaniam Kirana", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Annamalai Dairy", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Murugan Sabzi Stall", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Krishna Electronics", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Priya Beauty Centre", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Pandian Fruit Shop", "category_id": "fruit", "registered": False, "seller_id": None},
+        {"locality": "T. Nagar, Chennai", "shop": "Velavan Repair Service", "category_id": "services", "registered": False, "seller_id": None},
+        # Koramangala, Bangalore
+        {"locality": "Koramangala, Bangalore", "shop": "Reddy Fashion Studio", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Nagendra Sabzi Market", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Krishnappa Dairy Farm", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Murthy Groceries", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Shetty Electronics", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Anita Beauty Salon", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Venkatesh Repair Center", "category_id": "services", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Gowda Fruit Stall", "category_id": "fruit", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Nayaka Cloth House", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Koramangala, Bangalore", "shop": "Mohan Readymade Store", "category_id": "clothes", "registered": False, "seller_id": None},
+        # Salt Lake, Kolkata
+        {"locality": "Salt Lake, Kolkata", "shop": "Banerjee Saree Bhandar", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Mukherjee Sabji Bazaar", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Das Dairy & Sweets", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Chakraborty General Store", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Bose Mobile Gallery", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Sen Beauty Parlour", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Ghosh Repair Service", "category_id": "services", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Roy Fruit Centre", "category_id": "fruit", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Saha Fancy Cloth House", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Salt Lake, Kolkata", "shop": "Dutta Readymade Store", "category_id": "clothes", "registered": False, "seller_id": None},
+        # Vastrapur, Ahmedabad
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Shah Textiles", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Patel Sabzi Mart", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Desai Dairy Products", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Mehta Kirana Store", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Patel Electronics", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Shah Beauty Parlour", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Joshi Repair Center", "category_id": "services", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Trivedi Fruit Shop", "category_id": "fruit", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Rathod Readymade Store", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Vastrapur, Ahmedabad", "shop": "Solanki Saree House", "category_id": "clothes", "registered": False, "seller_id": None},
+        # Malviya Nagar, Jaipur
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Sharma Cloth Market", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Gupta Sabzi Bhandar", "category_id": "sabzi", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Verma Dairy & Sweets", "category_id": "dairy", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Bhardwaj General Store", "category_id": "kirana", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Meena Electronics", "category_id": "electronics", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Jain Beauty Centre", "category_id": "beauty", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Saxena Repair Works", "category_id": "services", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Choudhary Fruit Shop", "category_id": "fruit", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Agarwal Fancy Sarees", "category_id": "clothes", "registered": False, "seller_id": None},
+        {"locality": "Malviya Nagar, Jaipur", "shop": "Khandelwal Readymade", "category_id": "clothes", "registered": False, "seller_id": None},
+    ]
+    for d in directory_data:
+        if not db.query(SellerEntry).filter(SellerEntry.locality == d["locality"], SellerEntry.shop == d["shop"]).first():
+            db.add(SellerEntry(**d))
+
     db.commit()
     db.close()
-    print("Database seeded successfully!")
+    print("Database seeded successfully with real localities and seller directory!")
 
 if __name__ == "__main__":
     seed_data()

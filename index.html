@@ -35,18 +35,26 @@
     <span class="text-xl">Sauda</span>
   </div>
   <nav class="desktop-links">
-    <div class="desktop-link active" data-view="feed" data-show="buyer">Marketplace</div>
-    <div class="desktop-link" data-view="seller-dashboard" data-show="seller">Meri Dukaan</div>
-    <div class="desktop-link" data-view="categories">Categories</div>
-    <div class="desktop-link" data-view="voice">Bol ke Becho</div>
+    <div class="desktop-link active" data-view="feed" data-show="buyer" data-i18n="marketplace">Marketplace</div>
+          <div class="desktop-link" data-view="seller-dashboard" data-show="seller" data-i18n="meri_dukaan">Meri Dukaan</div>
+          <div class="desktop-link" data-view="categories" data-i18n="categories_nav">Categories</div>
+          <div class="desktop-link" data-view="voice" data-i18n="bol_ke_becho">Bol ke Becho</div>
   </nav>
-  <div class="desktop-profile" onclick="navigateTo('profile')">
-    <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold mr-2" id="desktop-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
-    <div class="text-left">
-      <p class="text-[10px] font-bold text-gray-400 uppercase leading-none">Profile</p>
-      <p class="text-xs font-bold" id="desktop-name" style="color:var(--text)">Aap</p>
+    <div class="desktop-profile" onclick="navigateTo('profile')">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold mr-2" id="desktop-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
+      <div class="text-left">
+        <p class="text-[10px] font-bold text-gray-400 uppercase leading-none" data-i18n="profile">Profile</p>
+        <p class="text-xs font-bold" id="desktop-name" style="color:var(--text)">Aap</p>
+      </div>
     </div>
-  </div>
+    <div class="lang-switcher relative ml-2">
+      <button onclick="toggleLangMenu()" class="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold" style="background:var(--bg2);color:var(--text2);border:none;cursor:pointer">
+        <i class="fa-solid fa-language"></i>
+        <span id="lang-btn-text">HI</span>
+      </button>
+      <div id="lang-menu" class="absolute right-0 top-full mt-1 rounded-xl shadow-lg z-50" style="display:none;background:#fff;border:1px solid #EDE5D5;width:200px;max-height:300px;overflow-y:auto">
+      </div>
+    </div>
 </header>
 
 <!-- ============================================================ -->
@@ -58,16 +66,16 @@
       <i class="fa-solid fa-handshake text-white text-3xl"></i>
     </div>
     <h1 class="text-3xl font-extrabold mb-2" style="color:var(--text)">Sauda</h1>
-    <p class="text-base font-medium mb-1" style="color:var(--accent)">Bharose ka Sauda</p>
-    <p class="text-sm leading-relaxed mt-3" style="color:var(--text2)">Apne mohalle ke trusted sellers,<br>apni aawaz se connect karo.</p>
+    <p class="text-base font-medium mb-1" style="color:var(--accent)" data-i18n="trust_tagline">Bharose ka Sauda</p>
+    <p class="text-sm leading-relaxed mt-3" style="color:var(--text2)" data-i18n="tagline">Apne mohalle ke trusted sellers,<br>apni aawaz se connect karo.</p>
     <div class="flex items-center gap-2 mt-6 px-4 py-2.5 rounded-full" style="background:var(--trust-light)">
       <i class="fa-solid fa-shield-halved text-xs" style="color:var(--trust)"></i>
-      <span class="text-xs font-bold" style="color:var(--trust)">Trust is a relationship, not a rating</span>
+      <span class="text-xs font-bold" style="color:var(--trust)" data-i18n="vouchchain_sub">Trust is a relationship, not a rating</span>
     </div>
   </div>
   <div class="px-6 pb-8">
-    <button class="btn-primary" onclick="goOnboard(1)">Shuru Karein</button>
-    <button class="btn-secondary mt-3" onclick="skipOnboard()" style="font-size:12px;color:var(--text3)">Skip for now</button>
+    <button class="btn-primary" data-i18n="shuru_karein" onclick="goOnboard(1)">Shuru Karein</button>
+    <button class="btn-secondary mt-3" onclick="skipOnboard()" style="font-size:12px;color:var(--text3)" data-i18n="skip">Skip for now</button>
   </div>
 </div>
 
@@ -75,53 +83,53 @@
 <div class="onboard" id="onboard-1">
   <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:16%"></div></div></div>
   <div class="flex-1 flex flex-col px-6 pt-8">
-    <button onclick="goOnboard(0)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-    <h2 class="text-xl font-bold mb-1">Aap kaun hain?</h2>
-    <p class="text-xs mb-6" style="color:var(--text2)">Choose your role to get started</p>
+    <button onclick="goOnboard(0)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n="back">Back</span></button>
+    <h2 class="text-xl font-bold mb-1" data-i18n="aap_kaun_hain">Aap kaun hain?</h2>
+    <p class="text-xs mb-6" style="color:var(--text2)" data-i18n="choose_role">Choose your role to get started</p>
     <div class="grid grid-cols-2 gap-4">
       <div class="role-card" onclick="selectRole('buyer',this)">
         <div class="icon-wrap" style="background:#FFF1F2;color:#E11D48"><i class="fa-solid fa-bag-shopping"></i></div>
-        <h3 class="text-sm font-bold mb-1">Buyer</h3>
-        <p class="text-[10px]" style="color:var(--text3)">Mohalle se best deals dhundho</p>
+        <h3 class="text-sm font-bold mb-1" data-i18n="buyer">Buyer</h3>
+        <p class="text-[10px]" style="color:var(--text3)" data-i18n="buyer_desc">Mohalle se best deals dhundho</p>
       </div>
       <div class="role-card" onclick="selectRole('seller',this)">
         <div class="icon-wrap" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid fa-store"></i></div>
-        <h3 class="text-sm font-bold mb-1">Seller</h3>
-        <p class="text-[10px]" style="color:var(--text3)">Apni dukaan online laao</p>
+        <h3 class="text-sm font-bold mb-1" data-i18n="seller">Seller</h3>
+        <p class="text-[10px]" style="color:var(--text3)" data-i18n="seller_desc">Apni dukaan online laao</p>
       </div>
     </div>
   </div>
-  <div class="px-6 pb-8"><button class="btn-primary" id="role-next-btn" disabled onclick="goOnboard(2)">Aage Badhein</button></div>
+  <div class="px-6 pb-8"><button class="btn-primary" data-i18n="aage_badhein" id="role-next-btn" disabled onclick="goOnboard(2)">Aage Badhein</button></div>
 </div>
 
 <!-- Step 2: Name & Phone -->
 <div class="onboard" id="onboard-2">
   <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:33%"></div></div></div>
   <div class="flex-1 flex flex-col px-6 pt-8">
-    <button onclick="goOnboard(1)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-    <h2 class="text-xl font-bold mb-1">Apna naam batayein</h2>
-    <p class="text-xs mb-6" style="color:var(--text2)">We need this to build your trust profile</p>
+    <button onclick="goOnboard(1)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n="back">Back</span></button>
+    <h2 class="text-xl font-bold mb-1" data-i18n="apna_naam">Apna naam batayein</h2>
+    <p class="text-xs mb-6" style="color:var(--text2)" data-i18n="name_phone_instruction">We need this to build your trust profile</p>
     <div class="space-y-4">
-      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">FULL NAME</label><input class="input-field" id="inp-name" placeholder="e.g. Priya Sharma" autocomplete="off"></div>
-      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">PHONE NUMBER</label><div class="flex gap-3"><input class="input-field" style="width:80px" value="+91" readonly><input class="input-field flex-1" id="inp-phone" placeholder="9876543210" type="tel" maxlength="10"></div></div>
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)" data-i18n="full_name">FULL NAME</label><input class="input-field" id="inp-name" placeholder="e.g. Priya Sharma" autocomplete="off"></div>
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)" data-i18n="phone_number">PHONE NUMBER</label><div class="flex gap-3"><input class="input-field" style="width:80px" value="+91" readonly><input class="input-field flex-1" id="inp-phone" placeholder="9876543210" type="tel" maxlength="10"></div></div>
     </div>
   </div>
-  <div class="px-6 pb-8"><button class="btn-primary" id="name-next-btn" disabled onclick="goOnboard(3)">Aage Badhein</button></div>
+  <div class="px-6 pb-8"><button class="btn-primary" data-i18n="aage_badhein" id="name-next-btn" disabled onclick="goOnboard(3)">Aage Badhein</button></div>
 </div>
 
 <!-- Step 3: Location -->
 <div class="onboard" id="onboard-3">
   <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:50%"></div></div></div>
   <div class="flex-1 flex flex-col px-6 pt-8">
-    <button onclick="goOnboard(2)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-    <h2 class="text-xl font-bold mb-1">Apna mohalla batayein</h2>
-    <p class="text-xs mb-6" style="color:var(--text2)">So we can show nearby trusted sellers</p>
-    <button class="btn-secondary mb-4 flex items-center justify-center gap-2" onclick="autoDetectLocation()"><i class="fa-solid fa-location-crosshairs" style="color:var(--accent)"></i> Auto-detect Location</button>
+    <button onclick="goOnboard(2)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n="back">Back</span></button>
+    <h2 class="text-xl font-bold mb-1" data-i18n="apna_mohalla">Apna mohalla batayein</h2>
+    <p class="text-xs mb-6" style="color:var(--text2)" data-i18n="apne_mohalle_trusted">So we can show nearby trusted sellers</p>
+    <button class="btn-secondary mb-4 flex items-center justify-center gap-2" onclick="autoDetectLocation()" data-i18n="auto_detect"><i class="fa-solid fa-location-crosshairs" style="color:var(--accent)"></i> Auto-detect Location</button>
     <div id="location-detected" style="display:none" class="p-3 rounded-xl mb-4 flex items-center gap-3" style="background:var(--trust-light)">
       <i class="fa-solid fa-check-circle" style="color:var(--trust)"></i>
       <span class="text-sm font-medium" id="location-text"></span>
     </div>
-    <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">OR ENTER MANUALLY</label><input class="input-field" id="inp-location" placeholder="e.g. Sultanpuri, Delhi"></div>
+    <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)" data-i18n="or_enter">OR ENTER MANUALLY</label><input class="input-field" id="inp-location" data-i18n-placeholder="location_placeholder" placeholder="e.g. Lalghati, Bhopal"></div>
   </div>
   <div class="px-6 pb-8"><button class="btn-primary" onclick="goOnboard(4)">Aage Badhein</button></div>
 </div>
@@ -130,26 +138,26 @@
 <div class="onboard" id="onboard-4a">
   <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:66%"></div></div></div>
   <div class="flex-1 flex flex-col px-6 pt-8 scroll-area">
-    <button onclick="goOnboard(3)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-    <h2 class="text-xl font-bold mb-1">Apni dukaan ki details</h2>
-    <p class="text-xs mb-5" style="color:var(--text2)">Tell us about your shop</p>
+    <button onclick="goOnboard(3)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n="back">Back</span></button>
+    <h2 class="text-xl font-bold mb-1" data-i18n="shop_details">Apni dukaan ki details</h2>
+    <p class="text-xs mb-5" style="color:var(--text2)" data-i18n="tell_shop">Tell us about your shop</p>
     <div class="space-y-4">
-      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">SHOP NAME</label><input class="input-field" id="inp-shop" placeholder="e.g. Laxmi Saree Center"></div>
-      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">CATEGORY (Select all that apply)</label>
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)" data-i18n="shop_name_label">SHOP NAME</label><input class="input-field" id="inp-shop" placeholder="e.g. Laxmi Saree Center"></div>
+      <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)" data-i18n="category_select_label">CATEGORY (Select all that apply)</label>
         <div class="flex flex-wrap gap-2" id="seller-cat-chips"></div>
       </div>
     </div>
   </div>
-  <div class="px-6 pb-8"><button class="btn-primary" onclick="goOnboard(5)">Aage Badhein</button></div>
+  <div class="px-6 pb-8"><button class="btn-primary" data-i18n="aage_badhein" onclick="goOnboard(5)">Aage Badhein</button></div>
 </div>
 
 <!-- Step 4b: Buyer Interests -->
 <div class="onboard" id="onboard-4b">
   <div class="px-6 pt-6"><div class="onboard-progress"><div class="onboard-progress-fill" style="width:66%"></div></div></div>
   <div class="flex-1 flex flex-col px-6 pt-8 scroll-area">
-    <button onclick="goOnboard(3)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> Back</button>
-    <h2 class="text-xl font-bold mb-1">Kya kya kharidte hain?</h2>
-    <p class="text-xs mb-5" style="color:var(--text2)">Select your interests for personalized feed</p>
+    <button onclick="goOnboard(3)" class="self-start mb-4 text-sm font-medium" style="color:var(--text3)"><i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n="back">Back</span></button>
+    <h2 class="text-xl font-bold mb-1" data-i18n="kya_kharidte">Kya kya kharidte hain?</h2>
+    <p class="text-xs mb-5" style="color:var(--text2)" data-i18n="select_interests">Select your interests for personalized feed</p>
     <div class="flex flex-wrap gap-2" id="buyer-cat-chips"></div>
   </div>
   <div class="px-6 pb-8"><button class="btn-primary" onclick="goOnboard(5)">Aage Badhein</button></div>
@@ -269,6 +277,9 @@
 
       <!-- Filter Chips -->
       <div class="flex gap-2 px-5 pb-3 overflow-x-auto" style="scrollbar-width:none" id="filter-chips"></div>
+
+      <!-- Location Chips -->
+      <div class="flex gap-2 px-5 pb-3 overflow-x-auto" style="scrollbar-width:none" id="location-chips"></div>
 
       <!-- Product Feed -->
       <div class="px-5 space-y-3" id="product-feed"></div>
@@ -497,49 +508,153 @@
 
   <!-- ===== PROFILE VIEW ===== -->
   <div id="view-profile" class="view">
-    <header class="px-5 pt-5 pb-3">
-      <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold" id="profile-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
-        <div class="flex-1">
-          <h2 class="text-lg font-extrabold" id="profile-name" style="font-family:'Space Grotesk',sans-serif">Aap</h2>
-          <p class="text-xs" style="color:var(--text2)" id="profile-location">Sultanpuri, Delhi</p>
-          <div class="flex items-center gap-1.5 mt-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[10px] font-bold" style="color:var(--trust)" id="profile-role">Active</span></div>
+    <!-- Cover + Avatar -->
+    <div class="profile-cover">
+      <div class="profile-cover-bg"></div>
+      <div class="profile-cover-content">
+        <div class="profile-avatar-wrap">
+          <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-2xl font-bold ring-4 ring-white shadow-lg" id="profile-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
+          <button class="profile-edit-avatar" onclick="openEditProfileModal()"><i class="fa-solid fa-camera text-[10px]"></i></button>
+        </div>
+        <div class="text-center mt-3">
+          <div class="flex items-center justify-center gap-2">
+            <h2 class="text-xl font-extrabold" id="profile-name" style="font-family:'Space Grotesk',sans-serif">Aap</h2>
+            <button class="profile-inline-edit" onclick="openEditProfileModal()"><i class="fa-solid fa-pencil text-[10px]"></i></button>
+          </div>
+          <div class="flex items-center justify-center gap-1.5 mt-1">
+            <i class="fa-solid fa-location-dot text-[10px]" style="color:var(--text3)"></i>
+            <p class="text-xs" style="color:var(--text2)" id="profile-location">Lalghati, Bhopal</p>
+            <button class="profile-inline-edit" onclick="openEditProfileModal()"><i class="fa-solid fa-pencil text-[8px]"></i></button>
+          </div>
+          <div class="flex items-center justify-center gap-1.5 mt-2">
+            <div class="px-3 py-1 rounded-full text-[10px] font-bold cursor-pointer profile-role-badge" id="profile-role" onclick="switchRole()" style="background:var(--trust-light);color:var(--trust)">Active</div>
+            <div class="px-3 py-1 rounded-full text-[10px] font-bold" id="profile-phone-badge" style="background:var(--bg2);color:var(--text2);display:none"></div>
+          </div>
         </div>
       </div>
-    </header>
-    <div class="scroll-area flex-1 pb-20 px-5">
+    </div>
+
+    <div class="scroll-area flex-1 pb-20 px-5 -mt-2" style="z-index:2;position:relative">
+      <!-- Stats Row -->
+      <div class="profile-stats">
+        <div class="profile-stat" onclick="openOrderHistory()">
+          <span class="profile-stat-num" id="profile-orders-count">0</span>
+          <span class="profile-stat-label" data-i18n="profile_orders">Orders</span>
+        </div>
+        <div class="profile-stat" onclick="navigateTo('seller-dashboard')">
+          <span class="profile-stat-num" id="profile-listings-count">0</span>
+          <span class="profile-stat-label" data-i18n="profile_listings">Listings</span>
+        </div>
+        <div class="profile-stat" onclick="openSavedSellers()">
+          <span class="profile-stat-num" id="profile-saved-count">0</span>
+          <span class="profile-stat-label" data-i18n="profile_saved">Saved</span>
+        </div>
+        <div class="profile-stat" onclick="openVouchChainModal()">
+          <span class="profile-stat-num" style="color:var(--trust)">5</span>
+          <span class="profile-stat-label" data-i18n="profile_vouches">Vouches</span>
+        </div>
+      </div>
+
       <!-- Trust Score Card -->
-      <div class="s-card p-4 mb-3 flex items-center gap-4">
-        <div class="trust-ring">
-          <svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#EDE5D5" stroke-width="5"/><circle cx="36" cy="36" r="30" fill="none" stroke="var(--trust)" stroke-width="5" stroke-dasharray="188.5" stroke-dashoffset="18.85" stroke-linecap="round"/></svg>
-          <div class="score">90</div>
-        </div>
-        <div>
-          <p class="text-sm font-bold">Trust Score</p>
-          <p class="text-xs" style="color:var(--text2)" id="profile-connections">5 trusted connections</p>
-          <div class="flex gap-1.5 mt-2 flex-wrap" id="profile-badges"></div>
+      <div class="profile-card mb-3" onclick="openEditProfileModal()">
+        <div class="flex items-center gap-4">
+          <div class="trust-ring" style="width:60px;height:60px">
+            <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="none" stroke="#EDE5D5" stroke-width="4"/><circle cx="30" cy="30" r="24" fill="none" stroke="var(--trust)" stroke-width="4" stroke-dasharray="150.8" stroke-dashoffset="15.08" stroke-linecap="round"/></svg>
+            <div class="score" style="font-size:15px">90</div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-bold" data-i18n="trust_score">Trust Score</p>
+              <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
+            </div>
+            <p class="text-xs" style="color:var(--text2)" id="profile-connections">5 trusted connections</p>
+            <div class="flex gap-1.5 mt-2 flex-wrap" id="profile-badges"></div>
+          </div>
         </div>
       </div>
+
+      <!-- Info Cards -->
+      <div class="space-y-2 mb-4">
+        <div class="profile-info-item" onclick="openEditProfileModal()">
+          <div class="flex items-center gap-3">
+            <div class="profile-info-icon" style="background:var(--trust-light);color:var(--trust)"><i class="fa-solid fa-shield-halved"></i></div>
+            <div><p class="text-sm font-medium" data-i18n="aadhaar">Aadhaar</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="verified">Verified</p></div>
+          </div>
+          <i class="fa-solid fa-check-circle" style="color:var(--trust);font-size:16px" id="aadhaar-status-icon"></i>
+        </div>
+        <div class="profile-info-item" onclick="openEditProfileModal()">
+          <div class="flex items-center gap-3">
+            <div class="profile-info-icon" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid fa-phone"></i></div>
+            <div><p class="text-sm font-medium" id="profile-phone-display" data-i18n="phone">Phone</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="tap_to_update">Tap to update</p></div>
+          </div>
+          <i class="fa-solid fa-pencil text-[10px]" style="color:var(--text3)"></i>
+        </div>
+        <div class="profile-info-item" onclick="openEditProfileModal()">
+          <div class="flex items-center gap-3">
+            <div class="profile-info-icon" style="background:#FFF1F2;color:#E11D48"><i class="fa-solid fa-tag"></i></div>
+            <div><p class="text-sm font-medium" data-i18n="role_label">Role</p><p class="text-[10px]" style="color:var(--text2)" id="profile-role-label">Buyer</p></div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
+        </div>
+        <div class="profile-info-item" onclick="openEditProfileModal()">
+          <div class="flex items-center gap-3">
+            <div class="profile-info-icon" style="background:#FEF3C7;color:#92400E"><i class="fa-solid fa-star"></i></div>
+            <div><p class="text-sm font-medium" data-i18n="interests_label">Interests</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="select_categories">Select categories</p></div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
+        </div>
+      </div>
+
       <!-- VouchChain CTA -->
-      <div class="s-card p-4 mb-3 cursor-pointer" onclick="openVouchChainModal()" style="border-color:rgba(13,148,136,0.15);background:var(--trust-light)">
+      <div class="profile-card mb-3" onclick="openVouchChainModal()" style="border-color:rgba(13,148,136,0.15);background:linear-gradient(135deg,var(--trust-light),#fff)">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--trust);color:#fff"><i class="fa-solid fa-diagram-project"></i></div>
-            <div><p class="text-sm font-bold" style="color:var(--trust)">VouchChain</p><p class="text-[10px]" style="color:var(--text2)">Dekho kaun kisko trust karta hai</p></div>
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:var(--trust);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,0.25)"><i class="fa-solid fa-diagram-project"></i></div>
+            <div><p class="text-sm font-bold" style="color:var(--trust)">VouchChain</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="dekho_kaun">Dekho kaun kisko trust karta hai</p></div>
           </div>
-          <i class="fa-solid fa-chevron-right text-xs" style="color:var(--trust)"></i>
+          <div class="flex items-center gap-2"><span class="text-[9px] font-bold" style="color:var(--trust)" data-i18n="tap_hint">TAP</span><i class="fa-solid fa-arrow-right text-xs" style="color:var(--trust)"></i></div>
         </div>
       </div>
-      <!-- Menu Items -->
-      <div class="space-y-2" id="profile-menu">
-        <div class="s-card p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><i class="fa-solid fa-shield-halved" style="color:var(--trust)"></i><span class="text-sm">Aadhaar Verified</span></div><i class="fa-solid fa-check-circle" style="color:var(--trust)" id="aadhaar-status-icon"></i></div>
-        <div class="s-card p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><i class="fa-solid fa-handshake" style="color:var(--accent)"></i><span class="text-sm">Vouches Given</span></div><span class="text-sm font-bold" style="color:var(--accent)">5</span></div>
-        <div class="s-card p-4 flex items-center justify-between cursor-pointer" onclick="openOrderHistory()"><div class="flex items-center gap-3"><i class="fa-solid fa-bag-shopping" style="color:var(--trust)"></i><span class="text-sm">My Orders</span></div><span class="text-sm font-bold" id="my-orders-count" style="color:var(--trust)">0</span></div>
-        <div class="s-card p-4 flex items-center justify-between cursor-pointer"><div class="flex items-center gap-3"><i class="fa-solid fa-store" style="color:var(--text2)"></i><span class="text-sm">My Listings</span></div><span class="text-sm font-bold" id="my-listings-count">0</span></div>
-        <div class="s-card p-4 flex items-center justify-between cursor-pointer" onclick="openSavedSellers()"><div class="flex items-center gap-3"><i class="fa-solid fa-heart" style="color:#E11D48"></i><span class="text-sm">Saved Sellers</span></div><span class="text-sm font-bold" id="saved-sellers-count" style="color:#E11D48">0</span></div>
-        <div class="s-card p-4 flex items-center justify-between cursor-pointer" onclick="resetApp()"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket" style="color:var(--danger)"></i><span class="text-sm" style="color:var(--danger)">Reset Demo</span></div></div>
+
+      <!-- Reset -->
+      <div class="profile-info-item" onclick="resetApp()" style="border-color:rgba(220,38,38,0.15)">
+        <div class="flex items-center gap-3">
+          <div class="profile-info-icon" style="background:#FEF2F2;color:var(--danger)"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+          <div><p class="text-sm font-medium" style="color:var(--danger)" data-i18n="reset_demo">Reset Demo</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="reset_demo_desc">Clear all data & restart</p></div>
+        </div>
       </div>
-      <p class="text-center text-[10px] mt-6" style="color:var(--text3)">Sauda v0.2 — Bharose ka Sauda</p>
+
+      <p class="text-center text-[10px] mt-6 mb-4" style="color:var(--text3)"><span data-i18n="sauda_version">Sauda v0.2 — Bharose ka Sauda</span></p>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="edit-profile-modal">
+    <div class="modal-sheet" style="max-height:90vh;max-width:420px">
+      <div class="p-5">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="text-base font-bold" style="font-family:'Space Grotesk',sans-serif" data-i18n="edit_profile">Edit Profile</h3>
+          <button onclick="closeEditProfileModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>
+        </div>
+        <div class="space-y-4">
+          <div><label class="text-xs font-bold block mb-1.5" style="color:var(--text2)" data-i18n="full_name">Full Name</label><input class="input-field" id="edit-name" data-i18n-placeholder="your_name_placeholder" placeholder="Your name"></div>
+          <div><label class="text-xs font-bold block mb-1.5" style="color:var(--text2)" data-i18n="phone">Phone</label><div class="flex gap-3"><input class="input-field" style="width:80px" value="+91" readonly><input class="input-field flex-1" id="edit-phone" placeholder="9876543210" type="tel" maxlength="10"></div></div>
+          <div><label class="text-xs font-bold block mb-1.5" style="color:var(--text2)" data-i18n="location">Location</label><input class="input-field" id="edit-location" data-i18n-placeholder="location_placeholder" placeholder="e.g. Lalghati, Bhopal"></div>
+          <div><label class="text-xs font-bold block mb-1.5" style="color:var(--text2)" data-i18n="role_label">Role</label>
+            <div class="flex gap-3">
+              <button class="role-option" id="role-option-buyer" onclick="selectEditRole('buyer')"><i class="fa-solid fa-bag-shopping"></i> <span data-i18n="buyer">Buyer</span></button>
+              <button class="role-option" id="role-option-seller" onclick="selectEditRole('seller')"><i class="fa-solid fa-store"></i> <span data-i18n="seller">Seller</span></button>
+            </div>
+          </div>
+          <div><label class="text-xs font-bold block mb-1.5" style="color:var(--text2)" data-i18n="aadhaar_verified">Aadhaar Verified</label>
+            <div class="flex items-center gap-3">
+              <button class="toggle-switch" id="aadhaar-toggle" onclick="toggleEditAadhaar()"><div class="toggle-knob"></div></button>
+              <span class="text-xs" style="color:var(--text2)" id="aadhaar-toggle-label">No</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary mt-6" onclick="saveProfileChanges()"><i class="fa-solid fa-check mr-2"></i><span data-i18n="save_changes">Save Changes</span></button>
+      </div>
     </div>
   </div>
 
@@ -570,8 +685,8 @@
     <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6" id="success-icon-wrap" style="background:var(--trust-light); box-shadow:0 8px 30px rgba(13,148,136,0.25); transform:scale(0); opacity:0; transition:all 0.5s cubic-bezier(0.16,1,0.3,1)">
       <i class="fa-solid fa-handshake-angle text-4xl" style="color:var(--trust)"></i>
     </div>
-    <h2 class="text-2xl font-extrabold mb-1" id="success-title" style="font-family:'Space Grotesk',sans-serif; opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.1s">Sauda Pakka!</h2>
-    <p class="text-sm px-4 mb-6" style="color:var(--text2); opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.2s">Aapki request bhej di gayi hai.<br>Trust network ke through deal secure hai.</p>
+    <h2 class="text-2xl font-extrabold mb-1" data-i18n="sauda_pakka" id="success-title" style="font-family:'Space Grotesk',sans-serif; opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.1s">Sauda Pakka!</h2>
+    <p class="text-sm px-4 mb-6" data-i18n="order_sent_success" style="color:var(--text2); opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.2s">Aapki request bhej di gayi hai.<br>Trust network ke through deal secure hai.</p>
     
     <div class="w-full p-4 rounded-2xl mb-6 text-left" id="success-card" style="background:var(--bg2);border:1px solid var(--card-border); opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.3s">
       <div class="flex items-center gap-3">
@@ -584,11 +699,11 @@
       </div>
       <div class="mt-3 pt-3 border-t flex items-center gap-2" style="border-color:var(--card-border)">
         <i class="fa-solid fa-shield-halved text-xs" style="color:var(--trust)"></i>
-        <span class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--trust)">VOUCHCHAIN SECURED</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider" data-i18n="vouchchain_secured" style="color:var(--trust)">VOUCHCHAIN SECURED</span>
       </div>
     </div>
     
-    <button class="w-full py-4 rounded-xl text-sm font-bold" id="success-btn" style="background:var(--bg2);color:var(--text);border:1.5px solid var(--card-border);cursor:pointer;opacity:0; transition:all 0.5s ease 0.4s" onclick="closeSuccessModal()">Marketplace Mein Wapas Jayein</button>
+    <button class="w-full py-4 rounded-xl text-sm font-bold" data-i18n="marketplace_wapas" id="success-btn" style="background:var(--bg2);color:var(--text);border:1.5px solid var(--card-border);cursor:pointer;opacity:0; transition:all 0.5s ease 0.4s" onclick="closeSuccessModal()">Marketplace Mein Wapas Jayein</button>
   </div>
 </div>
 
@@ -608,20 +723,72 @@
 <div class="toast" id="toast"></div>
 </div>
 
-<script src="js/api.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/data.js"></script>
-<script src="js/state.js"></script>
-<script src="js/onboard.js"></script>
-<script src="js/nav.js"></script>
-<script src="js/feed.js"></script>
-<script src="js/seller.js"></script>
-<script src="js/categories.js"></script>
-<script src="js/voice.js"></script>
-<script src="js/modals.js"></script>
-<script src="js/vouchchain.js"></script>
-<script src="js/success.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/lang.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/onboard.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/feed.js"></script>
+  <script src="js/seller.js"></script>
+  <script src="js/categories.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/vouchchain.js"></script>
+  <script src="js/success.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  function toggleLangMenu() {
+    var menu = document.getElementById('lang-menu');
+    var isOpen = menu.style.display === 'block';
+    menu.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) renderLangMenu();
+  }
+  function renderLangMenu() {
+    var menu = document.getElementById('lang-menu');
+    menu.innerHTML = '<div class="p-2 text-xs font-bold" style="color:var(--text3);border-bottom:1px solid var(--border)">'+__('lang_select')+'</div>' +
+      LANGUAGES.map(function(l) {
+        var active = (state.userLang || 'hi') === l.code;
+        return '<div class="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50" onclick="setLanguage(\''+l.code+'\')" style="'+(active ? 'background:var(--accent-light);color:var(--accent);font-weight:700' : 'color:var(--text)')+'">' +
+          '<span>' + l.native + '</span>' +
+          '<span style="color:var(--text3)">(' + l.name + ')</span>' +
+          (active ? '<i class="fa-solid fa-check ml-auto" style="color:var(--accent)"></i>' : '') +
+        '</div>';
+      }).join('');
+  }
+  function setLanguage(code) {
+    state.userLang = code;
+    localStorage.setItem('sauda_lang', code);
+    document.getElementById('lang-menu').style.display = 'none';
+    applyLanguage();
+    renderProfile();
+    renderLocationChips();
+    if (state.currentView === 'feed') renderFeed();
+    if (state.currentView === 'seller-dashboard') renderSellerDashboard();
+    if (state.currentView === 'categories') { renderCategoryGrid(); if (state.selectedCategory) selectCategory(state.selectedCategory); }
+    if (state.currentView === 'voice') initVoice();
+    renderVouchGraph();
+    renderNotifications();
+    renderOrdersModal();
+    renderSavedSellersModal();
+    renderCategoryCards();
+    renderFilterChips();
+  }
+  function applyLanguage() {
+    var code = state.userLang || 'hi';
+    document.getElementById('lang-btn-text').textContent = code.toUpperCase();
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      el.textContent = __(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      el.placeholder = __(key);
+    });
+  }
+  </script>
 </body>
 </html>
 

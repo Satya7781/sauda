@@ -59,10 +59,10 @@ function toggleSaveSeller(sid) {
   var idx = state.savedSellers.indexOf(sid);
   if (idx === -1) {
     state.savedSellers.push(sid);
-    showToast(SELLERS[sid].shop + ' saved!');
+    showToast(SELLERS[sid].shop + __('saved_tost'));
   } else {
     state.savedSellers.splice(idx, 1);
-    showToast(SELLERS[sid].shop + ' removed from saved');
+    showToast(SELLERS[sid].shop + __('removed_saved_tost'));
   }
 }
 
@@ -95,7 +95,7 @@ function addOrder(product, seller) {
     status: 'confirmed',
     time: Date.now()
   });
-  addNotification('Sauda pakka! ' + product.title + ' — ' + seller.shop, 'order');
+  addNotification(__('sauda_pakka') + ' ' + product.title + ' — ' + seller.shop, 'order');
 }
 
 function openNotifications() {
@@ -108,12 +108,12 @@ function openNotifications() {
     return '<div class="s-card p-3 flex items-center gap-3 mb-2">' +
       '<div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:' + (n.type === 'order' ? 'var(--trust-light)' : 'var(--accent-light)') + '"><i class="fa-solid ' + icon + ' text-sm" style="color:' + color + '"></i></div>' +
       '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + n.msg + '</p><p class="text-[10px]" style="color:var(--text3)">' + ago + '</p></div></div>';
-  }).join('') : '<div class="text-center py-10"><i class="fa-regular fa-bell text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">Koi notification nahi</p></div>';
+  }).join('') : '<div class="text-center py-10"><i class="fa-regular fa-bell text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">'+__('koi_notification_nahi')+'</p></div>';
 
   sheet.innerHTML =
     '<div class="p-5">' +
     '<div class="flex items-center justify-between mb-4">' +
-    '<h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">Notifications</h3>' +
+    '<h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">'+__('notifications')+'</h3>' +
     '<button onclick="closeNotifModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>' +
     '</div>' + items + '</div>';
 
@@ -126,10 +126,10 @@ function closeNotifModal() {
 
 function timeAgo(ts) {
   var diff = Date.now() - ts;
-  if (diff < 60000) return 'Abhi';
-  if (diff < 3600000) return Math.floor(diff / 60000) + ' min pehle';
-  if (diff < 86400000) return Math.floor(diff / 3600000) + ' ghante pehle';
-  return Math.floor(diff / 86400000) + ' din pehle';
+  if (diff < 60000) return __('abhi');
+  if (diff < 3600000) return Math.floor(diff / 60000) + __('min_pehle');
+  if (diff < 86400000) return Math.floor(diff / 3600000) + __('ghante_pehle');
+  return Math.floor(diff / 86400000) + __('din_pehle');
 }
 
 document.getElementById('notif-modal').addEventListener('click', function (e) {
@@ -150,13 +150,13 @@ function openOrderHistory() {
       (catObj ? '<div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:' + catObj.bg + '"><i class="fa-solid ' + catObj.icon + '" style="color:' + catObj.color + ';font-size:14px"></i></div>' : '<div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:var(--bg2)"><i class="fa-solid fa-bag-shopping" style="color:var(--text3);font-size:14px"></i></div>') +
       '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + o.title + '</p><p class="text-[10px]" style="color:var(--text3)">' + o.sellerName + ' — ' + ago + '</p></div>' +
       '<div class="text-right flex-shrink-0"><p class="text-sm font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + o.price + '</p>' +
-      '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:' + statusBg + ';color:' + statusColor + '">' + o.status.toUpperCase() + '</span></div></div>';
-  }).join('') : '<div class="text-center py-10"><i class="fa-solid fa-bag-shopping text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">Abhi tak koi order nahi</p><p class="text-xs mt-1" style="color:var(--text3)">Pehla Sauda karein!</p></div>';
+      '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:' + statusBg + ';color:' + statusColor + '">'+__('confirmed')+'</span></div></div>';
+  }).join('') : '<div class="text-center py-10"><i class="fa-solid fa-bag-shopping text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">'+__('koi_order_nahi')+'</p><p class="text-xs mt-1" style="color:var(--text3)">'+__('pehla_sauda')+'</p></div>';
 
   sheet.innerHTML =
     '<div class="p-5">' +
     '<div class="flex items-center justify-between mb-4">' +
-    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">My Orders</h3><p class="text-[10px]" style="color:var(--text3)">' + orders.length + ' orders</p></div>' +
+    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">'+__('my_orders')+'</h3><p class="text-[10px]" style="color:var(--text3)">' + orders.length + __('items_label')+'</p></div>' +
     '<button onclick="closeOrderModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>' +
     '</div>' + items + '</div>';
 
@@ -179,12 +179,12 @@ function openSavedSellers() {
       '<div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold" style="background:' + s.color + '15;color:' + s.color + '">' + s.initials + '</div>' +
       '<div class="flex-1 min-w-0"><p class="text-sm font-bold truncate">' + s.shop + '</p><p class="text-[10px]" style="color:var(--text2)">' + s.name + ' — ' + s.distance + '</p></div>' +
       '<div class="text-right"><div class="trust-ring" style="width:36px;height:36px"><svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="14" fill="none" stroke="#EDE5D5" stroke-width="3"/><circle cx="18" cy="18" r="14" fill="none" stroke="var(--trust)" stroke-width="3" stroke-dasharray="' + (2 * Math.PI * 14) + '" stroke-dashoffset="' + (2 * Math.PI * 14 * (1 - ts / 100)) + '" stroke-linecap="round"/></svg><div class="score" style="font-size:9px">' + Math.round(ts) + '</div></div></div></div>';
-  }).join('') : '<div class="text-center py-10"><i class="fa-regular fa-heart text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">Koi saved seller nahi</p><p class="text-xs mt-1" style="color:var(--text3)">Product detail mein heart icon tap karein</p></div>';
+  }).join('') : '<div class="text-center py-10"><i class="fa-regular fa-heart text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">'+__('koi_seller_nahi')+'</p><p class="text-xs mt-1" style="color:var(--text3)">'+__('heart_icon_hint')+'</p></div>';
 
   sheet.innerHTML =
     '<div class="p-5">' +
     '<div class="flex items-center justify-between mb-4">' +
-    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">Saved Sellers</h3><p class="text-[10px]" style="color:var(--text3)">' + saved.length + ' saved</p></div>' +
+    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">'+__('saved_sellers')+'</h3><p class="text-[10px]" style="color:var(--text3)">' + saved.length + __('saved_tost')+'</p></div>' +
     '<button onclick="closeSavedModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>' +
     '</div>' + items + '</div>';
 

@@ -32,7 +32,7 @@ function startRecording() {
   var btn = document.getElementById('mic-btn');
   btn.classList.add('recording');
   btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  document.getElementById('mic-hint').textContent = 'Sun raha hoon...';
+  document.getElementById('mic-hint').textContent = __('sun_raha_hoon');
   document.getElementById('transcription-area').style.display = 'none';
   document.getElementById('ai-status').style.display = 'none';
   document.getElementById('generated-listing').style.display = 'none';
@@ -46,7 +46,7 @@ function stopRecording() {
   var btn = document.getElementById('mic-btn');
   btn.classList.remove('recording');
   btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  document.getElementById('mic-hint').textContent = 'Mic tap karein — Hindi mein bolein';
+  document.getElementById('mic-hint').textContent = __('mic_hint');
   stopWaveform();
   var t = document.getElementById('transcription-text').textContent;
   if (t) {
@@ -63,7 +63,7 @@ function simulateTranscription() {
   var btn = document.getElementById('mic-btn');
   btn.classList.add('recording');
   btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  document.getElementById('mic-hint').textContent = 'Sun raha hoon...';
+  document.getElementById('mic-hint').textContent = __('sun_raha_hoon');
   document.getElementById('transcription-area').style.display = 'none';
   document.getElementById('ai-status').style.display = 'none';
   document.getElementById('generated-listing').style.display = 'none';
@@ -81,7 +81,7 @@ function simulateTranscription() {
         state.isRecording = false;
         btn.classList.remove('recording');
         btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-        document.getElementById('mic-hint').textContent = 'Mic tap karein — Hindi mein bolein';
+        document.getElementById('mic-hint').textContent = __('mic_hint');
         stopWaveform();
         document.getElementById('transcription-area').style.display = 'block';
         processWithAI(demo);
@@ -95,7 +95,7 @@ function processWithAI(t) {
   st.style.display = 'block';
   var at = document.getElementById('ai-status-text');
   setTimeout(function () {
-    at.innerHTML = 'Listing taiyaar kar raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span>';
+    at.innerHTML = __('listing_taiyaar')+'<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span>';
   }, 1200);
   setTimeout(function () {
     st.style.display = 'none';
@@ -277,7 +277,7 @@ document.getElementById('publish-manual-btn').addEventListener('click', function
   var stock = parseInt(document.getElementById('manual-stock').value) || 10;
 
   if (!title || !category || !price) {
-    showToast('Kripya sab details fill karein');
+    showToast(__('kripya_sab_details'));
     return;
   }
 
@@ -311,7 +311,7 @@ function publishProductItem(itemData) {
     category: itemData.category,
     stock: itemData.stock
   });
-  showToast('Listing publish ho gayi! Dukaan mein dikhegi.');
+  showToast(__('item_published'));
   document.getElementById('generated-listing').style.display = 'none';
   document.getElementById('transcription-area').style.display = 'none';
   document.getElementById('ai-status').style.display = 'none';

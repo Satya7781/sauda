@@ -9,6 +9,12 @@ os.chdir('/home/rajverma/Documents/sauda-main')
 print("Starting Sauda servers...")
 print("="*50)
 
+# Remove old database so fresh seed data is created on startup
+db_path = '/home/rajverma/Documents/sauda-main/backend/sauda.db'
+if os.path.exists(db_path):
+    os.remove(db_path)
+    print("Removed old database for fresh seed")
+
 # Start backend
 backend_env = os.environ.copy()
 backend_env['PYTHONPATH'] = '/home/rajverma/Documents/sauda-main/backend'

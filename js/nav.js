@@ -14,6 +14,7 @@ function navigateTo(view) {
 
   if (view === 'categories') renderCategoryGrid();
   if (view === 'seller-dashboard') renderSellerDashboard();
+  if (view === 'profile') renderProfile();
 }
 
 function setupNav() {

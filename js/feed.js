@@ -1,7 +1,3 @@
-// ============================================================
-// BUYER FEED — Sauda
-// ============================================================
-
 function renderCategoryCards() {
   var c = document.getElementById('category-cards');
   c.innerHTML = state.categories.map(function (cat) {
@@ -11,30 +7,179 @@ function renderCategoryCards() {
   }).join('');
 }
 
-function renderFilterChips() {
-  var c = document.getElementById('filter-chips');
-  c.innerHTML = '<button class="filter-chip active" data-filter="all">Sabhi</button>' +
-    state.categories.map(function (cat) {
-      return '<button class="filter-chip" data-filter="' + cat.id + '"><i class="fa-solid ' + cat.icon + ' text-[9px] mr-1" style="color:' + cat.color + '"></i>' + cat.name + '</button>';
+function getUniqueLocalities() {
+  var locs = {};
+  SELLER_DIRECTORY.forEach(function (d) {
+    locs[d.locality] = true;
+  });
+  return Object.keys(locs).sort();
+}
+
+function renderLocationChips() {
+  var c = document.getElementById('location-chips');
+  if (!c) return;
+  var locs = getUniqueLocalities();
+  c.innerHTML = '<button class="location-chip active" data-location="all">'+__('sabhi_kshetra')+'</button>' +
+    locs.map(function (loc) {
+      var count = SELLER_DIRECTORY.filter(function (d) { return d.locality === loc; }).length;
+      return '<button class="location-chip" data-location="' + loc + '">' + loc.replace(',', '') + ' <span class="text-[9px] opacity-60">(' + count + ')</span></button>';
     }).join('');
 
   c.addEventListener('click', function (e) {
-    var chip = e.target.closest('.filter-chip');
+    var chip = e.target.closest('.location-chip');
     if (!chip) return;
-    state.activeFilter = chip.dataset.filter;
-    c.querySelectorAll('.filter-chip').forEach(function (x) { x.classList.toggle('active', x === chip); });
+    state.activeLocation = chip.dataset.location;
+    c.querySelectorAll('.location-chip').forEach(function (x) { x.classList.toggle('active', x === chip); });
     renderFeed();
   });
 }
 
+// Category → keyword mapping for search parsing
+var SEARCH_CATEGORY_KEYWORDS = {
+  clothes: ['kapde', 'clothes', 'cloth', 'garment', 'saree', 'kurta', 'dress', 'fashion', 'kapda', 'kapde'],
+  sabzi: ['sabzi', 'sabji', 'vegetable', 'veg', 'sabziyan', 'tarkari'],
+  dairy: ['dairy', 'doodh', 'milk', 'dahi', 'yogurt', 'paneer', 'cheese'],
+  fruit: ['fruit', 'phal', 'fruit', 'aam', 'mango', 'kela', 'banana', 'phal'],
+  kirana: ['kirana', 'grocery', 'general', 'ration', 'atta', 'chini', 'groceries', 'kirane'],
+  electronics: ['electronics', 'mobile', 'phone', 'earphone', 'charger', 'electronic'],
+  beauty: ['beauty', 'salon', 'parlour', 'mehendi', 'facial', 'makeup', 'beauty'],
+  services: ['services', 'repair', 'plumber', 'plumbing', 'maid', 'cook', 'service', 'seva'],
+};
+
+function matchCategoryFromQuery(q) {
+  for (var catId in SEARCH_CATEGORY_KEYWORDS) {
+    var words = SEARCH_CATEGORY_KEYWORDS[catId];
+    for (var w = 0; w < words.length; w++) {
+      if (q.indexOf(words[w]) !== -1) return catId;
+    }
+  }
+  return null;
+}
+
+function matchLocalityFromQuery(q) {
+  var locs = getUniqueLocalities();
+  for (var l = 0; l < locs.length; l++) {
+    var locParts = locs[l].toLowerCase().split(/[,\s]+/);
+    for (var p = 0; p < locParts.length; p++) {
+      if (locParts[p].length > 2 && q.indexOf(locParts[p]) !== -1) return locs[l];
+    }
+  }
+  return null;
+}
+
+function renderDirectoryCard(entry) {
+  var cat = state.categories.find(function (c) { return c.id === entry.category; });
+  var ratingHtml = '';
+  var openHtml = '';
+  var googleBadge = '';
+
+  if (entry.rating) {
+    var stars = '';
+    var full = Math.floor(entry.rating);
+    for (var s = 0; s < 5; s++) {
+      stars += s < full ? '<i class="fa-solid fa-star" style="color:#F59E0B;font-size:7px"></i>' : '<i class="fa-regular fa-star" style="color:#D1D5DB;font-size:7px"></i>';
+    }
+    ratingHtml = '<span class="flex items-center gap-1 text-[9px] font-bold" style="color:var(--text2)">' + stars + ' ' + entry.rating.toFixed(1) + ' <span class="font-normal opacity-60">(' + entry.reviews + ')</span></span>';
+    googleBadge = '<a href="' + (entry.googlePlaceUrl || '#') + '" target="_blank" rel="noopener" class="text-[8px] font-bold" style="color:#4285F4" onclick="event.stopPropagation()"><i class="fa-brands fa-google"></i> Google</a>';
+  }
+
+  if (entry.openNow === true) {
+    openHtml = '<span class="text-[8px] font-bold" style="color:var(--trust)"><i class="fa-solid fa-circle text-[5px]"></i> ' + __('open_now') + '</span>';
+  } else if (entry.openNow === false) {
+    openHtml = '<span class="text-[8px] font-bold" style="color:var(--text3)">' + __('closed_now') + '</span>';
+  }
+
+  return '<div class="s-card flex overflow-hidden feed-card opacity-75" style="animation-delay:0s;border:1px dashed var(--card-border)" role="button" tabindex="0">' +
+    '<div style="width:100px;height:120px;flex-shrink:0;background:var(--bg2);display:flex;align-items:center;justify-content:center">' +
+    '<i class="fa-solid ' + (cat ? cat.icon : 'fa-store') + '" style="font-size:28px;color:' + (cat ? cat.color : 'var(--text3)') + ';opacity:0.5"></i>' +
+    '</div>' +
+    '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
+    '<div>' +
+    '<div class="flex items-center justify-between mb-1">' +
+    '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : entry.category) + '</span>' +
+    (googleBadge ? '<span class="flex items-center gap-1">' + (openHtml || '') + googleBadge + '</span>' : '<span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style="background:var(--bg2);color:var(--text3)">'+__('not_registered_tag')+'</span>') +
+    '</div>' +
+    '<h4 class="text-sm font-bold leading-tight truncate">' + entry.shop + '</h4>' +
+    '<p class="text-[10px] truncate" style="color:var(--text2)">' + (entry.address || entry.locality) + '</p>' +
+    '</div>' +
+    '<div class="flex items-center justify-between mt-1">' +
+    (ratingHtml ? ratingHtml : '<span class="text-[9px] font-medium" style="color:var(--text3)">'+__('not_listed_yet')+'</span>') +
+    '<div class="loc-tag text-[8px]"><i class="fa-solid fa-location-dot"></i>' + entry.locality + '</div>' +
+    '</div></div></div>';
+}
+
 function renderFeed() {
   var container = document.getElementById('product-feed');
-  var filtered = state.activeFilter === 'all'
-    ? state.productFeed
-    : state.productFeed.filter(function (p) { return p.category === state.activeFilter; });
+  var query = (document.getElementById('search-input') && document.getElementById('search-input').value.toLowerCase().trim()) || '';
+  var isSearching = !!query;
+
+  // If searching, use search results (already set by setupFeedSearch)
+  if (isSearching) {
+    var results = state._searchResults || { products: [], directory: [] };
+
+    if (!results.products.length && !results.directory.length) {
+      container.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-box-open text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">'+__('koi_listing_nahi')+'</p></div>';
+      return;
+    }
+
+    var html = [];
+
+    // Show matched products (registered sellers with items)
+    if (results.products.length) {
+      var i = 0;
+      results.products.forEach(function (p) {
+        var seller = SELLERS[p.seller];
+        var voucher = USERS[seller.vouchedBy];
+        var cat = state.categories.find(function (c) { return c.id === p.category; });
+        html.push('<div class="s-card flex overflow-hidden cursor-pointer feed-card" onclick="openProductDetail(' + p.id + ')" role="button" tabindex="0" style="animation-delay:' + (i * 0.06) + 's">' +
+          productImageHTML(p, 100, 120) +
+          '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
+          '<div>' +
+          '<div class="flex items-center justify-between mb-1">' +
+          '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : p.category) + '</span>' +
+          (seller.isLive ? '<div class="flex items-center gap-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[9px] font-bold" style="color:var(--trust)">'+__('live')+'</span></div>' : '') +
+          '</div>' +
+          '<h4 class="text-sm font-bold leading-tight truncate">' + p.title + '</h4>' +
+          '<p class="text-[10px] truncate" style="color:var(--text2)">' + p.titleHi + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
+          '</div>' +
+          '<div class="flex items-center justify-between mt-2">' +
+          '<span class="text-base font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
+          '<div class="flex items-center gap-1">' +
+          '<div class="vouch-tag"><i class="fa-solid fa-user-check text-[8px]"></i>' + voucher.name.split(' ')[0] + '</div>' +
+          '<div class="loc-tag text-[8px]"><i class="fa-solid fa-location-dot"></i>' + seller.locality + '</div>' +
+          '</div>' +
+          '</div></div></div>');
+        i++;
+      });
+    }
+
+    // Show directory entries (unregistered shops matching the search)
+    if (results.directory.length) {
+      if (results.products.length) {
+        html.push('<div class="mt-4 mb-2"><p class="text-[10px] font-bold uppercase tracking-wider" style="color:var(--text3)">'+__('more_shops_in_area')+'</p></div>');
+      }
+      results.directory.forEach(function (entry) {
+        html.push(renderDirectoryCard(entry));
+      });
+    }
+
+    container.innerHTML = html.join('');
+    return;
+  }
+
+  // ── Normal (non-search) feed ──
+  var filtered = state.productFeed;
+
+  if (state.activeFilter !== 'all') {
+    filtered = filtered.filter(function (p) { return p.category === state.activeFilter; });
+  }
+
+  if (state.activeLocation && state.activeLocation !== 'all') {
+    filtered = filtered.filter(function (p) { return SELLERS[p.seller] && SELLERS[p.seller].locality === state.activeLocation; });
+  }
 
   if (!filtered.length) {
-    container.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-box-open text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">Koi listing nahi mila</p></div>';
+    container.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-box-open text-3xl mb-3" style="color:var(--text3)"></i><p class="text-sm" style="color:var(--text3)">'+__('koi_listing_nahi')+'</p></div>';
     return;
   }
 
@@ -49,14 +194,17 @@ function renderFeed() {
       '<div>' +
       '<div class="flex items-center justify-between mb-1">' +
       '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : p.category) + '</span>' +
-      (seller.isLive ? '<div class="flex items-center gap-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[9px] font-bold" style="color:var(--trust)">LIVE</span></div>' : '') +
+      (seller.isLive ? '<div class="flex items-center gap-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[9px] font-bold" style="color:var(--trust)">'+__('live')+'</span></div>' : '') +
       '</div>' +
       '<h4 class="text-sm font-bold leading-tight truncate">' + p.title + '</h4>' +
       '<p class="text-[10px] truncate" style="color:var(--text2)">' + p.titleHi + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
       '</div>' +
       '<div class="flex items-center justify-between mt-2">' +
       '<span class="text-base font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
+      '<div class="flex items-center gap-1">' +
       '<div class="vouch-tag"><i class="fa-solid fa-user-check text-[8px]"></i>' + voucher.name.split(' ')[0] + '</div>' +
+      '<div class="loc-tag text-[8px]"><i class="fa-solid fa-location-dot"></i>' + seller.locality + '</div>' +
+      '</div>' +
       '</div></div></div>';
   }).join('');
 }
@@ -67,45 +215,39 @@ function openGroupDeal() {
   sheet.innerHTML =
     '<div class="p-5">' +
     '<div class="flex items-center justify-between mb-4">' +
-    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">Group Deal</h3><p class="text-[10px]" style="color:var(--text3)">3 log milke — 20% sasta</p></div>' +
+    '<div><h3 class="text-base font-bold" style="font-family:\'Space Grotesk\',sans-serif">'+__('group_deal')+'</h3><p class="text-[10px]" style="color:var(--text3)">'+__('group_deal_sub')+'</p></div>' +
     '<button onclick="closeGroupDealModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>' +
     '</div>' +
-
     '<div class="s-card p-4 mb-4 flex items-center gap-3">' +
     '<div class="product-img" style="width:56px;height:56px;border-radius:14px;overflow:hidden;flex-shrink:0;background:#FFF1F2">' +
     (PRODUCT_IMAGES[11] ? '<img src="images/' + PRODUCT_IMAGES[11] + '" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">' : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-shirt" style="font-size:24px;color:#BE123C;opacity:0.7"></i></div>') +
     '</div>' +
     '<div class="flex-1 min-w-0"><p class="text-sm font-bold truncate">Banarasi Silk Saree</p><p class="text-[10px]" style="color:var(--text2)">Laxmi Saree Center — 250m</p>' +
     '<div class="flex items-center gap-2 mt-1"><span class="text-sm font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹2,000</span><span class="text-xs line-through" style="color:var(--text3)">₹2,500</span><span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background:#FEF3C7;color:#92400E">20% OFF</span></div></div></div>' +
-
     '<p class="text-[10px] font-extrabold uppercase tracking-wider mb-3" style="color:var(--text3)">JOINED — ' + (joined ? '3' : '2') + '/3</p>' +
-
     '<div class="space-y-2 mb-4">' +
     '<div class="s-card p-3 flex items-center gap-3">' +
     '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:#EC4899;color:#fff">PS</div>' +
     '<div class="flex-1"><p class="text-sm font-medium">Priya Sharma</p><p class="text-[10px]" style="color:var(--text3)">Padosan — 5 saal</p></div>' +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-check text-[7px]"></i>Joined</div></div>' +
-
     '<div class="s-card p-3 flex items-center gap-3">' +
     '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:#3B82F6;color:#fff">AV</div>' +
     '<div class="flex-1"><p class="text-sm font-medium">Amit Verma</p><p class="text-[10px]" style="color:var(--text3)">Colleague — 3 saal</p></div>' +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-check text-[7px]"></i>Joined</div></div>' +
-
     (joined ? '<div class="s-card p-3 flex items-center gap-3">' +
     '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:var(--accent);color:#fff">' + (state.userName || 'Aap').charAt(0) + '</div>' +
-    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || 'Aap') + '</p><p class="text-[10px]" style="color:var(--text3)">You</p></div>' +
+    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || 'Aap') + '</p><p class="text-[10px]" style="color:var(--text3)">'+__('you')+'</p></div>' +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-check text-[7px]"></i>Joined</div></div>'
     : '<div class="s-card p-3 flex items-center gap-3" style="border:1.5px dashed var(--accent);background:var(--accent-light)">' +
     '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:var(--accent);color:#fff">' + (state.userName || 'Aap').charAt(0) + '</div>' +
-    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || 'Aap') + ' (You)</p><p class="text-[10px]" style="color:var(--accent)">Tap to join this deal</p></div></div>') +
+    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || 'Aap') + ' (' + __('you') + ')</p><p class="text-[10px]" style="color:var(--accent)">'+__('tap_to_join_deal')+'</p></div></div>') +
     '</div>' +
-
     (joined ?
     '<div class="p-4 rounded-2xl text-center" style="background:var(--trust-light);border:1px solid rgba(13,148,136,0.15)">' +
     '<i class="fa-solid fa-check-circle text-2xl mb-2" style="color:var(--trust)"></i>' +
-    '<p class="text-sm font-bold" style="color:var(--trust)">Deal Active!</p>' +
-    '<p class="text-[10px]" style="color:var(--text2)">3 log mil gaye — 20% discount laga hai</p></div>'
-    : '<button class="btn-primary" onclick="joinGroupDeal()"><i class="fa-solid fa-handshake mr-2"></i>Group Deal Mein Shamil Ho</button>') +
+    '<p class="text-sm font-bold" style="color:var(--trust)">'+__('deal_active')+'</p>' +
+    '<p class="text-[10px]" style="color:var(--text2)">'+__('three_log_mil_gaye')+'</p></div>'
+    : '<button class="btn-primary" onclick="joinGroupDeal()"><i class="fa-solid fa-handshake mr-2"></i>'+__('group_deal_join')+'</button>') +
     '</div>';
 
   document.getElementById('group-deal-modal').classList.add('show');
@@ -132,35 +274,119 @@ function setupFeedSearch() {
   if (!searchInput) return;
 
   searchInput.addEventListener('input', async function (e) {
-    var q = e.target.value.toLowerCase();
-    // Try API first, fallback to mock data
-    var products = await API.fetchProducts({ search: q });
-    
-    if (products.length) {
-      state.productFeed = products;
-    } else if (q) {
-      // Search in mock data
-      state.productFeed = PRODUCTS.filter(function(p) {
-        return p.title.toLowerCase().includes(q) || 
-               (p.titleHi && p.titleHi.toLowerCase().includes(q));
-      });
-    } else {
-      // Reset to full mock data
-      state.productFeed = PRODUCTS.map(function(p) {
+    var q = e.target.value.toLowerCase().trim();
+
+    if (!q) {
+      state.productFeed = PRODUCTS.map(function (p) {
         return {
-          id: p.id,
-          title: p.title,
-          titleHi: p.titleHi,
-          price: p.price,
-          unit: p.unit,
-          seller: p.seller,
-          category: p.category,
-          stock: p.stock
+          id: p.id, title: p.title, titleHi: p.titleHi,
+          price: p.price, unit: p.unit, seller: p.seller,
+          category: p.category, stock: p.stock
         };
       });
+      state._searchResults = null;
+      if (state.currentView === 'feed') renderFeed();
+      if (state.currentView === 'seller-dashboard') renderSellerFeed();
+      return;
     }
+
+    // ── Try backend API first for product search ──
+    var apiProducts = await API.fetchProducts({ search: q });
     
-    if (state.currentView === 'feed') renderFeed();
-    if (state.currentView === 'seller-dashboard') renderSellerFeed();
+    // Determine which product source to search
+    var productSource;
+    if (apiProducts.length) {
+      productSource = apiProducts;
+    } else {
+      productSource = state.productFeed.length ? state.productFeed : PRODUCTS;
+    }
+
+    // ── Parse query for category + location ──
+    var matchedCategory = matchCategoryFromQuery(q);
+    var matchedLocality = matchLocalityFromQuery(q);
+
+    // Respect active location chip when searching
+    var activeLoc = (state.activeLocation && state.activeLocation !== 'all') ? state.activeLocation : null;
+
+    // Search products matching the query
+    var matchedProducts = productSource.filter(function (p) {
+      var seller = SELLERS[p.seller];
+      if (!seller) return false;
+      if (activeLoc && seller.locality !== activeLoc) return false;
+
+      var matchesTitle = p.title.toLowerCase().includes(q) ||
+        (p.titleHi && p.titleHi.toLowerCase().includes(q));
+      var matchesSeller =
+        seller.shop.toLowerCase().includes(q) ||
+        seller.locality.toLowerCase().includes(q) ||
+        seller.name.toLowerCase().includes(q);
+      var matchesCategoryHint = matchedCategory ? p.category === matchedCategory : false;
+      var matchesLocalityHint = matchedLocality && seller ? seller.locality === matchedLocality : false;
+
+      if (matchesTitle || matchesSeller) return true;
+      if (matchedCategory && matchedLocality && matchesCategoryHint && matchesLocalityHint) return true;
+      return false;
+    });
+
+    // ── Try backend directory API ──
+    var apiDirectory = await API.fetchDirectory({ search: q });
+    var directorySource;
+    if (apiDirectory.length) {
+      directorySource = apiDirectory;
+    } else {
+      directorySource = SELLER_DIRECTORY;
+    }
+
+    // Search directory for unregistered shops matching the query
+    var matchedDirectory = directorySource.filter(function (d) {
+      if (d.registered) return false; // already handled by products
+      if (activeLoc && d.locality !== activeLoc) return false;
+
+      var shopMatch = (d.shop || '').toLowerCase().includes(q);
+      var locMatch = (d.locality || '').toLowerCase().includes(q);
+
+      var catMatch = matchedCategory ? d.category === matchedCategory : false;
+      var locHintMatch = matchedLocality ? d.locality === matchedLocality : false;
+
+      if (shopMatch || locMatch) return true;
+      if (matchedCategory && matchedLocality && catMatch && locHintMatch) return true;
+      if (matchedCategory && catMatch) return true;
+      if (matchedLocality && locHintMatch) return true;
+      return false;
+    });
+
+    // ── Try Google Places API for real-time shop discovery ──
+    var googlePlaces = await API.fetchPlaces(q);
+
+    // Filter out Google results that are already in our products or directory
+    var knownShops = {};
+    matchedProducts.forEach(function (p) { knownShops[SELLERS[p.seller].shop.toLowerCase()] = true; });
+    matchedDirectory.forEach(function (d) { knownShops[d.shop.toLowerCase()] = true; });
+
+    var newGooglePlaces = [];
+    googlePlaces.forEach(function (gp) {
+      var name = gp.shop.toLowerCase();
+      if (!knownShops[name] && !knownShops[name.replace(/[^a-z0-9]/g, '')]) {
+        // Check if any known shop is a substring of this Google name or vice versa
+        var isDuplicate = false;
+        for (var ks in knownShops) {
+          if (name.indexOf(ks) !== -1 || ks.indexOf(name) !== -1) { isDuplicate = true; break; }
+        }
+        if (!isDuplicate) {
+          // Apply location chip filter to Google results too
+          if (!activeLoc || (gp.locality && gp.locality.toLowerCase().indexOf(activeLoc.toLowerCase()) !== -1)) {
+            newGooglePlaces.push(gp);
+          }
+        }
+      }
+    });
+
+    // Deduplicate: if a Google place matches on shop name + category, keep our version
+    var mergedDirectory = matchedDirectory.concat(newGooglePlaces);
+
+    state.productFeed = matchedProducts;
+    state._searchResults = { products: matchedProducts, directory: mergedDirectory };
+
+    renderFeed();
   });
 }
