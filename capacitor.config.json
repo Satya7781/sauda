@@ -1,0 +1,6 @@
+{
+  "appId": "com.sauda.app",
+  "appName": "Sauda",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
