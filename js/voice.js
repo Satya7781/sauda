@@ -26,8 +26,7 @@ function initVoice() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     recognition = new SR();
-    var speechLangs = { hi:'hi-IN', en:'en-IN', mr:'mr-IN', bn:'bn-IN', ta:'ta-IN', te:'te-IN', gu:'gu-IN', pa:'pa-IN', kn:'kn-IN', ml:'ml-IN', or:'or-IN', ur:'ur-IN', as:'as-IN', ks:'ks-IN', kok:'kok-IN', mai:'mai-IN', sd:'sd-IN', ne:'ne-IN', sa:'sa-IN', sat:'sat-IN', brx:'brx-IN', doi:'doi-IN' };
-    recognition.lang = speechLangs[state.userLang] || 'hi-IN';
+    recognition.lang = state.userLang === 'en' ? 'en-IN' : 'hi-IN';
     recognition.interimResults = true;
     recognition.continuous = false;
     recognition.maxAlternatives = 1;
