@@ -33,10 +33,6 @@ def startup_event():
     from seed import seed_data
     seed_data()
 
-@app.get("/")
-def read_root():
-    return {"message": "Sauda API is running"}
-
 # ── CATEGORIES ──
 @app.get("/api/categories", response_model=List[dict])
 def get_categories(db: Session = Depends(get_db)):

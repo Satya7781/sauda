@@ -2,20 +2,7 @@ services:
   - type: web
     name: sauda-backend
     env: docker
-    repo: https://github.com/Satya7781/sauda
-    branch: main
-    dockerfilePath: .
-    instanceType: starter
-databases:
-  - name: sauda-db
-    databaseName: sauda
-    postgresVersion: "15"
-services:
-  - type: web
-    name: sauda-api
-    env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    dockerfilePath: Dockerfile
     envVars:
       - key: ENV
         value: production
@@ -23,3 +10,9 @@ services:
         value: sqlite:///sauda.db
       - key: ALLOWED_ORIGINS
         value: "*"
+
+  - type: web
+    name: sauda-frontend
+    env: static
+    buildCommand: "npm install && npm run build:www"
+    staticPublishPath: "./www"

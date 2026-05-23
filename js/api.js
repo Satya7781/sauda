@@ -5,9 +5,11 @@
 // Frontend on :8080, backend on :8000 — detect and proxy correctly
 var locPort = window.location.port;
 var locHost = window.location.hostname;
-var isLocal = locHost === 'localhost' || locHost === '127.0.0.1';
-// If we're on any local dev port (3000, 8080, etc.), point API at :8000
-var API_BASE_URL = isLocal ? ('http://' + locHost + ':8000/api') : '/api';
+var isLocalDev = (locHost === 'localhost' || locHost === '127.0.0.1') && (locPort === '8080' || locPort === '8000' || locPort === '3000');
+var isRender = locHost.includes('onrender.com');
+
+// If local DEV server, use local API. Otherwise (Capacitor/APK or Production), use Render URL.
+var API_BASE_URL = isLocalDev ? ('http://' + locHost + ':8000/api') : 'https://sauda-backend.onrender.com/api';
 
 const API = {
   async fetchCategories() {
