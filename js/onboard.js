@@ -101,6 +101,8 @@ function verifyAadhaar() {
 }
 
 function completeOnboarding() {
+  var shopVal = document.getElementById('inp-shop').value.trim();
+  if (shopVal) state.userShop = shopVal;
   saveState();
   document.querySelectorAll('.onboard').forEach(function (o) { o.classList.remove('active'); });
   document.getElementById('main-app').style.display = 'flex';

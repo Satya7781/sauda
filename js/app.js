@@ -27,6 +27,7 @@ async function initMainApp() {
 
   document.getElementById('feed-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('desktop-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('dashboard-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('desktop-name').textContent = name;
   document.getElementById('profile-listings-count').textContent = role === 'seller' ? getSellerProducts().length : '0';
   document.getElementById('profile-orders-count').textContent = (state.orders || []).length;
@@ -44,9 +45,9 @@ async function initMainApp() {
   // Seed initial notifications
   if (!state.notifications || state.notifications.length === 0) {
     state.notifications = [
-      { msg: 'Priya ne Banarasi Silk Saree ka deal kiya', type: 'order', time: Date.now() - 3600000 },
-      { msg: 'Naya seller: Rajesh Mobile Corner aaya', type: 'info', time: Date.now() - 7200000 },
-      { msg: 'Group Deal: 3 log milke 20% sasta!', type: 'info', time: Date.now() - 86400000 }
+      { msg: __('notif_order_deal'), type: 'order', time: Date.now() - 3600000 },
+      { msg: __('notif_new_seller'), type: 'info', time: Date.now() - 7200000 },
+      { msg: __('notif_group_deal'), type: 'info', time: Date.now() - 86400000 }
     ];
   }
   updateNotificationBadge();

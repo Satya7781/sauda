@@ -34,6 +34,28 @@ function renderLocationChips() {
   });
 }
 
+function renderFilterChips() {
+  var c = document.getElementById('filter-chips');
+  if (!c) return;
+  var cats = state.categories.length ? state.categories : (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []);
+  c.innerHTML = '<button class="filter-chip active" data-filter="all">'+__('sabhi')+'</button>' +
+    cats.map(function (cat) {
+      var count = state.productFeed.filter(function (p) { return p.category === cat.id; }).length;
+      return '<button class="filter-chip" data-filter="' + cat.id + '" style="color:' + cat.color + '">' +
+        '<i class="fa-solid ' + cat.icon + ' mr-1.5" style="font-size:10px"></i>' +
+        getCategoryName(cat) +
+        (count ? ' <span class="text-[9px] opacity-60">(' + count + ')</span>' : '') +
+        '</button>';
+    }).join('');
+  c.addEventListener('click', function (e) {
+    var chip = e.target.closest('.filter-chip');
+    if (!chip) return;
+    state.activeFilter = chip.dataset.filter;
+    c.querySelectorAll('.filter-chip').forEach(function (x) { x.classList.toggle('active', x === chip); });
+    renderFeed();
+  });
+}
+
 // Category → keyword mapping for search parsing
 var SEARCH_CATEGORY_KEYWORDS = {
   clothes: ['kapde', 'clothes', 'cloth', 'garment', 'saree', 'kurta', 'dress', 'fashion', 'kapda', 'kapde'],
@@ -122,11 +144,11 @@ function renderFeed() {
           '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
           '<div>' +
           '<div class="flex items-center justify-between mb-1">' +
-          '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : p.category) + '</span>' +
+      '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? getCategoryName(cat) : p.category) + '</span>' +
           (seller.isLive ? '<div class="flex items-center gap-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[9px] font-bold" style="color:var(--trust)">'+__('live')+'</span></div>' : '') +
           '</div>' +
           '<h4 class="text-sm font-bold leading-tight truncate">' + p.title + '</h4>' +
-          '<p class="text-[10px] truncate" style="color:var(--text2)">' + p.titleHi + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
+      '<p class="text-[10px] truncate" style="color:var(--text2)">' + getProductTitle(p) + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
           '</div>' +
           '<div class="flex items-center justify-between mt-2">' +
           '<span class="text-base font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
@@ -221,12 +243,12 @@ function openGroupDeal() {
     '<div class="flex-1"><p class="text-sm font-medium">Amit Verma</p><p class="text-[10px]" style="color:var(--text3)">Colleague — 3 saal</p></div>' +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-check text-[7px]"></i>Joined</div></div>' +
     (joined ? '<div class="s-card p-3 flex items-center gap-3">' +
-    '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:var(--accent);color:#fff">' + (state.userName || 'Aap').charAt(0) + '</div>' +
-    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || 'Aap') + '</p><p class="text-[10px]" style="color:var(--text3)">'+__('you')+'</p></div>' +
+    '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:var(--accent);color:#fff">' + (state.userName || __('you')).charAt(0) + '</div>' +
+    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || __('you')) + '</p><p class="text-[10px]" style="color:var(--text3)">'+__('you')+'</p></div>' +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-check text-[7px]"></i>Joined</div></div>'
     : '<div class="s-card p-3 flex items-center gap-3" style="border:1.5px dashed var(--accent);background:var(--accent-light)">' +
-    '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:var(--accent);color:#fff">' + (state.userName || 'Aap').charAt(0) + '</div>' +
-    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || 'Aap') + ' (' + __('you') + ')</p><p class="text-[10px]" style="color:var(--accent)">'+__('tap_to_join_deal')+'</p></div></div>') +
+    '<div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold" style="background:var(--accent);color:#fff">' + (state.userName || __('you')).charAt(0) + '</div>' +
+    '<div class="flex-1"><p class="text-sm font-medium">' + (state.userName || __('you')) + ' (' + __('you') + ')</p><p class="text-[10px]" style="color:var(--accent)">'+__('tap_to_join_deal')+'</p></div></div>') +
     '</div>' +
     (joined ?
     '<div class="p-4 rounded-2xl text-center" style="background:var(--trust-light);border:1px solid rgba(13,148,136,0.15)">' +
@@ -241,10 +263,10 @@ function openGroupDeal() {
 
 function joinGroupDeal() {
   state.groupDealJoined = true;
-  addNotification('Group Deal active! Banarasi Silk Saree — 20% off', 'order');
+  addNotification(__('group_deal_joined_notif'), 'order');
   closeGroupDealModal();
   openGroupDeal();
-  showToast('Group Deal mein shamil ho gaye! 20% sasta!');
+  showToast(__('group_deal_joined_toast'));
 }
 
 function closeGroupDealModal() {
@@ -298,7 +320,13 @@ function setupFeedSearch() {
     var matchedProducts = productSource.filter(function (p) {
       var seller = SELLERS[p.seller];
       if (!seller) return false;
-      if (activeLoc && seller.locality !== activeLoc) return false;
+
+      // Show items from active location chip OR location mentioned in query
+      var matchesActiveLoc = activeLoc ? seller.locality === activeLoc : false;
+      var matchesQueryLoc = matchedLocality ? seller.locality === matchedLocality : false;
+      if (activeLoc || matchedLocality) {
+        if (!matchesActiveLoc && !matchesQueryLoc) return false;
+      }
 
       var matchesTitle = p.title.toLowerCase().includes(q) ||
         (p.titleHi && p.titleHi.toLowerCase().includes(q));
@@ -326,7 +354,13 @@ function setupFeedSearch() {
     // Search directory for unregistered shops matching the query
     var matchedDirectory = directorySource.filter(function (d) {
       if (d.registered) return false; // already handled by products
-      if (activeLoc && d.locality !== activeLoc) return false;
+
+      // Show shops from active location chip OR location mentioned in query
+      var matchesActiveLocDir = activeLoc ? d.locality === activeLoc : false;
+      var matchesQueryLocDir = matchedLocality ? d.locality === matchedLocality : false;
+      if (activeLoc || matchedLocality) {
+        if (!matchesActiveLocDir && !matchesQueryLocDir) return false;
+      }
 
       var shopMatch = (d.shop || '').toLowerCase().includes(q);
       var locMatch = (d.locality || '').toLowerCase().includes(q);

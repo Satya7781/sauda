@@ -24,6 +24,7 @@ var state = {
   notifications: [],
   groupDealJoined: false,
   sellerId: 'neeta',
+  userShop: '',
   userLang: 'hi',
 };
 
@@ -33,6 +34,7 @@ function saveState() {
   localStorage.setItem('sauda_role', state.userRole || 'buyer');
   localStorage.setItem('sauda_location', state.userLocation || 'Lalghati, Bhopal');
   localStorage.setItem('sauda_aadhaar', state.aadhaarVerified ? '1' : '0');
+  if (state.userShop) localStorage.setItem('sauda_shop', state.userShop);
 }
 
 async function loadState() {
@@ -40,6 +42,7 @@ async function loadState() {
   state.userRole = localStorage.getItem('sauda_role') || 'buyer';
   state.userLocation = localStorage.getItem('sauda_location') || 'Lalghati, Bhopal';
   state.aadhaarVerified = localStorage.getItem('sauda_aadhaar') === '1';
+  state.userShop = localStorage.getItem('sauda_shop') || '';
   state.userLang = localStorage.getItem('sauda_lang') || 'hi';
 
   // Fetch data from backend

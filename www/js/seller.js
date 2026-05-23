@@ -102,7 +102,33 @@ function renderSellerFeed() {
 }
 
 // ============================================================
-// QUICK ADD ITEM MODAL
+// SELLER SEARCH
+// ============================================================
+
+document.getElementById('seller-search-input').addEventListener('input', function () {
+  var q = this.value.trim().toLowerCase();
+  var c = document.getElementById('seller-dashboard-content');
+  if (!q) {
+    renderSellerDashboard();
+    return;
+  }
+  var cats = c.querySelectorAll('.seller-stat-card, .quick-add-btn, .seller-feed-item');
+  if (cats.length) {
+    cats.forEach(function (el) {
+      var txt = el.textContent.toLowerCase();
+      el.style.display = txt.indexOf(q) !== -1 ? '' : 'none';
+    });
+  } else {
+    var items = c.querySelectorAll('.s-card');
+    items.forEach(function (el) {
+      var txt = el.textContent.toLowerCase();
+      el.style.display = txt.indexOf(q) !== -1 ? '' : 'none';
+    });
+  }
+});
+
+// ============================================================
+// QUICK ADD (from Seller Dashboard)
 // ============================================================
 
 function openQuickManualModal() {

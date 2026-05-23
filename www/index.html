@@ -767,11 +767,7 @@
     if (state.currentView === 'categories') { renderCategoryGrid(); if (state.selectedCategory) selectCategory(state.selectedCategory); }
     if (state.currentView === 'voice') initVoiceSection();
     renderVouchGraph();
-    renderNotifications();
-    renderOrdersModal();
-    renderSavedSellersModal();
     renderCategoryCards();
-    renderFilterChips();
   }
   function renderOnboardLangChips() {
     var container = document.getElementById('onboard-lang-chips');

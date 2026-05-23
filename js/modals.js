@@ -61,7 +61,7 @@ function openProductDetail(pid) {
     '</div>' +
 
     '<div class="flex items-center justify-between p-3 rounded-xl mb-4" style="background:var(--bg2);border:1px solid var(--card-border)">' +
-    '<span class="text-xs font-bold" style="color:var(--text2)">Quantity</span>' +
+    '<span class="text-xs font-bold" style="color:var(--text2)">'+__('quantity')+'</span>' +
     '<div class="flex items-center gap-3">' +
     '<button class="qty-btn" onclick="changeQty(' + p.id + ',-1)" style="width:32px;height:32px;border-radius:10px;border:none;background:var(--card);cursor:pointer;font-size:16px;font-weight:bold;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1">−</button>' +
     '<span class="text-base font-extrabold" style="min-width:24px;text-align:center;color:var(--text);font-family:\'Space Grotesk\',sans-serif" id="qty-display-' + p.id + '">1</span>' +
@@ -70,7 +70,7 @@ function openProductDetail(pid) {
     '</div>' +
 
     '<div class="flex items-center justify-between mb-4">' +
-    '<span class="text-xs font-bold" style="color:var(--text2)">Total</span>' +
+    '<span class="text-xs font-bold" style="color:var(--text2)">'+__('total')+'</span>' +
     '<span class="text-xl font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif" id="total-display-' + p.id + '">₹' + p.price + '</span>' +
     '</div>' +
 
@@ -115,11 +115,11 @@ function openSellerModal(sid) {
     '<div class="s-card p-4 mb-3">' +
     '<div class="flex items-center gap-4">' +
     '<div class="trust-ring"><svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" fill="none" stroke="#EDE5D5" stroke-width="5"/><circle cx="36" cy="36" r="30" fill="none" stroke="var(--trust)" stroke-width="5" stroke-dasharray="' + (2 * Math.PI * 30) + '" stroke-dashoffset="' + (2 * Math.PI * 30 * (1 - ts / 100)) + '" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/></svg><div class="score">' + Math.round(ts) + '</div></div>' +
-    '<div class="flex-1"><p class="text-sm font-bold mb-1.5">Trust Score</p><div class="flex flex-wrap gap-1.5">' +
-    (s.aadhaarVerified ? '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-shield-halved text-[7px]"></i>Aadhaar</div>' : '') +
+    '<div class="flex-1"><p class="text-sm font-bold mb-1.5">'+__('trust_score')+'</p><div class="flex flex-wrap gap-1.5">' +
+    (s.aadhaarVerified ? '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-shield-halved text-[7px]"></i>'+__('aadhaar_tag')+'</div>' : '') +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-clock text-[7px]"></i>' + s.yearsActive + __('saal') + '</div>' +
     '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-people-group text-[7px]"></i>' + s.trustedNeighbors + __('neighbors') + '</div>' +
-    (s.isLive ? '<div class="vouch-tag text-[9px]" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid fa-circle text-[5px]"></i>Live Now</div>' : '') +
+    (s.isLive ? '<div class="vouch-tag text-[9px]" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid fa-circle text-[5px]"></i>'+__('live')+'</div>' : '') +
     '</div></div></div></div>' +
 
     '<div class="p-4 rounded-2xl mb-3" style="background:var(--trust-light);border:1.5px solid rgba(13,148,136,0.12)">' +
@@ -163,7 +163,7 @@ function animateTrustPath(sid) {
   var s = SELLERS[sid], v = USERS[s.vouchedBy];
 
   var nodes = [
-    { x: W * 0.15, y: H * 0.5, label: 'Aap', sub: 'You', color: '#B8680F', r: 22 },
+    { x: W * 0.15, y: H * 0.5, label: __('you'), sub: __('you'), color: '#B8680F', r: 22 },
     { x: W * 0.5, y: H * 0.5, label: v.name.split(' ')[0], sub: v.relation.split('—')[0].trim(), color: v.color, r: 20 },
     { x: W * 0.85, y: H * 0.5, label: s.name.split(' ')[0], sub: s.shop.length > 14 ? s.shop.slice(0, 14) + '...' : s.shop, color: s.color, r: 20 },
   ];

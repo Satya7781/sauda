@@ -26,7 +26,8 @@ function initVoice() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     recognition = new SR();
-    recognition.lang = 'hi-IN';
+    var speechLangs = { hi:'hi-IN', en:'en-IN', mr:'mr-IN', bn:'bn-IN', ta:'ta-IN', te:'te-IN', gu:'gu-IN', pa:'pa-IN', kn:'kn-IN', ml:'ml-IN', or:'or-IN', ur:'ur-IN', as:'as-IN', ks:'ks-IN', kok:'kok-IN', mai:'mai-IN', sd:'sd-IN', ne:'ne-IN', sa:'sa-IN', sat:'sat-IN', brx:'brx-IN', doi:'doi-IN' };
+    recognition.lang = speechLangs[state.userLang] || 'hi-IN';
     recognition.interimResults = true;
     recognition.continuous = false;
     recognition.maxAlternatives = 1;
@@ -127,7 +128,7 @@ function showGeneratedListing(t) {
   document.getElementById('gen-category').style.color = (CATEGORIES.find(function (c) { return c.id === ext.category; }) || { color: 'var(--accent)' }).color;
   document.getElementById('gen-title').textContent = ext.title + (ext.titleHi ? ' (' + ext.titleHi + ')' : '');
   document.getElementById('gen-price').textContent = '₹' + ext.price + ' / ' + ext.unit;
-  document.getElementById('gen-stock').textContent = ext.stock + ' available';
+  document.getElementById('gen-stock').textContent = ext.stock + __('available');
   document.getElementById('generated-listing').style.display = 'block';
   document.querySelectorAll('.listing-field').forEach(function (f) {
     var d = parseInt(f.dataset.delay) || 0;
@@ -306,7 +307,7 @@ function showVoiceSearchResults(products, query) {
       var catObj = typeof CATEGORIES !== 'undefined' ? CATEGORIES.find(function (c) { return c.id === p.category; }) : null;
       var icon = catObj ? catObj.icon : 'fa-solid fa-box';
       var color = catObj ? catObj.color : 'var(--accent)';
-      return '<div class="s-card p-4 mb-3 flex items-center gap-4" onclick="showProductDetail(\'' + p.id + '\')">' +
+      return '<div class="s-card p-4 mb-3 flex items-center gap-4" onclick="openProductDetail(\'' + p.id + '\')">' +
         '<div class="w-14 h-14 rounded-xl flex items-center justify-center text-lg" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid ' + icon + '"></i></div>' +
         '<div class="flex-1 min-w-0"><p class="text-sm font-bold truncate">' + p.title + '</p>' +
         '<p class="text-xs" style="color:var(--text3)">' + sellerName + '</p></div>' +
