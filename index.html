@@ -37,8 +37,9 @@
   <nav class="desktop-links">
     <div class="desktop-link active" data-view="feed" data-show="buyer" data-i18n="marketplace">Marketplace</div>
           <div class="desktop-link" data-view="seller-dashboard" data-show="seller" data-i18n="meri_dukaan">Meri Dukaan</div>
-          <div class="desktop-link" data-view="categories" data-i18n="categories_nav">Categories</div>
-          <div class="desktop-link" data-view="voice" data-i18n="bol_ke_becho">Bol ke Becho</div>
+    <div class="desktop-link" data-view="categories" data-i18n="categories_nav">Categories</div>
+    <div class="desktop-link" data-view="voice" data-show="buyer" data-i18n="bol_ke_kharido">Bol ke Kharido</div>
+    <div class="desktop-link" data-view="voice" data-show="seller" data-i18n="bol_ke_becho">Bol ke Becho</div>
   </nav>
     <div class="desktop-profile" onclick="navigateTo('profile')">
       <div class="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold mr-2" id="desktop-avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff">A</div>
@@ -68,7 +69,12 @@
     <h1 class="text-3xl font-extrabold mb-2" style="color:var(--text)">Sauda</h1>
     <p class="text-base font-medium mb-1" style="color:var(--accent)" data-i18n="trust_tagline">Bharose ka Sauda</p>
     <p class="text-sm leading-relaxed mt-3" style="color:var(--text2)" data-i18n="tagline">Apne mohalle ke trusted sellers,<br>apni aawaz se connect karo.</p>
-    <div class="flex items-center gap-2 mt-6 px-4 py-2.5 rounded-full" style="background:var(--trust-light)">
+    <div class="w-full mt-5 px-2">
+      <p class="text-xs font-bold mb-3" style="color:var(--text3)" data-i18n="choose_language">Apni bhasha chunein</p>
+      <div class="flex flex-wrap justify-center gap-2" id="onboard-lang-chips"></div>
+      <button class="text-[10px] mt-2 font-medium underline mx-auto block" style="color:var(--accent)" onclick="toggleLangMenu()" data-i18n="more_languages">Aur bhashayein</button>
+    </div>
+    <div class="flex items-center gap-2 mt-4 px-4 py-2.5 rounded-full" style="background:var(--trust-light)">
       <i class="fa-solid fa-shield-halved text-xs" style="color:var(--trust)"></i>
       <span class="text-xs font-bold" style="color:var(--trust)" data-i18n="vouchchain_sub">Trust is a relationship, not a rating</span>
     </div>
@@ -324,102 +330,91 @@
 
   <!-- ===== VOICE VIEW ===== -->
   <div id="view-voice" class="view">
-    <header class="px-5 pt-5 pb-2">
-      <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Naya Listing Banao</h2>
-      <p class="text-xs" style="color:var(--text2)">Bol ke ya likhakar</p>
-      <!-- Mode Selector -->
-      <div class="flex gap-2 mt-4">
-        <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--accent-light);color:var(--accent);border:2px solid var(--accent);cursor:pointer" id="mode-voice-btn" onclick="switchMode('voice')"><i class="fa-solid fa-microphone mr-1"></i>Bol ke Becho</button>
-        <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--card);color:var(--text2);border:2px solid transparent;cursor:pointer" id="mode-manual-btn" onclick="switchMode('manual')"><i class="fa-solid fa-keyboard mr-1"></i>Likhakar</button>
-      </div>
-    </header>
-    <!-- VOICE MODE -->
-    <div id="voice-mode" class="flex-1 flex flex-col" style="display:flex">
-      <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
-        <canvas id="waveform-canvas" width="300" height="300"></canvas>
-        <button class="mic-btn" id="mic-btn" aria-label="Voice record"><i class="fa-solid fa-microphone"></i></button>
-        <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="mic-hint">Mic tap karein — Hindi mein bolein</p>
-      </div>
-      <div class="px-5 mb-2" id="transcription-area" style="display:none">
-        <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
-          <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
-          <p class="text-sm leading-relaxed" id="transcription-text"></p>
+    <!-- ===== SELLER VOICE (Listing Creation) ===== -->
+    <div id="voice-seller-section">
+      <header class="px-5 pt-5 pb-2">
+        <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Naya Listing Banao</h2>
+        <p class="text-xs" style="color:var(--text2)">Bol ke ya likhakar</p>
+        <div class="flex gap-2 mt-4">
+          <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--accent-light);color:var(--accent);border:2px solid var(--accent);cursor:pointer" id="mode-voice-btn" onclick="switchMode('voice')"><i class="fa-solid fa-microphone mr-1"></i>Bol ke Becho</button>
+          <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--card);color:var(--text2);border:2px solid transparent;cursor:pointer" id="mode-manual-btn" onclick="switchMode('manual')"><i class="fa-solid fa-keyboard mr-1"></i>Likhakar</button>
+        </div>
+      </header>
+      <div id="voice-mode" class="flex-1 flex flex-col" style="display:flex">
+        <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
+          <canvas id="waveform-canvas" width="300" height="300"></canvas>
+          <button class="mic-btn" id="mic-btn" aria-label="Voice record"><i class="fa-solid fa-microphone"></i></button>
+          <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="mic-hint">Mic tap karein — Hindi mein bolein</p>
+        </div>
+        <div class="px-5 mb-2" id="transcription-area" style="display:none">
+          <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
+            <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
+            <p class="text-sm leading-relaxed" id="transcription-text"></p>
+          </div>
+        </div>
+        <div class="px-5 mb-2" id="ai-status" style="display:none">
+          <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
+            <p class="text-sm font-semibold" style="color:var(--accent)" id="ai-status-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+          </div>
+        </div>
+        <div class="px-5 pb-4" id="generated-listing" style="display:none">
+          <div class="s-card p-5">
+            <div class="listing-field" data-delay="0"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold mb-3" style="background:var(--accent-light);color:var(--accent)" id="gen-category">—</span></div>
+            <div class="listing-field" data-delay="100"><h3 class="text-lg font-bold mb-1" id="gen-title">—</h3></div>
+            <div class="listing-field" data-delay="200"><p class="text-2xl font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="gen-price">—</p></div>
+            <div class="listing-field" data-delay="300"><div class="flex items-center gap-2 mt-3 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="gen-stock">—</span></div></div>
+            <div class="listing-field" data-delay="400"><button class="w-full mt-4 py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-btn">Listing Publish Karein</button></div>
+          </div>
+        </div>
+        <div class="px-5 pb-5 text-center">
+          <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="demo-voice-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Hindi Voice Simulation</button>
         </div>
       </div>
-      <div class="px-5 mb-2" id="ai-status" style="display:none">
-        <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
-          <p class="text-sm font-semibold" style="color:var(--accent)" id="ai-status-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+      <div id="manual-mode" class="flex-1 flex flex-col" style="display:none">
+        <div class="scroll-area flex-1 px-5 pt-4 pb-4">
+          <div class="space-y-4">
+            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (TITLE)</label><input type="text" class="input-field" id="manual-title" placeholder="e.g. Banarasi Silk Saree" style="width:100%"></div>
+            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (HINDI)</label><input type="text" class="input-field" id="manual-title-hi" placeholder="e.g. Banarasi Saree" style="width:100%"></div>
+            <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">CATEGORY</label><select class="input-field" id="manual-category" style="width:100%"><option value="">Select Category</option><option value="clothes">Clothes</option><option value="sabzi">Sabzi (Vegetables)</option><option value="fruit">Fruit</option><option value="dairy">Dairy</option><option value="kirana">Kirana</option><option value="electronics">Electronics</option><option value="beauty">Beauty</option><option value="services">Services</option></select></div>
+            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">PRICE (₹)</label><input type="number" class="input-field" id="manual-price" placeholder="e.g. 500" style="width:100%"></div>
+            <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">UNIT</label><select class="input-field" id="manual-unit" style="width:100%"><option value="pcs">Piece(s)</option><option value="kg">Kilogram (kg)</option><option value="litre">Litre</option><option value="dozen">Dozen</option><option value="set">Set</option><option value="gaddi">Bundle</option><option value="session">Session</option></select></div>
+            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">STOCK AVAILABLE</label><input type="number" class="input-field" id="manual-stock" placeholder="e.g. 10" style="width:100%" value="10"></div>
+          </div>
         </div>
-      </div>
-      <div class="px-5 pb-4" id="generated-listing" style="display:none">
-        <div class="s-card p-5">
-          <div class="listing-field" data-delay="0"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold mb-3" style="background:var(--accent-light);color:var(--accent)" id="gen-category">—</span></div>
-          <div class="listing-field" data-delay="100"><h3 class="text-lg font-bold mb-1" id="gen-title">—</h3></div>
-          <div class="listing-field" data-delay="200"><p class="text-2xl font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="gen-price">—</p></div>
-          <div class="listing-field" data-delay="300"><div class="flex items-center gap-2 mt-3 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="gen-stock">—</span></div></div>
-          <div class="listing-field" data-delay="400"><button class="w-full mt-4 py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-btn">Listing Publish Karein</button></div>
-        </div>
-      </div>
-      <div class="px-5 pb-5 text-center">
-        <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="demo-voice-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Hindi Voice Simulation</button>
+        <div class="px-5 pb-5"><button class="w-full py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-manual-btn">Listing Publish Karein</button></div>
       </div>
     </div>
-    <!-- MANUAL MODE -->
-    <div id="manual-mode" class="flex-1 flex flex-col" style="display:none">
-      <div class="scroll-area flex-1 px-5 pt-4 pb-4">
-        <div class="space-y-4">
-          <!-- Item Title -->
-          <div>
-            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (TITLE)</label>
-            <input type="text" class="input-field" id="manual-title" placeholder="e.g. Banarasi Silk Saree" style="width:100%">
-          </div>
-          <!-- Item Title Hindi -->
-          <div>
-            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (HINDI)</label>
-            <input type="text" class="input-field" id="manual-title-hi" placeholder="e.g. Banarasi Saree" style="width:100%">
-          </div>
-          <!-- Category -->
-          <div>
-            <label class="text-xs font-bold block mb-2" style="color:var(--text2)">CATEGORY</label>
-            <select class="input-field" id="manual-category" style="width:100%">
-              <option value="">Select Category</option>
-              <option value="clothes">Clothes</option>
-              <option value="sabzi">Sabzi (Vegetables)</option>
-              <option value="fruit">Fruit</option>
-              <option value="dairy">Dairy</option>
-              <option value="kirana">Kirana</option>
-              <option value="electronics">Electronics</option>
-              <option value="beauty">Beauty</option>
-              <option value="services">Services</option>
-            </select>
-          </div>
-          <!-- Price -->
-          <div>
-            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">PRICE (₹)</label>
-            <input type="number" class="input-field" id="manual-price" placeholder="e.g. 500" style="width:100%">
-          </div>
-          <!-- Unit -->
-          <div>
-            <label class="text-xs font-bold block mb-2" style="color:var(--text2)">UNIT</label>
-            <select class="input-field" id="manual-unit" style="width:100%">
-              <option value="pcs">Piece(s)</option>
-              <option value="kg">Kilogram (kg)</option>
-              <option value="litre">Litre</option>
-              <option value="dozen">Dozen</option>
-              <option value="set">Set</option>
-              <option value="gaddi">Bundle</option>
-              <option value="session">Session</option>
-            </select>
-          </div>
-          <!-- Stock -->
-          <div>
-            <label class="text-xs font-bold block mb-1" style="color:var(--text2)">STOCK AVAILABLE</label>
-            <input type="number" class="input-field" id="manual-stock" placeholder="e.g. 10" style="width:100%" value="10">
+
+    <!-- ===== BUYER VOICE (Voice Search / Bol ke Kharido) ===== -->
+    <div id="voice-buyer-section" style="display:none">
+      <header class="px-5 pt-5 pb-2">
+        <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;" data-i18n="bol_ke_kharido">Bol ke Kharido</h2>
+        <p class="text-xs" style="color:var(--text2)" data-i18n="voice_buy_subtitle">Jo chahiye, boliye — hum dhundh denge</p>
+      </header>
+      <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
+          <canvas id="buyer-waveform" width="300" height="300"></canvas>
+          <button class="mic-btn" id="buyer-mic-btn"><i class="fa-solid fa-microphone"></i></button>
+          <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="buyer-mic-hint" data-i18n="mic_hint">Mic tap karein — Hindi mein bolein</p>
+        </div>
+        <div class="px-5 mb-2" id="buyer-transcription-area" style="display:none">
+          <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
+            <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
+            <p class="text-sm leading-relaxed" id="buyer-transcription-text"></p>
           </div>
         </div>
-      </div>
-      <div class="px-5 pb-5">
-        <button class="w-full py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-manual-btn">Listing Publish Karein</button>
+        <div class="px-5 mb-2" id="buyer-ai-status" style="display:none">
+          <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
+            <p class="text-sm font-semibold" style="color:var(--accent)" id="buyer-ai-status-text" data-i18n="searching_products">Dhundh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+          </div>
+        </div>
+        <div class="px-5 pb-4" id="buyer-search-results" style="display:none">
+          <p class="text-xs font-bold mb-3" style="color:var(--text2)" data-i18n="search_results">Search Results</p>
+          <div id="buyer-results-list"></div>
+        </div>
+        <div class="px-5 pb-5 text-center">
+          <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="buyer-demo-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Search by Voice</button>
+        </div>
       </div>
     </div>
   </div>
@@ -664,9 +659,10 @@
   <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
     <div class="nav-item active" data-view="feed" data-show="buyer" tabindex="0" role="button"><i class="fa-solid fa-store"></i><span>Mohalla</span></div>
     <div class="nav-item" data-view="seller-dashboard" data-show="seller" tabindex="0" role="button"><i class="fa-solid fa-shop"></i><span>Dukaan</span></div>
-    <div class="nav-item" data-view="categories" tabindex="0" role="button"><i class="fa-solid fa-gem"></i><span>Categories</span></div>
-    <div class="nav-item" data-view="voice" tabindex="0" role="button"><i class="fa-solid fa-microphone"></i><span>Bol</span></div>
-    <div class="nav-item" data-view="profile" tabindex="0" role="button"><i class="fa-solid fa-user"></i><span>Profile</span></div>
+  <div class="nav-item" data-view="categories" tabindex="0" role="button"><i class="fa-solid fa-gem"></i><span>Categories</span></div>
+  <div class="nav-item" data-view="voice" data-show="buyer" tabindex="0" role="button"><i class="fa-solid fa-microphone"></i><span>Bol ke Kharido</span></div>
+  <div class="nav-item" data-view="voice" data-show="seller" tabindex="0" role="button"><i class="fa-solid fa-microphone"></i><span>Bol ke Becho</span></div>
+  <div class="nav-item" data-view="profile" tabindex="0" role="button"><i class="fa-solid fa-user"></i><span>Profile</span></div>
   </nav>
 </div>
 
@@ -763,18 +759,39 @@
     localStorage.setItem('sauda_lang', code);
     document.getElementById('lang-menu').style.display = 'none';
     applyLanguage();
+    renderOnboardLangChips();
     renderProfile();
     renderLocationChips();
     if (state.currentView === 'feed') renderFeed();
     if (state.currentView === 'seller-dashboard') renderSellerDashboard();
     if (state.currentView === 'categories') { renderCategoryGrid(); if (state.selectedCategory) selectCategory(state.selectedCategory); }
-    if (state.currentView === 'voice') initVoice();
+    if (state.currentView === 'voice') initVoiceSection();
     renderVouchGraph();
     renderNotifications();
     renderOrdersModal();
     renderSavedSellersModal();
     renderCategoryCards();
     renderFilterChips();
+  }
+  function renderOnboardLangChips() {
+    var container = document.getElementById('onboard-lang-chips');
+    if (!container) return;
+    var popular = ['hi','en','mr','bn','ta','te','gu','pa','kn','ml'];
+    container.innerHTML = popular.map(function(code) {
+      var lang = LANGUAGES.find(function(l) { return l.code === code; });
+      if (!lang) return '';
+      var active = (state.userLang || 'hi') === code;
+      return '<div class="lang-chip'+(active?' selected':'')+'" onclick="selectOnboardLang(\''+code+'\')">'+lang.native+'</div>';
+    }).join('');
+  }
+  function selectOnboardLang(code) {
+    setLanguage(code);
+    var chips = document.getElementById('onboard-lang-chips');
+    if (chips) [].forEach.call(chips.children, function(c) { c.classList.remove('selected'); });
+    var all = document.querySelectorAll('#onboard-lang-chips .lang-chip');
+    [].forEach.call(all, function(c) {
+      if (c.getAttribute('onclick').indexOf("'"+code+"'") !== -1) c.classList.add('selected');
+    });
   }
   function applyLanguage() {
     var code = state.userLang || 'hi';
@@ -788,6 +805,7 @@
       el.placeholder = __(key);
     });
   }
+  renderOnboardLangChips();
   </script>
 </body>
 </html>

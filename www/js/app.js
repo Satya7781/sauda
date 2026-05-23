@@ -39,7 +39,7 @@ async function initMainApp() {
   renderLocationChips();
   renderFeed();
   if (role === 'seller') renderSellerDashboard();
-  initVoice();
+  initVoiceSection();
 
   // Seed initial notifications
   if (!state.notifications || state.notifications.length === 0) {

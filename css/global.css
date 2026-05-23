@@ -63,6 +63,9 @@ h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 .cat-chip{padding:10px 16px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--card-border);color:var(--text2);background:var(--card);display:flex;align-items:center;gap:8px}
 .cat-chip.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
 .cat-chip i{font-size:16px}
+.lang-chip{padding:6px 14px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--card-border);background:var(--card);color:var(--text2)}
+.lang-chip:hover{border-color:var(--accent);color:var(--accent)}
+.lang-chip.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .input-field{width:100%;padding:14px 16px;border:1.5px solid var(--card-border);border-radius:14px;font-size:15px;font-family:'DM Sans',sans-serif;background:var(--card);color:var(--text);outline:none;transition:border-color .2s}
 .input-field:focus{border-color:var(--accent)}
 .input-field::placeholder{color:var(--text3)}
