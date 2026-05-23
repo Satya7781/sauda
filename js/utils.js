@@ -81,8 +81,10 @@ function updateNotificationBadge() {
   }
 }
 
-function addOrder(product, seller) {
+function addOrder(product, seller, qty, total) {
   if (!state.orders) state.orders = [];
+  qty = qty || 1;
+  total = total || product.price;
   state.orders.unshift({
     id: Date.now(),
     productId: product.id,
@@ -90,6 +92,8 @@ function addOrder(product, seller) {
     titleHi: product.titleHi,
     price: product.price,
     unit: product.unit,
+    quantity: qty,
+    total: total,
     sellerId: seller.id,
     sellerName: seller.shop,
     status: 'confirmed',

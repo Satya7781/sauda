@@ -28,9 +28,9 @@ async function initMainApp() {
   document.getElementById('feed-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('desktop-avatar').textContent = name.charAt(0).toUpperCase();
   document.getElementById('desktop-name').textContent = name;
-  document.getElementById('my-listings-count').textContent = role === 'seller' ? getSellerProducts().length : '0';
-  document.getElementById('my-orders-count').textContent = (state.orders || []).length;
-  document.getElementById('saved-sellers-count').textContent = (state.savedSellers || []).length;
+  document.getElementById('profile-listings-count').textContent = role === 'seller' ? getSellerProducts().length : '0';
+  document.getElementById('profile-orders-count').textContent = (state.orders || []).length;
+  document.getElementById('profile-saved-count').textContent = (state.savedSellers || []).length;
 
   renderProfile();
 

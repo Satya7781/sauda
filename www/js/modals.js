@@ -60,6 +60,20 @@ function openProductDetail(pid) {
     '<span><i class="fa-solid fa-location-dot mr-1"></i>' + s.distance + '</span>' +
     '</div>' +
 
+    '<div class="flex items-center justify-between p-3 rounded-xl mb-4" style="background:var(--bg2);border:1px solid var(--card-border)">' +
+    '<span class="text-xs font-bold" style="color:var(--text2)">Quantity</span>' +
+    '<div class="flex items-center gap-3">' +
+    '<button class="qty-btn" onclick="changeQty(' + p.id + ',-1)" style="width:32px;height:32px;border-radius:10px;border:none;background:var(--card);cursor:pointer;font-size:16px;font-weight:bold;color:var(--text2);display:flex;align-items:center;justify-content:center;line-height:1">−</button>' +
+    '<span class="text-base font-extrabold" style="min-width:24px;text-align:center;color:var(--text);font-family:\'Space Grotesk\',sans-serif" id="qty-display-' + p.id + '">1</span>' +
+    '<button class="qty-btn" onclick="changeQty(' + p.id + ',1)" style="width:32px;height:32px;border-radius:10px;border:none;background:var(--accent);cursor:pointer;font-size:16px;font-weight:bold;color:#fff;display:flex;align-items:center;justify-content:center;line-height:1">+</button>' +
+    '</div>' +
+    '</div>' +
+
+    '<div class="flex items-center justify-between mb-4">' +
+    '<span class="text-xs font-bold" style="color:var(--text2)">Total</span>' +
+    '<span class="text-xl font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif" id="total-display-' + p.id + '">₹' + p.price + '</span>' +
+    '</div>' +
+
     '<button class="btn-primary" onclick="confirmOrder(' + p.id + ')">' +
     '<i class="fa-solid fa-handshake mr-2"></i>' + __('sauda_karein') +
     '</button>' +
@@ -233,3 +247,18 @@ function animateTrustPath(sid) {
 document.getElementById('seller-modal').addEventListener('click', function (e) {
   if (e.target.id === 'seller-modal') closeSellerModal();
 });
+
+function changeQty(pid, delta) {
+  var display = document.getElementById('qty-display-' + pid);
+  if (!display) return;
+  var qty = parseInt(display.textContent) || 1;
+  qty += delta;
+  var prod = PRODUCTS.find(function (p) { return p.id == pid; });
+  if (!prod) prod = state.productFeed.find(function (p) { return p.id == pid; });
+  if (!prod) return;
+  if (qty < 1) qty = 1;
+  if (qty > prod.stock) qty = prod.stock;
+  display.textContent = qty;
+  var total = document.getElementById('total-display-' + pid);
+  if (total) total.textContent = '\u20B9' + (prod.price * qty);
+}

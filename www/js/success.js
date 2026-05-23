@@ -3,6 +3,9 @@
 // ============================================================
 
 function confirmOrder(pid) {
+  var qtyEl = document.getElementById('qty-display-' + pid);
+  var qty = qtyEl ? parseInt(qtyEl.textContent) || 1 : 1;
+
   closeSellerModal();
   closeProductModal();
   var prod = PRODUCTS.find(function (p) { return p.id == pid; });
@@ -10,11 +13,12 @@ function confirmOrder(pid) {
   if (!prod) return;
 
   var seller = SELLERS[prod.seller];
-  addOrder(prod, seller);
+  var total = prod.price * qty;
+  addOrder(prod, seller, qty, total);
 
-  document.getElementById('success-product-title').textContent = prod.title;
+  document.getElementById('success-product-title').textContent = (qty > 1 ? qty + 'x ' : '') + prod.title;
   document.getElementById('success-seller-name').textContent = seller.shop;
-  document.getElementById('success-price').textContent = '₹' + prod.price;
+  document.getElementById('success-price').textContent = '\u20B9' + total;
   var v = getCategoryVisual(prod.category);
   var imgEl = document.getElementById('success-product-img');
   var imgFile = PRODUCT_IMAGES[prod.id];
