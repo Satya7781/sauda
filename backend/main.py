@@ -7,8 +7,7 @@ from typing import List, Optional
 import time
 import os
 import httpx
-# Use package-relative imports so module resolution works when running as a package
-from . import database as db_mod
+import database as db_mod
 
 app = FastAPI(title="Sauda API")
 
@@ -31,7 +30,7 @@ def get_db():
 @app.on_event("startup")
 def startup_event():
     db_mod.init_db()
-    from .seed import seed_data
+    from seed import seed_data
     seed_data()
 
 @app.get("/")
