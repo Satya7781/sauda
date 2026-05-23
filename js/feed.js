@@ -69,24 +69,10 @@ function matchLocalityFromQuery(q) {
 
 function renderDirectoryCard(entry) {
   var cat = state.categories.find(function (c) { return c.id === entry.category; });
-  var ratingHtml = '';
-  var openHtml = '';
-  var googleBadge = '';
+  var osmBadge = '';
 
-  if (entry.rating) {
-    var stars = '';
-    var full = Math.floor(entry.rating);
-    for (var s = 0; s < 5; s++) {
-      stars += s < full ? '<i class="fa-solid fa-star" style="color:#F59E0B;font-size:7px"></i>' : '<i class="fa-regular fa-star" style="color:#D1D5DB;font-size:7px"></i>';
-    }
-    ratingHtml = '<span class="flex items-center gap-1 text-[9px] font-bold" style="color:var(--text2)">' + stars + ' ' + entry.rating.toFixed(1) + ' <span class="font-normal opacity-60">(' + entry.reviews + ')</span></span>';
-    googleBadge = '<a href="' + (entry.googlePlaceUrl || '#') + '" target="_blank" rel="noopener" class="text-[8px] font-bold" style="color:#4285F4" onclick="event.stopPropagation()"><i class="fa-brands fa-google"></i> Google</a>';
-  }
-
-  if (entry.openNow === true) {
-    openHtml = '<span class="text-[8px] font-bold" style="color:var(--trust)"><i class="fa-solid fa-circle text-[5px]"></i> ' + __('open_now') + '</span>';
-  } else if (entry.openNow === false) {
-    openHtml = '<span class="text-[8px] font-bold" style="color:var(--text3)">' + __('closed_now') + '</span>';
+  if (entry.osmUrl) {
+    osmBadge = '<a href="' + entry.osmUrl + '" target="_blank" rel="noopener" class="text-[8px] font-bold" style="color:#7CB342" onclick="event.stopPropagation()"><i class="fa-solid fa-map"></i> OSM</a>';
   }
 
   return '<div class="s-card flex overflow-hidden feed-card opacity-75" style="animation-delay:0s;border:1px dashed var(--card-border)" role="button" tabindex="0">' +
@@ -97,13 +83,13 @@ function renderDirectoryCard(entry) {
     '<div>' +
     '<div class="flex items-center justify-between mb-1">' +
     '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : entry.category) + '</span>' +
-    (googleBadge ? '<span class="flex items-center gap-1">' + (openHtml || '') + googleBadge + '</span>' : '<span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style="background:var(--bg2);color:var(--text3)">'+__('not_registered_tag')+'</span>') +
+    (osmBadge ? '<span>' + osmBadge + '</span>' : '<span class="text-[8px] font-bold px-1.5 py-0.5 rounded-full" style="background:var(--bg2);color:var(--text3)">'+__('not_registered_tag')+'</span>') +
     '</div>' +
     '<h4 class="text-sm font-bold leading-tight truncate">' + entry.shop + '</h4>' +
     '<p class="text-[10px] truncate" style="color:var(--text2)">' + (entry.address || entry.locality) + '</p>' +
     '</div>' +
     '<div class="flex items-center justify-between mt-1">' +
-    (ratingHtml ? ratingHtml : '<span class="text-[9px] font-medium" style="color:var(--text3)">'+__('not_listed_yet')+'</span>') +
+    '<span class="text-[9px] font-medium" style="color:var(--text3)">'+__('not_listed_yet')+'</span>' +
     '<div class="loc-tag text-[8px]"><i class="fa-solid fa-location-dot"></i>' + entry.locality + '</div>' +
     '</div></div></div>';
 }
@@ -355,34 +341,31 @@ function setupFeedSearch() {
       return false;
     });
 
-    // ── Try Google Places API for real-time shop discovery ──
-    var googlePlaces = await API.fetchPlaces(q);
+    // ── Try Nominatim (OpenStreetMap) for real-time shop discovery ──
+    var osmPlaces = await API.fetchPlaces(q);
 
-    // Filter out Google results that are already in our products or directory
+    // Filter out OSM results that are already in our products or directory
     var knownShops = {};
     matchedProducts.forEach(function (p) { knownShops[SELLERS[p.seller].shop.toLowerCase()] = true; });
     matchedDirectory.forEach(function (d) { knownShops[d.shop.toLowerCase()] = true; });
 
-    var newGooglePlaces = [];
-    googlePlaces.forEach(function (gp) {
-      var name = gp.shop.toLowerCase();
+    var newOsmPlaces = [];
+    osmPlaces.forEach(function (op) {
+      var name = op.shop.toLowerCase();
       if (!knownShops[name] && !knownShops[name.replace(/[^a-z0-9]/g, '')]) {
-        // Check if any known shop is a substring of this Google name or vice versa
         var isDuplicate = false;
         for (var ks in knownShops) {
           if (name.indexOf(ks) !== -1 || ks.indexOf(name) !== -1) { isDuplicate = true; break; }
         }
         if (!isDuplicate) {
-          // Apply location chip filter to Google results too
-          if (!activeLoc || (gp.locality && gp.locality.toLowerCase().indexOf(activeLoc.toLowerCase()) !== -1)) {
-            newGooglePlaces.push(gp);
+          if (!activeLoc || (op.locality && op.locality.toLowerCase().indexOf(activeLoc.toLowerCase()) !== -1)) {
+            newOsmPlaces.push(op);
           }
         }
       }
     });
 
-    // Deduplicate: if a Google place matches on shop name + category, keep our version
-    var mergedDirectory = matchedDirectory.concat(newGooglePlaces);
+    var mergedDirectory = matchedDirectory.concat(newOsmPlaces);
 
     state.productFeed = matchedProducts;
     state._searchResults = { products: matchedProducts, directory: mergedDirectory };
