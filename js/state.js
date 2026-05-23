@@ -49,11 +49,12 @@ async function loadState() {
   var usersList = await API.fetchUsers();
   var directoryList = await API.fetchDirectory();
   
-  // Build sellers map from backend
+  // Build sellers map from backend, merge into global SELLERS for backward compat
   var sellersMap = {};
   if (sellersList.length) {
     sellersList.forEach(function(s) { sellersMap[s.id] = s; });
-    state.sellers = sellersMap;
+    Object.keys(sellersMap).forEach(function(k) { SELLERS[k] = sellersMap[k]; });
+    state.sellers = SELLERS;
   } else {
     state.sellers = SELLERS;
   }
