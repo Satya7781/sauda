@@ -56,8 +56,6 @@
         <i class="fa-solid fa-language"></i>
         <span id="lang-btn-text">HI</span>
       </button>
-      <div id="lang-menu" class="absolute right-0 top-full mt-1 rounded-xl shadow-lg z-50" style="display:none;background:#fff;border:1px solid #EDE5D5;width:220px;max-height:420px;overflow-y:auto">
-      </div>
     </div>
 </header>
 
@@ -726,6 +724,10 @@
 <!-- SAVED SELLERS MODAL -->
 <div class="modal-overlay" id="saved-modal"><div class="modal-sheet" id="saved-sheet" style="max-height:80vh"></div></div>
 
+<!-- LANGUAGE MENU OVERLAY -->
+<div id="lang-menu-overlay" class="fixed inset-0 z-40" style="display:none;background:rgba(0,0,0,0.3)" onclick="toggleLangMenu()"></div>
+<div id="lang-menu" class="fixed z-50 rounded-xl shadow-lg" style="display:none;background:#fff;border:1px solid #EDE5D5;width:220px;max-height:420px;overflow-y:auto"></div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 </div>
@@ -749,9 +751,16 @@
   <script>
   function toggleLangMenu() {
     var menu = document.getElementById('lang-menu');
+    var overlay = document.getElementById('lang-menu-overlay');
     var isOpen = menu.style.display === 'block';
     menu.style.display = isOpen ? 'none' : 'block';
-    if (!isOpen) renderLangMenu();
+    if (overlay) overlay.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) {
+      renderLangMenu();
+      menu.style.left = '50%';
+      menu.style.top = '50%';
+      menu.style.transform = 'translate(-50%,-50%)';
+    }
   }
    function renderLangMenu() {
      var menu = document.getElementById('lang-menu');
@@ -766,11 +775,13 @@
        }).join('') +
        getRTToggleHTML();
    }
-   function setLanguage(code) {
-     state.userLang = code;
-     localStorage.setItem('sauda_lang', code);
-     document.getElementById('lang-menu').style.display = 'none';
-     applyLanguage();
+    function setLanguage(code) {
+      state.userLang = code;
+      localStorage.setItem('sauda_lang', code);
+      document.getElementById('lang-menu').style.display = 'none';
+      var overlay = document.getElementById('lang-menu-overlay');
+      if (overlay) overlay.style.display = 'none';
+      applyLanguage();
      renderOnboardLangChips();
      renderProfile();
      renderLocationChips();

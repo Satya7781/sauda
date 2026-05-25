@@ -34,6 +34,7 @@ function saveState() {
   localStorage.setItem('sauda_role', state.userRole || 'buyer');
   localStorage.setItem('sauda_location', state.userLocation || 'Lalghati, Bhopal');
   localStorage.setItem('sauda_aadhaar', state.aadhaarVerified ? '1' : '0');
+  localStorage.setItem('sauda_lang', state.userLang || 'hi');
   if (state.userShop) localStorage.setItem('sauda_shop', state.userShop);
 }
 
@@ -72,6 +73,7 @@ async function loadState() {
   
   if (products.length) {
     state.productFeed = products;
+    state._originalFeed = products;
   } else {
     state.productFeed = PRODUCTS.map(function(p) {
       return {
@@ -80,6 +82,7 @@ async function loadState() {
         category: p.category, stock: p.stock
       };
     });
+    state._originalFeed = state.productFeed.slice();
   }
   
   if (categories.length) {

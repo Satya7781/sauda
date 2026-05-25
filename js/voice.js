@@ -136,7 +136,10 @@ function initVoice() {
       if (el) el.textContent = t;
     };
     recognition.onend = function () {
-      if (state.isRecording) stopRecording();
+      if (state.isRecording) {
+        state.isRecording = false;
+        stopRecording();
+      }
     };
     recognition.onerror = function (e) {
       console.warn('Voice recognition error:', e);
@@ -152,12 +155,18 @@ function initVoice() {
 function startRecording() {
   state.isRecording = true;
   var btn = document.getElementById('mic-btn');
-  btn.classList.add('recording');
-  btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  document.getElementById('mic-hint').textContent = __('sun_raha_hoon');
-  document.getElementById('transcription-area').style.display = 'none';
-  document.getElementById('ai-status').style.display = 'none';
-  document.getElementById('generated-listing').style.display = 'none';
+  if (btn) {
+    btn.classList.add('recording');
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  }
+  var hintEl = document.getElementById('mic-hint');
+  if (hintEl) hintEl.textContent = __('sun_raha_hoon');
+  var taEl = document.getElementById('transcription-area');
+  if (taEl) taEl.style.display = 'none';
+  var aiEl = document.getElementById('ai-status');
+  if (aiEl) aiEl.style.display = 'none';
+  var genEl = document.getElementById('generated-listing');
+  if (genEl) genEl.style.display = 'none';
   startWaveform();
   if (recognition) recognition.start();
   else simulateTranscription();
@@ -166,29 +175,36 @@ function startRecording() {
 function stopRecording() {
   state.isRecording = false;
   var btn = document.getElementById('mic-btn');
-  btn.classList.remove('recording');
-  btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  document.getElementById('mic-hint').textContent = __('mic_hint');
+  if (btn) {
+    btn.classList.remove('recording');
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  }
+  var hintEl = document.getElementById('mic-hint');
+  if (hintEl) hintEl.textContent = __('mic_hint');
   stopWaveform();
-  var t = document.getElementById('transcription-text').textContent;
+  var tEl = document.getElementById('transcription-text');
+  var t = tEl ? tEl.textContent : '';
   if (t) {
     document.getElementById('transcription-area').style.display = 'block';
     processWithAI(t);
-  }
-  if (recognition) {
-    try { recognition.stop(); } catch (e) { }
   }
 }
 
 function simulateTranscription() {
   state.isRecording = true;
   var btn = document.getElementById('mic-btn');
-  btn.classList.add('recording');
-  btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  document.getElementById('mic-hint').textContent = __('sun_raha_hoon');
-  document.getElementById('transcription-area').style.display = 'none';
-  document.getElementById('ai-status').style.display = 'none';
-  document.getElementById('generated-listing').style.display = 'none';
+  if (btn) {
+    btn.classList.add('recording');
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  }
+  var hintEl = document.getElementById('mic-hint');
+  if (hintEl) hintEl.textContent = __('sun_raha_hoon');
+  var taEl = document.getElementById('transcription-area');
+  if (taEl) taEl.style.display = 'none';
+  var aiEl = document.getElementById('ai-status');
+  if (aiEl) aiEl.style.display = 'none';
+  var genEl = document.getElementById('generated-listing');
+  if (genEl) genEl.style.display = 'none';
   startWaveform();
   var demo = 'Banarasi silk saree ₹2500 piece';
   var el = document.getElementById('transcription-text');
@@ -201,11 +217,13 @@ function simulateTranscription() {
       clearInterval(iv);
       setTimeout(function () {
         state.isRecording = false;
-        btn.classList.remove('recording');
-        btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-        document.getElementById('mic-hint').textContent = __('mic_hint');
+        if (btn) {
+          btn.classList.remove('recording');
+          btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        }
+        if (hintEl) hintEl.textContent = __('mic_hint');
         stopWaveform();
-        document.getElementById('transcription-area').style.display = 'block';
+        if (taEl) taEl.style.display = 'block';
         processWithAI(demo);
       }, 400);
     }
@@ -308,7 +326,10 @@ function initBuyerVoice() {
       if (el) el.textContent = t;
     };
     buyerRecognition.onend = function () {
-      if (state.isRecording) stopBuyerRecording();
+      if (state.isRecording) {
+        state.isRecording = false;
+        stopBuyerRecording();
+      }
     };
     buyerRecognition.onerror = function (e) {
       console.warn('Buyer voice recognition error:', e);
@@ -324,12 +345,18 @@ function initBuyerVoice() {
 function startBuyerRecording() {
   state.isRecording = true;
   var btn = document.getElementById('buyer-mic-btn');
-  btn.classList.add('recording');
-  btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  document.getElementById('buyer-mic-hint').textContent = __('sun_raha_hoon');
-  document.getElementById('buyer-transcription-area').style.display = 'none';
-  document.getElementById('buyer-ai-status').style.display = 'none';
-  document.getElementById('buyer-search-results').style.display = 'none';
+  if (btn) {
+    btn.classList.add('recording');
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  }
+  var hintEl = document.getElementById('buyer-mic-hint');
+  if (hintEl) hintEl.textContent = __('sun_raha_hoon');
+  var taEl = document.getElementById('buyer-transcription-area');
+  if (taEl) taEl.style.display = 'none';
+  var aiEl = document.getElementById('buyer-ai-status');
+  if (aiEl) aiEl.style.display = 'none';
+  var srEl = document.getElementById('buyer-search-results');
+  if (srEl) srEl.style.display = 'none';
   startBuyerWaveform();
   if (buyerRecognition) buyerRecognition.start();
   else simulateBuyerTranscription();
@@ -338,29 +365,36 @@ function startBuyerRecording() {
 function stopBuyerRecording() {
   state.isRecording = false;
   var btn = document.getElementById('buyer-mic-btn');
-  btn.classList.remove('recording');
-  btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  document.getElementById('buyer-mic-hint').textContent = __('mic_hint');
+  if (btn) {
+    btn.classList.remove('recording');
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  }
+  var hintEl = document.getElementById('buyer-mic-hint');
+  if (hintEl) hintEl.textContent = __('mic_hint');
   stopBuyerWaveform();
-  var t = document.getElementById('buyer-transcription-text').textContent;
+  var tEl = document.getElementById('buyer-transcription-text');
+  var t = tEl ? tEl.textContent : '';
   if (t) {
     document.getElementById('buyer-transcription-area').style.display = 'block';
     searchByVoice(t);
-  }
-  if (buyerRecognition) {
-    try { buyerRecognition.stop(); } catch (e) { }
   }
 }
 
 function simulateBuyerTranscription() {
   state.isRecording = true;
   var btn = document.getElementById('buyer-mic-btn');
-  btn.classList.add('recording');
-  btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  document.getElementById('buyer-mic-hint').textContent = __('sun_raha_hoon');
-  document.getElementById('buyer-transcription-area').style.display = 'none';
-  document.getElementById('buyer-ai-status').style.display = 'none';
-  document.getElementById('buyer-search-results').style.display = 'none';
+  if (btn) {
+    btn.classList.add('recording');
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  }
+  var hintEl = document.getElementById('buyer-mic-hint');
+  if (hintEl) hintEl.textContent = __('sun_raha_hoon');
+  var taEl = document.getElementById('buyer-transcription-area');
+  if (taEl) taEl.style.display = 'none';
+  var aiEl = document.getElementById('buyer-ai-status');
+  if (aiEl) aiEl.style.display = 'none';
+  var srEl = document.getElementById('buyer-search-results');
+  if (srEl) srEl.style.display = 'none';
   startBuyerWaveform();
   var demo = 'Banarasi silk saree';
   var el = document.getElementById('buyer-transcription-text');
@@ -373,11 +407,13 @@ function simulateBuyerTranscription() {
       clearInterval(iv);
       setTimeout(function () {
         state.isRecording = false;
-        btn.classList.remove('recording');
-        btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-        document.getElementById('buyer-mic-hint').textContent = __('mic_hint');
+        if (btn) {
+          btn.classList.remove('recording');
+          btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        }
+        if (hintEl) hintEl.textContent = __('mic_hint');
         stopBuyerWaveform();
-        document.getElementById('buyer-transcription-area').style.display = 'block';
+        if (taEl) taEl.style.display = 'block';
         searchByVoice(demo);
       }, 400);
     }
@@ -396,8 +432,8 @@ function searchByVoice(text) {
 
 function filterProductsByText(text) {
   var t = text.toLowerCase();
-  var all = state.productFeed && state.productFeed.length ? state.productFeed : (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []);
-  return all.filter(function (p) {
+  var fullFeed = state._originalFeed && state._originalFeed.length ? state._originalFeed : (state.productFeed && state.productFeed.length ? state.productFeed : (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []));
+  return fullFeed.filter(function (p) {
     var title = (p.title || '').toLowerCase();
     var titleHi = (p.titleHi || '').toLowerCase();
     var cat = (p.category || '').toLowerCase();
@@ -485,6 +521,7 @@ function stopBuyerWaveform() {
 
 function startWaveform() {
   var canvas = document.getElementById('waveform-canvas');
+  if (!canvas) return;
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   canvas.width = 300 * dpr;

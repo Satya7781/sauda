@@ -30,7 +30,13 @@ function setupFeedEventListeners() {
       container.querySelectorAll('.location-chip').forEach(function (x) {
         x.classList.toggle('active', x === locationChip);
       });
-      renderFeed();
+      // Re-trigger search if there's an active search query
+      var searchInput = document.getElementById('search-input');
+      if (searchInput && searchInput.value.trim()) {
+        searchInput.dispatchEvent(new Event('input'));
+      } else {
+        renderFeed();
+      }
       return;
     }
 
@@ -42,7 +48,13 @@ function setupFeedEventListeners() {
       container2.querySelectorAll('.filter-chip').forEach(function (x) {
         x.classList.toggle('active', x === filterChip);
       });
-      renderFeed();
+      // Re-trigger search if there's an active search query
+      var searchInput = document.getElementById('search-input');
+      if (searchInput && searchInput.value.trim()) {
+        searchInput.dispatchEvent(new Event('input'));
+      } else {
+        renderFeed();
+      }
       return;
     }
   });
@@ -297,6 +309,27 @@ document.getElementById('group-deal-modal').addEventListener('click', function (
   if (e.target.id === 'group-deal-modal') closeGroupDealModal();
 });
 
+function getFullProductFeed() {
+  if (state._originalFeed && state._originalFeed.length) return state._originalFeed;
+  return PRODUCTS.map(function (p) {
+    return {
+      id: p.id, title: p.title, titleEn: p.titleEn, titleHi: p.titleHi,
+      price: p.price, unit: p.unit, seller: p.seller,
+      category: p.category, stock: p.stock
+    };
+  });
+}
+
+function applyActiveFilters(products) {
+  if (state.activeFilter && state.activeFilter !== 'all') {
+    products = products.filter(function (p) { return p.category === state.activeFilter; });
+  }
+  if (state.activeLocation && state.activeLocation !== 'all') {
+    products = products.filter(function (p) { return SELLERS[p.seller] && SELLERS[p.seller].locality === state.activeLocation; });
+  }
+  return products;
+}
+
 function setupFeedSearch() {
   var searchInput = document.getElementById('search-input');
   if (!searchInput) return;
@@ -305,18 +338,15 @@ function setupFeedSearch() {
     var q = e.target.value.toLowerCase().trim();
 
     if (!q) {
-      state.productFeed = PRODUCTS.map(function (p) {
-        return {
-          id: p.id, title: p.title, titleEn: p.titleEn, titleHi: p.titleHi,
-          price: p.price, unit: p.unit, seller: p.seller,
-          category: p.category, stock: p.stock
-        };
-      });
+      state.productFeed = applyActiveFilters(getFullProductFeed());
       state._searchResults = null;
       if (state.currentView === 'feed') renderFeed();
       if (state.currentView === 'seller-dashboard') renderSellerFeed();
       return;
     }
+
+    // Always search from the full product feed
+    var fullFeed = getFullProductFeed();
 
     // ── Try backend API first for product search ──
     var apiProducts = await API.fetchProducts({ search: q });
@@ -326,7 +356,7 @@ function setupFeedSearch() {
     if (apiProducts.length) {
       productSource = apiProducts;
     } else {
-      productSource = state.productFeed.length ? state.productFeed : PRODUCTS;
+      productSource = fullFeed;
     }
 
     // ── Parse query for category + location ──
@@ -341,13 +371,13 @@ function setupFeedSearch() {
       var seller = SELLERS[p.seller];
       if (!seller) return false;
 
-      // Show items from active location chip OR location mentioned in query
-      var matchesActiveLoc = activeLoc ? seller.locality === activeLoc : false;
-      var matchesQueryLoc = matchedLocality ? seller.locality === matchedLocality : false;
-      if (activeLoc || matchedLocality) {
-        if (!matchesActiveLoc && !matchesQueryLoc) return false;
-      }
+      // Filter by active location chip (if set)
+      if (activeLoc && seller.locality !== activeLoc) return false;
 
+      // Filter by location parsed from query (if any)
+      if (matchedLocality && seller.locality !== matchedLocality) return false;
+
+      // Match text query against title, seller name, shop name, or locality
       var matchesTitle = p.title.toLowerCase().includes(q) ||
         (p.titleHi && p.titleHi.toLowerCase().includes(q));
       var matchesSeller =
@@ -373,14 +403,12 @@ function setupFeedSearch() {
 
     // Search directory for unregistered shops matching the query
     var matchedDirectory = directorySource.filter(function (d) {
-      if (d.registered) return false; // already handled by products
+      if (d.registered) return false;
 
-      // Show shops from active location chip OR location mentioned in query
-      var matchesActiveLocDir = activeLoc ? d.locality === activeLoc : false;
-      var matchesQueryLocDir = matchedLocality ? d.locality === matchedLocality : false;
-      if (activeLoc || matchedLocality) {
-        if (!matchesActiveLocDir && !matchesQueryLocDir) return false;
-      }
+      // Filter by active location chip
+      if (activeLoc && d.locality !== activeLoc) return false;
+      // Filter by location parsed from query
+      if (matchedLocality && d.locality !== matchedLocality) return false;
 
       var shopMatch = (d.shop || '').toLowerCase().includes(q);
       var locMatch = (d.locality || '').toLowerCase().includes(q);
@@ -421,7 +449,7 @@ function setupFeedSearch() {
 
     var mergedDirectory = matchedDirectory.concat(newOsmPlaces);
 
-    state.productFeed = matchedProducts;
+    // Store search results separately — don't override productFeed
     state._searchResults = { products: matchedProducts, directory: mergedDirectory };
 
     renderFeed();
