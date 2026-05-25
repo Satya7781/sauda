@@ -15,28 +15,55 @@ function getUniqueLocalities() {
   return Object.keys(locs).sort();
 }
 
+var feedListenersSetup = false;
+
+function setupFeedEventListeners() {
+  if (feedListenersSetup) return;
+  feedListenersSetup = true;
+
+  document.addEventListener('click', function (e) {
+    var locationChip = e.target.closest('.location-chip');
+    if (locationChip) {
+      var container = document.getElementById('location-chips');
+      if (!container) return;
+      state.activeLocation = locationChip.dataset.location;
+      container.querySelectorAll('.location-chip').forEach(function (x) {
+        x.classList.toggle('active', x === locationChip);
+      });
+      renderFeed();
+      return;
+    }
+
+    var filterChip = e.target.closest('.filter-chip');
+    if (filterChip) {
+      var container2 = document.getElementById('filter-chips');
+      if (!container2) return;
+      state.activeFilter = filterChip.dataset.filter;
+      container2.querySelectorAll('.filter-chip').forEach(function (x) {
+        x.classList.toggle('active', x === filterChip);
+      });
+      renderFeed();
+      return;
+    }
+  });
+}
+
 function renderLocationChips() {
   var c = document.getElementById('location-chips');
   if (!c) return;
+  setupFeedEventListeners();
   var locs = getUniqueLocalities();
   c.innerHTML = '<button class="location-chip active" data-location="all">'+__('sabhi_kshetra')+'</button>' +
     locs.map(function (loc) {
       var count = SELLER_DIRECTORY.filter(function (d) { return d.locality === loc; }).length;
       return '<button class="location-chip" data-location="' + loc + '">' + loc.replace(',', '') + ' <span class="text-[9px] opacity-60">(' + count + ')</span></button>';
     }).join('');
-
-  c.addEventListener('click', function (e) {
-    var chip = e.target.closest('.location-chip');
-    if (!chip) return;
-    state.activeLocation = chip.dataset.location;
-    c.querySelectorAll('.location-chip').forEach(function (x) { x.classList.toggle('active', x === chip); });
-    renderFeed();
-  });
 }
 
 function renderFilterChips() {
   var c = document.getElementById('filter-chips');
   if (!c) return;
+  setupFeedEventListeners();
   var cats = state.categories.length ? state.categories : (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []);
   c.innerHTML = '<button class="filter-chip active" data-filter="all">'+__('sabhi')+'</button>' +
     cats.map(function (cat) {
@@ -47,13 +74,6 @@ function renderFilterChips() {
         (count ? ' <span class="text-[9px] opacity-60">(' + count + ')</span>' : '') +
         '</button>';
     }).join('');
-  c.addEventListener('click', function (e) {
-    var chip = e.target.closest('.filter-chip');
-    if (!chip) return;
-    state.activeFilter = chip.dataset.filter;
-    c.querySelectorAll('.filter-chip').forEach(function (x) { x.classList.toggle('active', x === chip); });
-    renderFeed();
-  });
 }
 
 // Category → keyword mapping for search parsing

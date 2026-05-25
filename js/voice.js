@@ -5,6 +5,37 @@
 var recognition = null;
 var waveformAnim = null;
 var buyerRecognition = null;
+var voiceInitialized = false;
+
+var SPEECH_LANG_MAP = {
+  hi: 'hi-IN',
+  en: 'en-IN',
+  mr: 'mr-IN',
+  bn: 'bn-IN',
+  ta: 'ta-IN',
+  te: 'te-IN',
+  gu: 'gu-IN',
+  pa: 'pa-IN',
+  kn: 'kn-IN',
+  ml: 'ml-IN',
+  or: 'or-IN',
+  ur: 'ur-IN',
+  as: 'as-IN',
+  ks: 'ks-IN',
+  kok: 'kok-IN',
+  mai: 'mai-IN',
+  sd: 'sd-IN',
+  ne: 'ne-NP',
+  sa: 'sa-IN',
+  sat: 'sat-IN',
+  brx: 'brx-IN',
+  doi: 'doi-IN'
+};
+
+function getSpeechLanguageCode() {
+  var lang = state.userLang || 'hi';
+  return SPEECH_LANG_MAP[lang] || 'hi-IN';
+}
 
 function initVoiceSection() {
   var role = state.userRole || 'buyer';
@@ -20,26 +51,100 @@ function initVoiceSection() {
     buySection.style.display = '';
     initBuyerVoice();
   }
+  if (!voiceInitialized) {
+    setupVoiceEventListeners();
+    voiceInitialized = true;
+  }
+}
+
+function setupVoiceEventListeners() {
+  var micBtn = document.getElementById('mic-btn');
+  if (micBtn) {
+    micBtn.replaceWith(micBtn.cloneNode(true));
+    micBtn = document.getElementById('mic-btn');
+    micBtn.addEventListener('click', function () {
+      state.isRecording ? stopRecording() : startRecording();
+    });
+  }
+
+  var demoBtn = document.getElementById('demo-voice-btn');
+  if (demoBtn) {
+    demoBtn.replaceWith(demoBtn.cloneNode(true));
+    demoBtn = document.getElementById('demo-voice-btn');
+    demoBtn.addEventListener('click', simulateTranscription);
+  }
+
+  var publishBtn = document.getElementById('publish-btn');
+  if (publishBtn) {
+    publishBtn.replaceWith(publishBtn.cloneNode(true));
+    publishBtn = document.getElementById('publish-btn');
+    publishBtn.addEventListener('click', function () {
+      var title = document.getElementById('gen-title').textContent;
+      var priceText = document.getElementById('gen-price').textContent;
+      var category = document.getElementById('gen-category').textContent.toLowerCase();
+      var pm = priceText.match(/₹(\d+)\s*\/\s*(\w+)/);
+      var price = pm ? parseInt(pm[1]) : 0;
+      var unit = pm ? pm[2] : 'pcs';
+      publishProductItem({
+        title: title.split(' (')[0],
+        titleEn: title.split(' (')[0],
+        titleHi: title.indexOf('(') !== -1 ? (title.match(/\(([^)]+)\)/) || [])[1] || '' : '',
+        price: price,
+        unit: unit,
+        category: category,
+        stock: 25
+      });
+    });
+  }
+
+  var publishManualBtn = document.getElementById('publish-manual-btn');
+  if (publishManualBtn) {
+    publishManualBtn.replaceWith(publishManualBtn.cloneNode(true));
+    publishManualBtn = document.getElementById('publish-manual-btn');
+    publishManualBtn.addEventListener('click', handlePublishManual);
+  }
+
+  var buyerMicBtn = document.getElementById('buyer-mic-btn');
+  if (buyerMicBtn) {
+    buyerMicBtn.replaceWith(buyerMicBtn.cloneNode(true));
+    buyerMicBtn = document.getElementById('buyer-mic-btn');
+    buyerMicBtn.addEventListener('click', function () {
+      state.isRecording ? stopBuyerRecording() : startBuyerRecording();
+    });
+  }
+
+  var buyerDemoBtn = document.getElementById('buyer-demo-btn');
+  if (buyerDemoBtn) {
+    buyerDemoBtn.replaceWith(buyerDemoBtn.cloneNode(true));
+    buyerDemoBtn = document.getElementById('buyer-demo-btn');
+    buyerDemoBtn.addEventListener('click', simulateBuyerTranscription);
+  }
 }
 
 function initVoice() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     recognition = new SR();
-    recognition.lang = state.userLang === 'en' ? 'en-IN' : 'hi-IN';
+    recognition.lang = getSpeechLanguageCode();
     recognition.interimResults = true;
     recognition.continuous = false;
     recognition.maxAlternatives = 1;
     recognition.onresult = function (e) {
       var t = '';
       for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
-      document.getElementById('transcription-text').textContent = t;
+      var el = document.getElementById('transcription-text');
+      if (el) el.textContent = t;
     };
     recognition.onend = function () {
       if (state.isRecording) stopRecording();
     };
-    recognition.onerror = function () {
-      if (state.isRecording) stopRecording();
+    recognition.onerror = function (e) {
+      console.warn('Voice recognition error:', e);
+      if (state.isRecording) {
+        setTimeout(function () {
+          if (state.isRecording) simulateTranscription();
+        }, 300);
+      }
     };
   }
 }
@@ -192,20 +297,26 @@ function initBuyerVoice() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     buyerRecognition = new SR();
-    buyerRecognition.lang = state.userLang === 'en' ? 'en-IN' : 'hi-IN';
+    buyerRecognition.lang = getSpeechLanguageCode();
     buyerRecognition.interimResults = true;
     buyerRecognition.continuous = false;
     buyerRecognition.maxAlternatives = 1;
     buyerRecognition.onresult = function (e) {
       var t = '';
       for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
-      document.getElementById('buyer-transcription-text').textContent = t;
+      var el = document.getElementById('buyer-transcription-text');
+      if (el) el.textContent = t;
     };
     buyerRecognition.onend = function () {
       if (state.isRecording) stopBuyerRecording();
     };
-    buyerRecognition.onerror = function () {
-      if (state.isRecording) stopBuyerRecording();
+    buyerRecognition.onerror = function (e) {
+      console.warn('Buyer voice recognition error:', e);
+      if (state.isRecording) {
+        setTimeout(function () {
+          if (state.isRecording) simulateBuyerTranscription();
+        }, 300);
+      }
     };
   }
 }
@@ -421,42 +532,11 @@ function startWaveform() {
 function stopWaveform() {
   if (waveformAnim) cancelAnimationFrame(waveformAnim);
   var c = document.getElementById('waveform-canvas');
-  var ctx = c.getContext('2d');
-  ctx.clearRect(0, 0, 300, 300);
+  if (c) {
+    var ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, 300, 300);
+  }
 }
-
-document.getElementById('mic-btn').addEventListener('click', function () {
-  state.isRecording ? stopRecording() : startRecording();
-});
-
-document.getElementById('demo-voice-btn').addEventListener('click', simulateTranscription);
-
-// Buyer voice listeners
-var buyerMicBtn = document.getElementById('buyer-mic-btn');
-if (buyerMicBtn) buyerMicBtn.addEventListener('click', function () {
-  state.isRecording ? stopBuyerRecording() : startBuyerRecording();
-});
-
-var buyerDemoBtn = document.getElementById('buyer-demo-btn');
-if (buyerDemoBtn) buyerDemoBtn.addEventListener('click', simulateBuyerTranscription);
-
-document.getElementById('publish-btn').addEventListener('click', function () {
-  var title = document.getElementById('gen-title').textContent;
-  var priceText = document.getElementById('gen-price').textContent;
-  var category = document.getElementById('gen-category').textContent.toLowerCase();
-  var pm = priceText.match(/₹(\d+)\s*\/\s*(\w+)/);
-  var price = pm ? parseInt(pm[1]) : 0;
-  var unit = pm ? pm[2] : 'pcs';
-  publishProductItem({
-    title: title.split(' (')[0],
-    titleEn: title.split(' (')[0],
-    titleHi: title.indexOf('(') !== -1 ? (title.match(/\(([^)]+)\)/) || [])[1] || '' : '',
-    price: price,
-    unit: unit,
-    category: category,
-    stock: 25
-  });
-});
 
 // ============================================================
 // MANUAL FORM HANDLING
@@ -484,7 +564,7 @@ function switchMode(mode) {
   }
 }
 
-document.getElementById('publish-manual-btn').addEventListener('click', function () {
+function handlePublishManual() {
   var title = document.getElementById('manual-title').value.trim();
   var titleHi = document.getElementById('manual-title-hi').value.trim();
   var category = document.getElementById('manual-category').value;
@@ -506,14 +586,13 @@ document.getElementById('publish-manual-btn').addEventListener('click', function
     stock: stock
   });
 
-  // Clear form
   document.getElementById('manual-title').value = '';
   document.getElementById('manual-title-hi').value = '';
   document.getElementById('manual-category').value = '';
   document.getElementById('manual-price').value = '';
   document.getElementById('manual-unit').value = 'pcs';
   document.getElementById('manual-stock').value = '10';
-});
+}
 
 // Publish product to feed
 function publishProductItem(itemData) {
