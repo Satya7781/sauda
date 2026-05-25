@@ -3,45 +3,211 @@
 // ============================================================
 
 const LANGUAGES = [
-  { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
-  { code: 'en', name: 'English', native: 'English' },
-  { code: 'mr', name: 'Marathi', native: 'मराठी' },
-  { code: 'bn', name: 'Bengali', native: 'বাংলা' },
-  { code: 'ta', name: 'Tamil', native: 'தமிழ்' },
-  { code: 'te', name: 'Telugu', native: 'తెలుగు' },
-  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી' },
-  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
-  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ' },
-  { code: 'ml', name: 'Malayalam', native: 'മലയാളം' },
-  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ' },
-  { code: 'ur', name: 'Urdu', native: 'اردو' },
-  { code: 'as', name: 'Assamese', native: 'অসমীয়া' },
-  { code: 'ks', name: 'Kashmiri', native: 'कॉशुर' },
-  { code: 'kok', name: 'Konkani', native: 'कोंकणी' },
-  { code: 'mai', name: 'Maithili', native: 'मैथिली' },
-  { code: 'sd', name: 'Sindhi', native: 'سنڌي' },
-  { code: 'ne', name: 'Nepali', native: 'नेपाली' },
-  { code: 'sa', name: 'Sanskrit', native: 'संस्कृतम्' },
-  { code: 'sat', name: 'Santali', native: 'ᱥᱟᱱᱛᱟᱲᱤ' },
-  { code: 'brx', name: 'Bodo', native: 'बर' },
-  { code: 'doi', name: 'Dogri', native: 'डोगरी' },
+  { code: 'hi', name: 'Hindi', native: 'हिन्दी', iso639: 'hi' },
+  { code: 'en', name: 'English', native: 'English', iso639: 'en' },
+  { code: 'mr', name: 'Marathi', native: 'मराठी', iso639: 'mr' },
+  { code: 'bn', name: 'Bengali', native: 'বাংলা', iso639: 'bn' },
+  { code: 'ta', name: 'Tamil', native: 'தமிழ்', iso639: 'ta' },
+  { code: 'te', name: 'Telugu', native: 'తెలుగు', iso639: 'te' },
+  { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', iso639: 'gu' },
+  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', iso639: 'pa' },
+  { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', iso639: 'kn' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളം', iso639: 'ml' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ', iso639: 'or' },
+  { code: 'ur', name: 'Urdu', native: 'اردو', iso639: 'ur' },
+  { code: 'as', name: 'Assamese', native: 'অসমীয়া', iso639: 'as' },
+  { code: 'ks', name: 'Kashmiri', native: 'कॉशुर', iso639: 'ks' },
+  { code: 'kok', name: 'Konkani', native: 'कोंकणी', iso639: 'kok' },
+  { code: 'mai', name: 'Maithili', native: 'मैथिली', iso639: 'mai' },
+  { code: 'sd', name: 'Sindhi', native: 'سنڌي', iso639: 'sd' },
+  { code: 'ne', name: 'Nepali', native: 'नेपाली', iso639: 'ne' },
+  { code: 'sa', name: 'Sanskrit', native: 'संस्कृतम्', iso639: 'sa' },
+  { code: 'sat', name: 'Santali', native: 'ᱥᱟᱱᱛᱟᱲᱤ', iso639: 'sat' },
+  { code: 'brx', name: 'Bodo', native: 'बर', iso639: 'brx' },
+  { code: 'doi', name: 'Dogri', native: 'डोगरी', iso639: 'doi' },
 ];
+
+var REAL_TIME_TRANSLATION_ENABLED = true;
+var TRANSLATION_CACHE = {};
+
+function loadTranslationCache() {
+  try {
+    var cached = localStorage.getItem('sauda_translation_cache');
+    if (cached) {
+      TRANSLATION_CACHE = JSON.parse(cached);
+    }
+  } catch (e) {
+    TRANSLATION_CACHE = {};
+  }
+}
+
+function saveTranslationCache() {
+  try {
+    var cacheStr = JSON.stringify(TRANSLATION_CACHE);
+    if (cacheStr.length < 4000000) {
+      localStorage.setItem('sauda_translation_cache', cacheStr);
+    }
+  } catch (e) {
+    console.warn('Could not save translation cache:', e);
+  }
+}
+
+function getCacheKey(text, fromLang, toLang) {
+  return fromLang + '_' + toLang + '_' + text.trim().substring(0, 200);
+}
+
+function getISO639Code(code) {
+  var lang = LANGUAGES.find(function(l) { return l.code === code; });
+  if (lang && lang.iso639) return lang.iso639;
+  return code;
+}
+
+async function translateWithMyMemory(text, fromLang, toLang) {
+  if (!text || !text.trim()) return text;
+  if (fromLang === toLang) return text;
+
+  var cacheKey = getCacheKey(text, fromLang, toLang);
+  if (TRANSLATION_CACHE[cacheKey]) {
+    return TRANSLATION_CACHE[cacheKey];
+  }
+
+  var fromISO = getISO639Code(fromLang);
+  var toISO = getISO639Code(toLang);
+
+  try {
+    var langPair = fromISO + '|' + toISO;
+    var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + encodeURIComponent(langPair);
+    
+    var response = await fetch(url);
+    var data = await response.json();
+
+    if (data && data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      var translated = data.responseData.translatedText;
+      TRANSLATION_CACHE[cacheKey] = translated;
+      saveTranslationCache();
+      return translated;
+    }
+  } catch (e) {
+    console.warn('MyMemory translation failed:', e);
+  }
+
+  return text;
+}
+
+async function translateWithLibreTranslate(text, fromLang, toLang) {
+  if (!text || !text.trim()) return text;
+  if (fromLang === toLang) return text;
+
+  var cacheKey = getCacheKey(text, fromLang, toLang);
+  if (TRANSLATION_CACHE[cacheKey]) {
+    return TRANSLATION_CACHE[cacheKey];
+  }
+
+  var fromISO = getISO639Code(fromLang);
+  var toISO = getISO639Code(toLang);
+
+  try {
+    var response = await fetch('https://translate.argosopentech.com/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: text,
+        source: fromISO,
+        target: toISO,
+        format: 'text'
+      })
+    });
+    
+    var data = await response.json();
+    
+    if (data && data.translatedText) {
+      TRANSLATION_CACHE[cacheKey] = data.translatedText;
+      saveTranslationCache();
+      return data.translatedText;
+    }
+  } catch (e) {
+    console.warn('LibreTranslate translation failed:', e);
+  }
+
+  return text;
+}
+
+async function translateText(text, toLang, fromLang) {
+  if (!text) return '';
+  if (!toLang) toLang = state ? (state.userLang || 'hi') : 'hi';
+  if (!fromLang) fromLang = 'en';
+  
+  if (fromLang === toLang) return text;
+  
+  var result = await translateWithMyMemory(text, fromLang, toLang);
+  
+  if (result === text && fromLang !== 'en') {
+    var englishText = await translateWithMyMemory(text, fromLang, 'en');
+    if (englishText !== text) {
+      result = await translateWithMyMemory(englishText, 'en', toLang);
+    }
+  }
+  
+  return result;
+}
+
+async function translateDynamicContent(element, toLang) {
+  if (!element || !toLang) return;
+  
+  var textContent = element.textContent || element.innerText;
+  if (textContent && textContent.trim() && textContent.length < 500) {
+    var translated = await translateText(textContent, toLang);
+    if (translated !== textContent) {
+      element.setAttribute('data-original-text', textContent);
+      element.textContent = translated;
+    }
+  }
+  
+  var placeholder = element.getAttribute('placeholder');
+  if (placeholder && placeholder.trim()) {
+    var translatedPlaceholder = await translateText(placeholder, toLang);
+    if (translatedPlaceholder !== placeholder) {
+      element.setAttribute('data-original-placeholder', placeholder);
+      element.setAttribute('placeholder', translatedPlaceholder);
+    }
+  }
+  
+  var children = element.children;
+  for (var i = 0; i < children.length; i++) {
+    if (!children[i].hasAttribute('data-i18n')) {
+      await translateDynamicContent(children[i], toLang);
+    }
+  }
+}
+
+function toggleRealTimeTranslation(enabled) {
+  REAL_TIME_TRANSLATION_ENABLED = enabled;
+  localStorage.setItem('sauda_rt_translation', enabled ? '1' : '0');
+  return REAL_TIME_TRANSLATION_ENABLED;
+}
+
+function isRealTimeTranslationEnabled() {
+  var stored = localStorage.getItem('sauda_rt_translation');
+  if (stored !== null) {
+    REAL_TIME_TRANSLATION_ENABLED = stored === '1';
+  }
+  return REAL_TIME_TRANSLATION_ENABLED;
+}
+
+loadTranslationCache();
+isRealTimeTranslationEnabled();
 
 function getProductTitle(product) {
   var lang = state.userLang || 'hi';
   var map = {
-    hi: product.titleHi || product.title,
-    en: product.titleEn || product.title,
-    mr: product.titleMr || product.title,
-    bn: product.titleBn || product.title,
-    ta: product.titleTa || product.title,
-    te: product.titleTe || product.title,
-    gu: product.titleGu || product.title,
-    pa: product.titlePa || product.title,
-    kn: product.titleKn || product.title,
-    ml: product.titleMl || product.title,
-    or: product.titleOr || product.title,
-    ur: product.titleUr || product.title,
+    hi: product.titleHi, en: product.titleEn, mr: product.titleMr,
+    bn: product.titleBn, ta: product.titleTa, te: product.titleTe,
+    gu: product.titleGu, pa: product.titlePa, kn: product.titleKn,
+    ml: product.titleMl, or: product.titleOr, ur: product.titleUr,
+    as: product.titleAs, ks: product.titleKs, kok: product.titleKok,
+    mai: product.titleMai, sd: product.titleSd, ne: product.titleNe,
+    sa: product.titleSa, sat: product.titleSat, brx: product.titleBrx,
+    doi: product.titleDoi,
   };
   return map[lang] || product.title;
 }
@@ -68,7 +234,7 @@ const TRANS = {
   bol: { hi: 'Bol', en: 'Voice', mr: 'Bol', bn: 'বলো', ta: 'பேசு', te: 'మాట్లాడు', gu: 'બોલ', pa: 'ਬੋਲ', kn: 'ಮಾತನಾಡು', ml: 'സംസാരിക്കുക', or: 'କୁହ', ur: 'بولو', as: 'কোৱা', ks: 'بولو', kok: 'बोल', mai: 'बोलू', sd: 'ڳالهايو', ne: 'बोल', sa: 'वद', sat: 'ᱨᱳᱲ', brx: 'राव', doi: 'बोल' },
   bol_ke_becho: { hi: 'Bol ke Becho', en: 'Voice Sell', mr: 'Bolun Viku', bn: 'বলে বিক্রি করো', ta: 'குரலில் விற்க', te: 'గొంతులో అమ్ము', gu: 'બોલીને વેચો', pa: 'ਬੋਲ ਕੇ ਵੇਚੋ', kn: 'ಧ್ವನಿಯಲ್ಲಿ ಮಾರು', ml: 'ശബ്ദത്തിൽ വിൽക്കുക', or: 'କହି ବିକ', ur: 'بول کر بیچو', as: 'কৈ বেচা', ks: 'بول کٔرِ بیٖچھو', kok: 'उलोवन विक', mai: 'बोलि बेचू', sd: 'ڳالهائي وڪرو', ne: 'बोलेर बेच्नुहोस्', sa: 'वदित्वा विक्रय', sat: 'ᱨᱳᱲ ᱛᱮ ᱟ.ᱠᱤᱱ', brx: 'रावनो बेराय', doi: 'बोल के वेचो' },
   bol_ke_becho_title: { hi: 'Naya Listing Banao', en: 'Create New Listing', mr: 'Navi Yadi Banva', bn: 'নতুন লিস্টিং তৈরি করো', ta: 'புதிய பட்டியல்', te: 'కొత్త లిస్టింగ్', gu: 'નવી લિસ્ટિંગ', pa: 'ਨਵੀਂ ਲਿਸਟਿੰਗ', kn: 'ಹೊಸ ಲಿಸ್ಟಿಂಗ್', ml: 'പുതിയ ലിസ്റ്റിംഗ്', or: 'ନୂଆ ଲିସ୍ଟିଂ', ur: 'نیا لسٹنگ بنائیں', as: 'নতুন লিষ্টিং', ks: 'نئو لسٹنگ', kok: 'नवी यादी', mai: 'नव लिस्टिंग', sd: 'نئون لسٽنگ', ne: 'नयाँ लिस्टिङ', sa: 'नवीन सूची', sat: 'ᱱᱟᱶᱟ ᱞᱤᱥᱴᱤᱝ', brx: 'गोदान लिस्टिंग', doi: 'नई लिस्टिंग' },
-  bol_ke_kharido: { hi: 'Bol ke Kharido', en: 'Voice Buy', mr: 'Bol ke Kharido', bn: 'Bol ke Kharido', ta: 'Bol ke Kharido', te: 'Bol ke Kharido', gu: 'Bol ke Kharido', pa: 'Bol ke Kharido', kn: 'Bol ke Kharido', ml: 'Bol ke Kharido', or: 'Bol ke Kharido', ur: 'Bol ke Kharido', as: 'Bol ke Kharido', ks: 'Bol ke Kharido', kok: 'Bol ke Kharido', mai: 'Bol ke Kharido', sd: 'Bol ke Kharido', ne: 'Bol ke Kharido', sa: 'Bol ke Kharido', sat: 'Bol ke Kharido', brx: 'Bol ke Kharido', doi: 'Bol ke Kharido' },
+  bol_ke_kharido: { hi: 'बोल के खरीदो', en: 'Voice Shopping', mr: 'बोलून खरेदी', bn: 'বলে কেনাকাটা', ta: 'குரலில் ஷாப்பிங்', te: 'గొంతుతో షాపింగ్', gu: 'બોલીને ખરીદી', pa: 'ਬੋਲ ਕੇ ਖਰੀਦਦਾਰੀ', kn: 'ಮಾತನಾಡಿ ಶಾಪಿಂಗ್', ml: 'ശബ്ദത്തിൽ ഷോപ്പിംഗ്', or: 'କହି କିଣାକିଣି', ur: 'بول کر خریداری', as: 'মাতি কিনাকাটি', ks: 'وَتھ کٔرِتھ خریدٲری', kok: 'उलोवन घेवप', mai: 'बोलि किनबेच', sd: 'ڳالهائي خريداري', ne: 'बोलेर किनमेल', sa: 'वाचा क्रयविक्रयम्', sat: 'ᱨᱚᱲ ᱠᱟᱛᱮ ᱥᱮᱞᱮᱫ', brx: 'रावजों लिरबनाय', doi: 'बोल के खरीददारी', },
   bolein: { hi: 'Bolein', en: 'Speak', mr: 'Bola', bn: 'বলুন', ta: 'பேசுங்கள்', te: 'మాట్లాడండి', gu: 'બોલો', pa: 'ਬੋਲੋ', kn: 'ಮಾತನಾಡಿ', ml: 'സംസാരിക്കുക', or: 'କୁହନ୍ତୁ', ur: 'بولیں', as: 'কওক', ks: 'تھٲیِو', kok: 'उलोवात', mai: 'बोलू', sd: 'ڳالهايو', ne: 'बोल्नुहोस्', sa: 'वदतु', sat: 'ᱨᱳᱲ', brx: 'राव', doi: 'बोलो', },
   browse_categories: { hi: 'Browse Categories', en: 'Browse Categories', mr: 'Categories Explor Kara', bn: 'বিভাগগুলি ব্রাউজ করুন', ta: 'வகைகளை உலாவுக', te: 'వర్గాలను బ్రౌజ్ చేయండి', gu: 'શ્રેણીઓ બ્રાઉઝ કરો', pa: 'ਸ਼੍ਰੇਣੀਆਂ ਬ੍ਰਾਊਜ਼ ਕਰੋ', kn: 'ವರ್ಗಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ', ml: 'വിഭാഗങ്ങൾ ബ്രൗസ് ചെയ്യുക', or: 'ଶ୍ରେଣୀଗୁଡ଼ିକ ବ୍ରାଉଜ କରନ୍ତୁ', ur: 'زمرہ جات براؤز کریں', as: 'শ্ৰেণীসমূহ ব্ৰাউজ কৰক', ks: 'زمرے براؤز کٔرِو', kok: 'वर्ग ब्राउज करात', mai: 'श्रेणी ब्राउज करू', sd: 'قسمون براؤز ڪريو', ne: 'कोटिहरू ब्राउज गर्नुहोस्', sa: 'वर्गान् आलोच्यताम्', sat: 'ᱛᱷᱳᱠ ᱠᱚ ᱧᱮᱞᱢᱮ', brx: 'श्रेणी फेराय', doi: 'श्रेणियाँ ब्राउज करो', },
   buyer: { hi: 'Buyer', en: 'Buyer', mr: 'खरेदीदार', bn: 'ক্রেতা', ta: 'வாங்குபவர்', te: 'కొనుగోలుదారు', gu: 'ખરીદનાર', pa: 'ਖਰੀਦਦਾਰ', kn: 'ಖರೀದಿದಾರ', ml: 'വാങ്ങുന്നയാൾ', or: 'କ୍ରେତା', ur: 'خریدار', as: 'ক্ৰেতা', ks: 'خریدار', kok: 'विकत घेवपी', mai: 'खरीददार', sd: 'خريد ڪندڙ', ne: 'क्रेता', sa: 'क्रेता', sat: 'ᱠᱤᱨᱤᱧᱤᱡ', brx: 'बेरजो', doi: 'खरीददार', },
@@ -76,7 +242,7 @@ const TRANS = {
   categories_nav: { hi: 'Categories', en: 'Categories', mr: 'Categories', bn: 'ক্যাটাগরিস', ta: 'வகைகள்', te: 'వర్గాలు', gu: 'શ્રેણીઓ', pa: 'ਸ਼੍ਰੇਣੀਆਂ', kn: 'ವರ್ಗಗಳು', ml: 'വിഭാഗങ്ങൾ', or: 'ଶ୍ରେଣୀମାନ', ur: 'زمرہ جات', as: 'শ্ৰেণীসমূহ', ks: 'زمرے', kok: 'वर्ग', mai: 'श्रेणी', sd: 'قسمون', ne: 'कोटिहरू', sa: 'वर्गाः', sat: 'ᱛᱷᱚᱠ', brx: 'श्रेणी', doi: 'श्रेणियाँ' },
   categories_section: { hi: 'Categories', en: 'Categories', mr: 'Categories', bn: 'ক্যাটাগরিস', ta: 'வகைகள்', te: 'వర్గాలు', gu: 'শ्रेণીઓ', pa: 'ਸ਼੍ਰੇਣੀਆਂ', kn: 'ವರ್ಗಗಳು', ml: 'വിഭാഗങ്ങൾ', or: 'ଶ୍ରେଣୀମାନ', ur: 'زمرہ جات', as: 'শ্রেণীসমূহ', ks: 'زمرے', kok: 'वर्ग', mai: 'श्रेणी', sd: 'قسمون', ne: 'कोटिहरू', sa: 'वर्गाः', sat: 'ᱛᱷᱚᱠ', brx: 'श्रेणी', doi: 'श्रेणियाँ', },
   category_select_label: { hi: 'SHREENI (SARI LAGU HONE PAR CHUNEIN)', en: 'CATEGORY (Select all that apply)', mr: 'वर्ग (सर्व लागू असल्यास निवडा)', bn: 'বিভাগ (প্রযোজ্য সব নির্বাচন করুন)', ta: 'வகை (பொருந்தும் அனைத்தையும் தேர்ந்தெடுக்கவும்)', te: 'వర్గం (వర్తించేవన్నీ ఎంచుకోండి)', gu: 'શ્રેણી (બધા લાગુ પડે તે પસંદ કરો)', pa: 'ਸ਼੍ਰੇਣੀ (ਸਭ ਲਾਗੂ ਚੁਣੋ)', kn: 'ವರ್ಗ (ಎಲ್ಲಾ ಅನ್ವಯಿಸುವವುಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ)', ml: 'വിഭാഗം (ബാധകമായതെല്ലാം തിരഞ്ഞെടുക്കുക)', or: 'ଶ୍ରେଣୀ (ସମସ୍ତ ପ୍ରଯୁଜ୍ୟ ଚୟନ କରନ୍ତୁ)', ur: 'زمرہ (تمام لاگو کا انتخاب کریں)', as: 'শ্ৰেণী (প্ৰযোজ্য সকলো নিৰ্বাচন কৰক)', ks: 'زمرہ (تمام لاگو منتخب کٔرِو)', kok: 'वर्ग (सगले लागू जाल्ले निवडात)', mai: 'श्रेणी (सब लागू होइत चुनू)', sd: 'قسم (سڀ لاڳو چونڊيو)', ne: 'कोटि (सबै लागु हुने चयन गर्नुहोस्)', sa: 'वर्गः (सर्वान् अन्वितान् चिनुत)', sat: 'ᱛᱷᱚᱠ (ᱡᱳᱛ ᱮᱱᱮᱢ ᱵᱟᱪᱷᱟᱣ)', brx: 'श्रेणी (सब लागो फिन सोलों)', doi: 'श्रेणी (सारे लागू चुनो)', },
-  choose_language: { hi: 'Apni bhasha chunein', en: 'Choose your language', mr: 'Apni bhasha chunein', bn: 'Apni bhasha chunein', ta: 'Apni bhasha chunein', te: 'Apni bhasha chunein', gu: 'Apni bhasha chunein', pa: 'Apni bhasha chunein', kn: 'Apni bhasha chunein', ml: 'Apni bhasha chunein', or: 'Apni bhasha chunein', ur: 'Apni bhasha chunein', as: 'Apni bhasha chunein', ks: 'Apni bhasha chunein', kok: 'Apni bhasha chunein', mai: 'Apni bhasha chunein', sd: 'Apni bhasha chunein', ne: 'Apni bhasha chunein', sa: 'Apni bhasha chunein', sat: 'Apni bhasha chunein', brx: 'Apni bhasha chunein', doi: 'Apni bhasha chunein' },
+  choose_language: { hi: 'अपनी भाषा चुनें', en: 'Choose your language', mr: 'तुमची भाषा निवडा', bn: 'আপনার ভাষা নির্বাচন করুন', ta: 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்', te: 'మీ భాషను ఎంచుకోండి', gu: 'તમારી ભાષા પસંદ કરો', pa: 'ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ', kn: 'ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ', ml: 'നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക', or: 'ଆପଣଙ୍କ ଭାଷା ଚୟନ କରନ୍ତୁ', ur: 'اپنی زبان منتخب کریں', as: 'আপোনাৰ ভাষা বাছনি কৰক', ks: 'پنٕہِ زبان منتخب کٔرِو', kok: 'तुमची भास निवडात', mai: 'अहाँक भाषा चुनू', sd: 'پنهنجي ٻولي چونڊيو', ne: 'आफ्नो भाषा चुन्नुहोस्', sa: 'स्वभाषां चिनुत', sat: 'ᱟᱢᱟᱜ ᱯᱟᱹᱨᱥᱤ ᱵᱟᱪᱷᱚᱱ ᱢᱮ', brx: 'आंनि जोंखानि खालाम', doi: 'अपनी भाषा चुनो', },
   choose_role: { hi: 'Choose your role to get started', en: 'Choose your role to get started', mr: 'सुरु करण्यासाठी तुमची भूमिका निवडा', bn: 'শুরু করতে আপনার ভূমিকা বেছে নিন', ta: 'தொடங்க உங்கள் பங்கைத் தேர்ந்தெடுக்கவும்', te: 'ప్రారంభించడానికి మీ పాత్రను ఎంచుకోండి', gu: 'શરૂ કરવા તમારી ભૂમિકા પસંદ કરો', pa: 'ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਆਪਣੀ ਭੂਮਿਕਾ ਚੁਣੋ', kn: 'ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಪಾತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ', ml: 'ആരംഭിക്കാൻ നിങ്ങളുടെ റോൾ തിരഞ്ഞെടുക്കുക', or: 'ଆରମ୍ଭ କରିବାକୁ ଆପଣଙ୍କ ଭୂମିକା ବାଛନ୍ତୁ', ur: 'شروع کرنے کے لیے اپنا کردار منتخب کریں', as: 'আৰম্ভ কৰিবলৈ আপোনাৰ ভূমিকা বাছক', ks: 'شروع کرنہٕ خاطرِ پنٕہِ کردار منتخب کٔرِو', kok: 'सुरु करपा खातीर तुमची भूमिका निवडात', mai: 'शुरू करैक लेल अपन भूमिका चुनू', sd: 'شروع ڪرڻ لاءِ پنهنجو ڪردار چونڊيو', ne: 'सुरु गर्न आफ्नो भूमिका छान्नुहोस्', sa: 'आरम्भाय स्वभूमिकां चिनुत', sat: 'ᱮᱩ ᱞᱟᱹᱜᱤᱫ ᱟᱢᱟᱜ ᱯᱟᱴ ᱵᱟᱪᱷᱟᱣᱢᱮ', brx: 'सुरु खालामनो आंनि भूमिका सोलों', doi: 'शुरू करन लई आपदी भूमिका चुनो', },
   closed_now: { hi: 'Band hai', en: 'Closed now', mr: 'आता बंद आहे', bn: 'এখন বন্ধ', ta: 'இப்போது மூடப்பட்டுள்ளது', te: 'ఇప్పుడు మూసివేయబడింది', gu: 'હવે બંધ છે', pa: 'ਹੁਣ ਬੰਦ ਹੈ', kn: 'ಈಗ ಮುಚ್ಚಲಾಗಿದೆ', ml: 'ഇപ്പോൾ അടച്ചിരിക്കുന്നു', or: 'ବର୍ତ୍ତମାନ ବନ୍ଦ', ur: 'ابھی بند ہے', as: 'এতিয়া বন্ধ', ks: 'أس بند چھُ', kok: 'आता बंद आसा', mai: 'अखनी बंद अछि', sd: 'هاڻي بند آهي', ne: 'अहिले बन्द छ', sa: 'साम्प्रतम् पिहितम्', sat: 'ᱱᱤᱛ ᱵᱚᱸᱫᱽ', brx: 'दान बंद', doi: 'हल्ली बंद है', },
   confirmed: { hi: 'CONFIRMED', en: 'CONFIRMED', mr: 'CONFIRMED', bn: 'নিশ্চিত', ta: 'உறுதி', te: 'నిర్ధారించబడింది', gu: 'પુષ્ટિ', pa: 'ਪੁਸ਼ਟੀ', kn: 'ದೃಢೀಕರಿಸಲಾಗಿದೆ', ml: 'സ്ഥിരീകരിച്ചു', or: 'ନିଶ୍ଚିତ', ur: 'مصنوعہ', as: 'নিশ্চিত', ks: 'مصنوعہ', kok: 'पक्को', mai: 'पुष्टि', sd: 'تصديق ٿيل', ne: 'पुष्टि', sa: 'निर्धारितम्', sat: 'ᱥᱤᱠᱟᱨ', brx: 'फैसालाम', doi: 'पक्का', },
@@ -126,7 +292,7 @@ const TRANS = {
   min_pehle: { hi: ' min pehle', en: ' min ago', mr: ' मिनिटापूर्वी', bn: ' মিনিট আগে', ta: ' நிமிடம் முன்பு', te: ' నిమిషం క్రితం', gu: ' મિનિટ પહેલા', pa: ' ਮਿੰਟ ਪਹਿਲਾਂ', kn: ' ನಿಮಿಷದ ಹಿಂದೆ', ml: ' മിനിറ്റ് മുമ്പ്', or: ' ମିନିଟ ପୂର୍ବେ', ur: ' منٹ پہلے', as: ' মিনিট আগত', ks: ' منٹ پہلے', kok: ' मिनिटा आदीं', mai: ' मिनट पहिने', sd: ' منٽ اڳي', ne: ' मिनेट अघि', sa: ' निमेषात् प्राक्', sat: ' ᱴᱟᱲᱟᱝ ᱞᱟᱦᱟ', brx: ' मिनिट सिगां', doi: ' मिंट पैह्ले', },
   mohalla: { hi: 'Mohalla', en: 'Mohalla', mr: 'Mohalla', bn: 'মহল্লা', ta: 'அக்கம்', te: 'పరిసరాలు', gu: 'મોહલ્લો', pa: 'ਮੁਹੱਲਾ', kn: 'ಸಮೀಪ', ml: 'അയൽപക്കം', or: 'ପଡ଼ିଆ', ur: 'محلہ', as: 'মহল্লা', ks: 'محلہ', kok: 'मोहल्लो', mai: 'मोहल्ला', sd: 'محلو', ne: 'टोल', sa: 'समीपम्', sat: 'ᱴᱚᱞᱟ', brx: 'मोहल्ला', doi: 'मुहल्ला' },
   mohalla_market: { hi: 'Mohalla Market', en: 'Neighborhood Market', mr: 'Mahalla Market', bn: 'মহল্লা মার্কেট', ta: 'அக்கம்பக்க சந்தை', te: 'పరిసర మార్కెట్', gu: 'મોહલ્લા માર્કેટ', pa: 'ਮੁਹੱਲਾ ਮਾਰਕੀਟ', kn: 'ಮೊಹಲ್ಲಾ ಮಾರುಕಟ್ಟೆ', ml: 'അയൽപക്ക ചന്ത', or: 'ପଡ଼ିଆ ବଜାର', ur: 'محلہ مارکیٹ', as: 'মহল্লা বজাৰ', ks: 'محلہ مارکیٹ', kok: 'मोहल्लो बाजार', mai: 'मोहल्ला बजार', sd: 'محلي مارڪيٽ', ne: 'टोल बजार', sa: 'समीपबाजारः', sat: 'ᱴᱚᱞᱟ ᱵᱟᱡᱟᱨ', brx: 'मोहल्ला बाजार', doi: 'मुहल्ला बाजार', },
-  more_languages: { hi: 'Aur bhashayein', en: 'More languages', mr: 'Aur bhashayein', bn: 'Aur bhashayein', ta: 'Aur bhashayein', te: 'Aur bhashayein', gu: 'Aur bhashayein', pa: 'Aur bhashayein', kn: 'Aur bhashayein', ml: 'Aur bhashayein', or: 'Aur bhashayein', ur: 'Aur bhashayein', as: 'Aur bhashayein', ks: 'Aur bhashayein', kok: 'Aur bhashayein', mai: 'Aur bhashayein', sd: 'Aur bhashayein', ne: 'Aur bhashayein', sa: 'Aur bhashayein', sat: 'Aur bhashayein', brx: 'Aur bhashayein', doi: 'Aur bhashayein' },
+  more_languages: { hi: 'और भाषाएं', en: 'More languages', mr: 'आणखी भाषा', bn: 'আরও ভাষা', ta: 'மேலும் மொழிகள்', te: 'మరిన్ని భాషలు', gu: 'વધુ ભાષાઓ', pa: 'ਹੋਰ ਭਾਸ਼ਾਵਾਂ', kn: 'ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು', ml: 'കൂടുതൽ ഭാഷകൾ', or: 'ଅଧିକ ଭାଷା', ur: 'مزید زبانیں', as: 'অধিক ভাষা', ks: 'مزید زبانیں', kok: 'आनी भासो', mai: 'आरू भाषा', sd: 'وڌيڪ ٻوليون', ne: 'अरू भाषाहरू', sa: 'अधिक भाषाः', sat: 'ᱵᱟᱹᱲᱛᱤ ᱯᱟᱹᱨᱥᱤᱠᱚ', brx: 'गोबां जोंखा', doi: 'होर भाषाएं', },
   more_shops_in_area: { hi: 'Is kshetra mein aur dukanein', en: 'More shops in this area', mr: 'या भागात अधिक दुकाने', bn: 'এই এলাকায় আরও দোকান', ta: 'இந்த பகுதியில் மேலும் கடைகள்', te: 'ఈ ప్రాంతంలో మరిన్ని దుకాణాలు', gu: 'આ વિસ્તારમાં વધુ દુકાનો', pa: 'ਇਸ ਖੇਤਰ ਵਿੱਚ ਹੋਰ ਦੁਕਾਨਾਂ', kn: 'ಈ ಪ್ರದೇಶದಲ್ಲಿ ಹೆಚ್ಚಿನ ಅಂಗಡಿಗಳು', ml: 'ഈ പ്രദേശത്ത് കൂടുതൽ കടകൾ', or: 'ଏହି କ୍ଷେତ୍ରରେ ଅଧିକ ଦୋକାନ', ur: 'اس علاقے میں مزید دکانیں', as: 'এই অঞ্চলত অধিক দোকান', ks: 'ییٚتِھ علاقس منٛز بییہٕ دکانہٕ', kok: 'ह्या भागांत आनीक दुकानां', mai: 'एहि क्षेत्र में आर दुकान', sd: 'هن علائقي ۾ وڌيڪ دوڪان', ne: 'यस क्षेत्रमा थप पसलहरू', sa: 'अस्मिन् क्षेत्रे अधिकाः आपणाः', sat: 'ᱤᱱ ᱡᱟᱭᱜᱟ ᱨᱮ ᱵᱟᱹᱲᱛᱤ ᱫᱳᱠᱟᱱ', brx: 'बे जायगा आव मोनसेन दुकान', doi: 'एस क्षेत्र च होर दुकानां', },
   my_orders: { hi: 'My Orders', en: 'My Orders', mr: 'Maze Orders', bn: 'আমার অর্ডার', ta: 'என் ஆர்டர்கள்', te: 'నా ఆర్డర్లు', gu: 'મારા ઓર્ડર', pa: 'ਮੇਰੇ ਆਰਡਰ', kn: 'ನನ್ನ ಆರ್ಡರ್‌ಗಳು', ml: 'എന്റെ ഓർഡറുകൾ', or: 'ମୋ ଅର୍ଡର', ur: 'میرے آرڈر', as: 'মোৰ অৰ্ডাৰ', ks: 'میٖنِ آرڈر', kok: 'म्हजे ऑर्डर', mai: 'हमर आर्डर', sd: 'منهنجا آرڊر', ne: 'मेरो अर्डर', sa: 'मम आदेशाः', sat: 'ᱟᱹᱢᱟᱜ ᱟᱨᱰᱟᱨ', brx: 'आंनि आर्डर', doi: 'मेरे आर्डर', },
   namaste: { hi: 'Namaste', en: 'Hello', mr: 'Namaskar', bn: 'নমস্কার', ta: 'வணக்கம்', te: 'నమస్కారం', gu: 'નમસ્તે', pa: 'ਸਤ ਸ਼੍ਰੀ ਅਕਾਲ', kn: 'ನಮಸ್ಕಾರ', ml: 'നമസ്കാരം', or: 'ନମସ୍କାର', ur: 'نمستے', as: 'নমস্কাৰ', ks: 'नमस्कार', kok: 'नमस्कार', mai: 'नमस्कार', sd: 'نمستي', ne: 'नमस्ते', sa: 'नमस्कारः', sat: 'ᱡᱳᱦᱟᱨ', brx: 'नमस्कार', doi: 'नमस्कार', },
@@ -178,7 +344,7 @@ const TRANS = {
   saved_tost: { hi: ' saved!', en: ' saved!', mr: ' सेव केले!', bn: ' সংরক্ষিত!', ta: ' சேமிக்கப்பட்டது!', te: ' సేవ్ చేయబడింది!', gu: ' સાચવ્યું!', pa: ' ਸੇਵ ਕੀਤਾ!', kn: ' ಉಳಿಸಲಾಗಿದೆ!', ml: ' സംരക്ഷിച്ചു!', or: ' ସଞ୍ଚୟ ହେଲା!', ur: ' محفوظ!', as: ' সংৰক্ষণ!', ks: ' محفوظ!', kok: ' सांबाळून दवरलें!', mai: ' सेव भेल!', sd: ' محفوظ!', ne: ' सुरक्षित!', sa: ' रक्षितम्!', sat: ' ᱨᱟᱠᱷᱟ!', brx: ' राखियाबाय!', doi: ' सेव होइ गेआ!', },
   search_placeholder: { hi: 'Apne mohalle mein dhundho...', en: 'Search in your neighborhood...', mr: 'Tumchya mohallayat shodha...', bn: 'আপনার পাড়ায় খুঁজুন...', ta: 'உங்கள் பகுதியில் தேடுங்கள்...', te: 'మీ పరిసరాల్లో వెతకండి...', gu: 'તમારા મોહલ્લામાં શોધો...', pa: 'ਆਪਣੇ ਮੁਹੱਲੇ ਵਿੱਚ ਲੱਭੋ...', kn: 'ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಹುಡುಕಿ...', ml: 'നിങ്ങളുടെ പ്രദേശത്ത് തിരയുക...', or: 'ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଖୋଜନ୍ତୁ...', ur: 'اپنے محلے میں تلاش کریں...', as: 'আপোনাৰ অঞ্চলত সন্ধান কৰক...', ks: 'پیٚمِس محلہَس منٛز تلاش کٔرِو...', kok: 'तुमच्या मोहल्ल्यांत सोधात...', mai: 'अपने मोहल्ले में खोजू...', sd: 'پنهنجي محلي ۾ ڳوليو...', ne: 'आफ्नो टोलमा खोज्नुहोस्...', sa: 'स्वसमीपे अन्विष्यताम्...', sat: 'ᱟᱢᱟᱜ ᱴᱚᱞᱟ ᱨᱮ ᱥᱮᱢ ᱢᱮ...', brx: 'आंनि मोहल्लाव सोदोब...', doi: 'अपने मुहल्ले च खोजो...', },
   search_results: { hi: 'Search Results', en: 'Search Results', mr: 'Search Results', bn: 'Search Results', ta: 'Search Results', te: 'Search Results', gu: 'Search Results', pa: 'Search Results', kn: 'Search Results', ml: 'Search Results', or: 'Search Results', ur: 'Search Results', as: 'Search Results', ks: 'Search Results', kok: 'Search Results', mai: 'Search Results', sd: 'Search Results', ne: 'Search Results', sa: 'Search Results', sat: 'Search Results', brx: 'Search Results', doi: 'Search Results' },
-  searching_products: { hi: 'Dhundh raha hoon...', en: 'Searching products...', mr: 'Dhundh raha hoon...', bn: 'Dhundh raha hoon...', ta: 'Dhundh raha hoon...', te: 'Dhundh raha hoon...', gu: 'Dhundh raha hoon...', pa: 'Dhundh raha hoon...', kn: 'Dhundh raha hoon...', ml: 'Dhundh raha hoon...', or: 'Dhundh raha hoon...', ur: 'Dhundh raha hoon...', as: 'Dhundh raha hoon...', ks: 'Dhundh raha hoon...', kok: 'Dhundh raha hoon...', mai: 'Dhundh raha hoon...', sd: 'Dhundh raha hoon...', ne: 'Dhundh raha hoon...', sa: 'Dhundh raha hoon...', sat: 'Dhundh raha hoon...', brx: 'Dhundh raha hoon...', doi: 'Dhundh raha hoon...' },
+  searching_products: { hi: 'ढूंढ रहा हूँ...', en: 'Searching products...', mr: 'शोधत आहे...', bn: 'খুঁজছি...', ta: 'தேடுகிறது...', te: 'వెతుకుతోంది...', gu: 'શોધી રહ્યા છે...', pa: 'ਖੋਜ ਰਿਹਾ ਹੈ...', kn: 'ಹುಡುಕುತ್ತಿದೆ...', ml: 'തിരയുന്നു...', or: 'ଖୋଜୁଛି...', ur: 'تلاش کر رہا ہے...', as: 'সন্ধান কৰি আছে...', ks: 'ڳولان چھُ...', kok: 'सोदतां...', mai: 'खोजैत छी...', sd: 'ڳولي رهيو آهي...', ne: 'खोज्दै...', sa: 'अन्वेषणं कुर्वन्...', sat: 'ᱥᱮᱸᱫᱽᱨᱟ ᱠᱟᱱᱟ...', brx: 'सोदिनो...', doi: 'लभदा...', },
   select_categories: { hi: 'Select categories', en: 'Select categories', mr: 'श्रेण्या निवडा', bn: 'বিভাগ নির্বাচন করুন', ta: 'வகைகளைத் தேர்ந்தெடுக்கவும்', te: 'వర్గాలను ఎంచుకోండి', gu: 'શ્રેણીઓ પસંદ કરો', pa: 'ਸ਼੍ਰੇਣੀਆਂ ਚੁਣੋ', kn: 'ವರ್ಗಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ', ml: 'വിഭാഗങ്ങൾ തിരഞ്ഞെടുക്കുക', or: 'ଶ୍ରେଣୀ ଚୟନ କରନ୍ତୁ', ur: 'زمرے منتخب کریں', as: 'শ্ৰেণী নিৰ্বাচন কৰক', ks: 'زمرٕ منتخب کٔرِو', kok: 'वर्ग निवडात', mai: 'श्रेणी चुनू', sd: 'درجا چونڊيو', ne: 'कोटीहरू छान्नुहोस्', sa: 'वर्गान् चिनुत', sat: 'ᱵᱤᱵᱷᱟᱜᱽ ᱵᱟᱪᱷᱟᱣ', brx: 'गोरोब जेरि', doi: 'वर्ग चुनो', },
   select_interests: { hi: 'Select your interests for personalized feed', en: 'Select your interests for personalized feed', mr: 'वैयक्तिक फीडसाठी आपली आवड निवडा', bn: 'ব্যক্তিগতকৃত ফিডের জন্য আপনার আগ্রহ নির্বাচন করুন', ta: 'தனிப்பயனாக்கப்பட்ட ஊட்டத்திற்கு உங்கள் ஆர்வங்களைத் தேர்ந்தெடுக்கவும்', te: 'వ్యక్తిగతీకరించిన ఫీడ్ కోసం మీ ఆసక్తులను ఎంచుకోండి', gu: 'વ્યક્તિગત ફીડ માટે તમારી રુચિઓ પસંદ કરો', pa: 'ਨਿੱਜੀ ਫੀਡ ਲਈ ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਚੁਣੋ', kn: 'ವೈಯಕ್ತಿಕ ಫೀಡ್‌ಗಾಗಿ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ', ml: 'വ്യക്തിഗത ഫീഡിനായി നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ തിരഞ്ഞെടുക്കുക', or: 'ବ୍ୟକ୍ତିଗତ ଫିଡ ପାଇଁ ଆପଣଙ୍କ ଆଗ୍ରହ ଚୟନ କରନ୍ତୁ', ur: 'ذاتی فیڈ کے لیے اپنی دلچسپیاں منتخب کریں', as: 'ব্যক্তিগত ফিডৰ বাবে আপোনাৰ আগ্ৰহ নিৰ্বাচন কৰক', ks: 'ذاتی فیڈس خاطرِ پنٕہِ دلچسپیاں منتخب کٔرِو', kok: 'वैयक्तिक फीड खातीर तुमची आवड निवडात', mai: 'निजी फीड लेल अहाँक रुचि चुनू', sd: 'ذاتي فيڊ لاءِ پنهنجي دلچسپيون چونڊيو', ne: 'व्यक्तिगत फीडको लागि आफ्नो रुचिहरू छान्नुहोस्', sa: 'वैयक्तिकफीडाय स्वाभिरुचीन् चिनुत', sat: 'ᱟᱪᱤᱱ ᱯᱷᱤᱰ ᱞᱟᱹᱜᱤᱫ ᱟᱢᱟᱜ ᱨᱩᱪᱤ ᱵᱟᱪᱷᱟᱣᱢᱮ', brx: 'आंनि मोनथाइ सोलोनो फीड खालाम', doi: 'निजी फीड लई अपणियां रुचियां चुनो', },
   seller: { hi: 'Seller', en: 'Seller', mr: 'Seller', bn: 'Seller', ta: 'Seller', te: 'Seller', gu: 'Seller', pa: 'Seller', kn: 'Seller', ml: 'Seller', or: 'Seller', ur: 'Seller', as: 'Seller', ks: 'Seller', kok: 'Seller', mai: 'Seller', sd: 'Seller', ne: 'Seller', sa: 'Seller', sat: 'Seller', brx: 'Seller', doi: 'Seller' },
@@ -225,7 +391,7 @@ const TRANS = {
   trusted_connections: { hi: 'trusted connections', en: 'trusted connections', mr: 'विश्वासू कनेक्शन्स', bn: 'বিশ্বস্ত সংযোগ', ta: 'நம்பிக்கை இணைப்புகள்', te: 'నమ్మకమైన కనెక్షన్లు', gu: 'વિશ્વાસુ કનેક્શન્સ', pa: 'ਭਰੋਸੇਯੋਗ ਕਨੈਕਸ਼ਨ', kn: 'ವಿಶ್ವಾಸಾರ್ಹ ಸಂಪರ್ಕಗಳು', ml: 'വിശ്വസ്ത കണക്ഷനുകൾ', or: 'ବିଶ୍ୱସ୍ତ ସଂଯୋଗ', ur: 'معتبر کنکشنز', as: 'বিশ্বস্ত সংযোগ', ks: 'معتبر کنکشن', kok: 'विश्वासू जोडण्यो', mai: 'भरोसेमंद संबंध', sd: 'معتبر ڪنيڪشن', ne: 'भरपर्दो जडानहरू', sa: 'विश्वसनीयसम्बन्धाः', sat: 'ᱵᱷᱳᱨᱥᱟ ᱡᱳᱜ', brx: 'फैसलाजो जोरनाय', doi: 'भरोसेमंद जुड़ाव', },
   verified: { hi: 'Verified', en: 'Verified', mr: 'सत्यापित', bn: 'যাচাইকৃত', ta: 'சரிபார்க்கப்பட்டது', te: 'ధృవీకరించబడింది', gu: 'ચકાસાયેલ', pa: 'ਪ੍ਰਮਾਣਿਤ', kn: 'ಪರಿಶೀಲಿಸಲಾಗಿದೆ', ml: 'സ്ഥിരീകരിച്ചു', or: 'ଯାଞ୍ଚ', ur: 'تصدیق شدہ', as: 'যাচাই', ks: 'تصدیق شدٕ', kok: 'पडताळून', mai: 'प्रमाणित', sd: 'تصديق ٿيل', ne: 'प्रमाणित', sa: 'प्रमाणितः', sat: 'ᱵᱷᱟᱹᱨᱛᱤ', brx: 'जायगाबाय', doi: 'तस्दीक', },
   voice: { hi: 'Voice', en: 'Voice', mr: 'Voice', bn: 'ভয়েস', ta: 'குரல்', te: 'వాయిస్', gu: 'વૉઇસ', pa: 'ਆਵਾਜ਼', kn: 'ಧ್ವನಿ', ml: 'ശബ്ദം', or: 'ଭଏସ୍', ur: 'آواز', as: 'কণ্ঠ', ks: 'آواز', kok: 'आवाज', mai: 'आवाज', sd: 'آواز', ne: 'आवाज', sa: 'स्वरः', sat: 'ᱨᱟᱦᱟ', brx: 'राव', doi: 'आवाज', },
-  voice_buy_subtitle: { hi: 'Jo chahiye, boliye — hum dhundh denge', en: 'Speak what you need — we will find it', mr: 'Jo chahiye, boliye — hum dhundh denge', bn: 'Jo chahiye, boliye — hum dhundh denge', ta: 'Jo chahiye, boliye — hum dhundh denge', te: 'Jo chahiye, boliye — hum dhundh denge', gu: 'Jo chahiye, boliye — hum dhundh denge', pa: 'Jo chahiye, boliye — hum dhundh denge', kn: 'Jo chahiye, boliye — hum dhundh denge', ml: 'Jo chahiye, boliye — hum dhundh denge', or: 'Jo chahiye, boliye — hum dhundh denge', ur: 'Jo chahiye, boliye — hum dhundh denge', as: 'Jo chahiye, boliye — hum dhundh denge', ks: 'Jo chahiye, boliye — hum dhundh denge', kok: 'Jo chahiye, boliye — hum dhundh denge', mai: 'Jo chahiye, boliye — hum dhundh denge', sd: 'Jo chahiye, boliye — hum dhundh denge', ne: 'Jo chahiye, boliye — hum dhundh denge', sa: 'Jo chahiye, boliye — hum dhundh denge', sat: 'Jo chahiye, boliye — hum dhundh denge', brx: 'Jo chahiye, boliye — hum dhundh denge', doi: 'Jo chahiye, boliye — hum dhundh denge' },
+  voice_buy_subtitle: { hi: 'जो चाहिए, बोलिए — हम ढूंढ देंगे', en: 'Speak what you need — we will find it', mr: 'जे हवे ते बोला — आम्ही शोधू', bn: 'যা দরকার বলুন — আমরা খুঁজে দেব', ta: 'உங்களுக்குத் தேவையானதைச் சொல்லுங்கள் — நாங்கள் கண்டுபிடிப்போம்', te: 'మీకు కావలసినది చెప్పండి — మేము కనుగొంటాము', gu: 'જે જોઈએ તે બોલો — અમે શોધી આપીશું', pa: 'ਜੋ ਚਾਹੀਦਾ ਹੈ ਬੋਲੋ — ਅਸੀਂ ਲੱਭ ਦੇਵਾਂਗੇ', kn: 'ನಿಮಗೆ ಬೇಕಾದುದನ್ನು ಹೇಳಿ — ನಾವು ಹುಡುಕುತ್ತೇವೆ', ml: 'വേണ്ടത് പറയൂ — ഞങ്ങൾ കണ്ടെത്തും', or: 'ଯାହା ଦରକାର କୁହନ୍ତୁ — ଆମେ ଖୋଜି ଦେବୁ', ur: 'جو چاہیے بولیں — ہم ڈھونڈ دیں گے', as: 'যি লাগে কওক — আমি বিচাৰি দিম', ks: 'یُس چھُہ سٮ۪ٔن — أسہِ ڳولِتھ دِٮ۪ٔو', kok: 'जे जाय तें सांगात — आमी सोदून दितले', mai: 'जे चाही बोलू — हम खोजि देब', sd: 'جِي گهربل آهي ڳالهايو — اسين ڳولي ڏينداسين', ne: 'जे चाहिन्छ बोल्नुहोस् — हमी खोजिदिन्छौं', sa: 'यद् इच्छति वदतु — वयम् अन्विष्यामः', sat: 'ᱡᱟᱦᱟᱸ ᱞᱟᱹᱠᱛᱤ ᱢᱮᱢᱮ — ᱟᱞᱚ ᱧᱟᱢ ᱠᱮᱫᱮᱭᱟ', brx: 'जो गोनाय जायो राव — जों सोदिनो', doi: 'जे चाहिदा बोलो — असां लभदे आं', },
   voice_item_detected: { hi: 'Voice se item detect kiya!', en: 'Item detected by voice!', mr: 'वॉइस वरून आयटम सापडला!', bn: 'ভয়েস দিয়ে আইটেম সনাক্ত!', ta: 'குரலில் பொருள் கண்டறியப்பட்டது!', te: 'వాయిస్ ద్వారా అంశం కనుగొనబడింది!', gu: 'વૉઇસ દ્વારા આઇટમ શોધી!', pa: 'ਆਵਾਜ਼ ਰਾਹੀਂ ਆਈਟਮ ਮਿਲੀ!', kn: 'ಧ್ವನಿಯ ಮೂಲಕ ವಸ್ತು ಪತ್ತೆ!', ml: 'ശബ്ദത്തിലൂടെ ഇനം കണ്ടെത്തി!', or: 'ଭଏସରେ ଆଇଟମ ଚିହ୍ନଟ!', ur: 'آواز سے آئٹم دریافت!', as: 'কণ্ঠৰে আইটেম চিনাক্ত!', ks: 'آواز سۭتہ آئٹم دریافت!', kok: 'आवाजान आयटम सापडलो!', mai: 'आवाज स आइटम भेटल!', sd: 'آواز سان آئٽم معلوم!', ne: 'आवाजले वस्तु पत्ता!', sa: 'स्वरेण वस्तुः आविष्कृता!', sat: 'ᱨᱟᱦᱟᱛᱮ ᱟᱭᱴᱮᱢ ᱧᱟᱢ!', brx: 'रावनो आइटम मोन!', doi: 'आवाज नाल आइटम लब्भा!', },
   vouchchain: { hi: 'VouchChain', en: 'VouchChain', mr: 'VouchChain', bn: 'VouchChain', ta: 'VouchChain', te: 'VouchChain', gu: 'VouchChain', pa: 'VouchChain', kn: 'VouchChain', ml: 'VouchChain', or: 'VouchChain', ur: 'VouchChain', as: 'VouchChain', ks: 'VouchChain', kok: 'VouchChain', mai: 'VouchChain', sd: 'VouchChain', ne: 'VouchChain', sa: 'VouchChain', sat: 'VouchChain', brx: 'VouchChain', doi: 'VouchChain' },
   vouchchain_secured: { hi: 'VOUCHCHAIN SECURED', en: 'VOUCHCHAIN SECURED', mr: 'VOUCHCHAIN SECURED', bn: 'VOUCHCHAIN SECURED', ta: 'VOUCHCHAIN SECURED', te: 'VOUCHCHAIN SECURED', gu: 'VOUCHCHAIN SECURED', pa: 'VOUCHCHAIN SECURED', kn: 'VOUCHCHAIN SECURED', ml: 'VOUCHCHAIN SECURED', or: 'VOUCHCHAIN SECURED', ur: 'VOUCHCHAIN SECURED', as: 'VOUCHCHAIN SECURED', ks: 'VOUCHCHAIN SECURED', kok: 'VOUCHCHAIN SECURED', mai: 'VOUCHCHAIN SECURED', sd: 'VOUCHCHAIN SECURED', ne: 'VOUCHCHAIN SECURED', sa: 'VOUCHCHAIN SECURED', sat: 'VOUCHCHAIN SECURED', brx: 'VOUCHCHAIN SECURED', doi: 'VOUCHCHAIN SECURED' },
@@ -238,19 +404,122 @@ const TRANS = {
 };
 
 function getText(key) {
-  var lang = state.userLang || 'hi';
+  var lang = state ? (state.userLang || 'hi') : 'hi';
   var t = TRANS[key];
   if (!t) return key;
   return t[lang] || t['hi'] || t['en'] || key;
+}
+
+async function getTextAsync(key, toLang) {
+  if (!toLang) toLang = state ? (state.userLang || 'hi') : 'hi';
+  var fromLang = 'en';
+  
+  var t = TRANS[key];
+  if (t && (t[toLang] || t['hi'] || t['en'])) {
+    return t[toLang] || t['hi'] || t['en'];
+  }
+  
+  if (REAL_TIME_TRANSLATION_ENABLED) {
+    var sourceText = t ? (t['en'] || t['hi'] || key) : key;
+    var translated = await translateText(sourceText, toLang, t ? (t['en'] ? 'en' : 'hi') : 'en');
+    return translated;
+  }
+  
+  return key;
 }
 
 function __(key) {
   return getText(key);
 }
 
+function getFallbackLanguage(code) {
+  var fallbackMap = {
+    'kok': 'mr',
+    'mai': 'hi',
+    'brx': 'as',
+    'doi': 'hi',
+    'sat': 'hi',
+    'ks': 'ur',
+    'sd': 'hi',
+    'sa': 'hi',
+    'ne': 'hi',
+  };
+  return fallbackMap[code] || null;
+}
+
+async function applyLanguageRTL() {
+  var code = state.userLang || 'hi';
+  
+  var langBtn = document.getElementById('lang-btn-text');
+  if (langBtn) langBtn.textContent = code.toUpperCase();
+  
+  var elements = document.querySelectorAll('[data-i18n]');
+  for (var i = 0; i < elements.length; i++) {
+    var el = elements[i];
+    var key = el.getAttribute('data-i18n');
+    var originalText = el.getAttribute('data-original-text') || el.textContent;
+    
+    var t = TRANS[key];
+    if (t && t[code]) {
+      el.textContent = t[code];
+    } else if (REAL_TIME_TRANSLATION_ENABLED) {
+      var sourceText = t ? (t['en'] || t['hi'] || key) : originalText;
+      var sourceLang = t ? (t['en'] ? 'en' : 'hi') : 'en';
+      
+      var translated = await translateText(sourceText, code, sourceLang);
+      if (translated !== sourceText) {
+        el.setAttribute('data-original-text', originalText);
+        el.textContent = translated;
+      }
+    }
+  }
+  
+  var placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+  for (var j = 0; j < placeholders.length; j++) {
+    var elPh = placeholders[j];
+    var keyPh = elPh.getAttribute('data-i18n-placeholder');
+    var originalPh = elPh.getAttribute('data-original-placeholder') || elPh.placeholder;
+    
+    var tPh = TRANS[keyPh];
+    if (tPh && tPh[code]) {
+      elPh.placeholder = tPh[code];
+    } else if (REAL_TIME_TRANSLATION_ENABLED) {
+      var sourcePh = tPh ? (tPh['en'] || tPh['hi'] || keyPh) : originalPh;
+      var sourceLangPh = tPh ? (tPh['en'] ? 'en' : 'hi') : 'en';
+      
+      var translatedPh = await translateText(sourcePh, code, sourceLangPh);
+      if (translatedPh !== sourcePh) {
+        elPh.setAttribute('data-original-placeholder', originalPh);
+        elPh.placeholder = translatedPh;
+      }
+    }
+  }
+  
+  var title = TRANS['site_title'];
+  if (title && title[code]) {
+    document.title = title[code];
+  }
+  
+  var rtlLangs = ['ur', 'ks', 'sd'];
+  if (rtlLangs.indexOf(code) !== -1) {
+    document.documentElement.dir = 'rtl';
+  } else {
+    document.documentElement.dir = 'ltr';
+  }
+}
+
 function getCategoryName(cat) {
   if (!cat) return '';
   var lang = state.userLang || 'hi';
-  if (lang === 'hi') return cat.name || cat.nameEn || cat.id;
-  return cat.nameEn || cat.name || cat.id;
+  var map = {
+    hi: cat.name, en: cat.nameEn, mr: cat.nameMr,
+    bn: cat.nameBn, ta: cat.nameTa, te: cat.nameTe,
+    gu: cat.nameGu, pa: cat.namePa, kn: cat.nameKn,
+    ml: cat.nameMl, or: cat.nameOr, ur: cat.nameUr,
+    as: cat.nameAs, ks: cat.nameKs, kok: cat.nameKok,
+    mai: cat.nameMai, sd: cat.nameSd, ne: cat.nameNe,
+    sa: cat.nameSa, sat: cat.nameSat, brx: cat.nameBrx,
+    doi: cat.nameDoi,
+  };
+  return map[lang] || cat.name || cat.nameEn;
 }

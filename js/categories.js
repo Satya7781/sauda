@@ -38,7 +38,7 @@ function selectCategory(catId) {
       return '<div class="s-card flex overflow-hidden mb-2 cursor-pointer" onclick="openProductDetail(' + p.id + ')">' +
         productImageHTML(p, 80, 100) +
         '<div class="flex-1 p-3 flex flex-col justify-between">' +
-        '<div><h4 class="text-sm font-bold truncate">' + getProductTitle(p) + '</h4><p class="text-[10px]" style="color:var(--text2)">' + (state.userLang === 'hi' ? p.titleEn || '' : p.titleHi || '') + ' — ' + p.unit + '</p></div>' +
+        '<div><h4 class="text-sm font-bold truncate">' + getProductTitle(p) + '</h4><p class="text-[10px]" style="color:var(--text2)">' + (state.userLang === 'en' ? p.titleHi || '' : p.titleEn || '') + ' — ' + p.unit + '</p></div>' +
         '<div class="flex items-center justify-between mt-1.5">' +
         '<span class="text-sm font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
         '<div class="vouch-tag text-[9px]"><i class="fa-solid fa-user-check text-[7px]"></i>' + v.name.split(' ')[0] + '</div>' +

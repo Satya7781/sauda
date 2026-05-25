@@ -32,7 +32,7 @@ function openProductDetail(pid) {
     '</div>' +
 
     '<h2 class="text-xl font-extrabold mb-1" style="font-family:\'Space Grotesk\',sans-serif">' + getProductTitle(p) + '</h2>' +
-    '<p class="text-sm mb-3" style="color:var(--text2)">' + (state.userLang === 'hi' ? (p.titleEn || '') : (p.titleHi || '')) + '</p>' +
+    '<p class="text-sm mb-3" style="color:var(--text2)">' + (state.userLang === 'en' ? (p.titleHi || '') : (p.titleEn || '')) + '</p>' +
 
     '<div class="flex items-baseline gap-2 mb-4">' +
     '<span class="text-2xl font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
@@ -135,7 +135,7 @@ function openSellerModal(sid) {
     prods.map(function (p) {
       return '<div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg2);border:1px solid var(--card-border)">' +
         productImageHTMLSmall(p) +
-        '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + getProductTitle(p) + '</p><p class="text-[10px]" style="color:var(--text3)">' + (state.userLang === 'hi' ? p.titleEn || '' : p.titleHi || '') + ' — ' + p.unit + '</p></div>' +
+        '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + getProductTitle(p) + '</p><p class="text-[10px]" style="color:var(--text3)">' + (state.userLang === 'en' ? p.titleHi || '' : p.titleEn || '') + ' — ' + p.unit + '</p></div>' +
         '<span class="text-sm font-extrabold flex-shrink-0" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
         '<button class="px-3 py-1.5 rounded-lg text-xs font-bold" style="background:var(--trust-light);color:var(--trust);border:none;cursor:pointer" onclick="confirmOrder(\'' + p.id + '\')">' + __('sauda') + '</button>' +
         '</div>';

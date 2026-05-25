@@ -148,7 +148,7 @@ function renderFeed() {
           (seller.isLive ? '<div class="flex items-center gap-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[9px] font-bold" style="color:var(--trust)">'+__('live')+'</span></div>' : '') +
           '</div>' +
           '<h4 class="text-sm font-bold leading-tight truncate">' + getProductTitle(p) + '</h4>' +
-      '<p class="text-[10px] truncate" style="color:var(--text2)">' + (state.userLang === 'hi' ? p.titleEn || '' : p.titleHi || '') + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
+      '<p class="text-[10px] truncate" style="color:var(--text2)">' + (state.userLang === 'en' ? p.titleHi || '' : p.titleEn || '') + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
           '</div>' +
           '<div class="flex items-center justify-between mt-2">' +
           '<span class="text-base font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
@@ -205,7 +205,7 @@ function renderFeed() {
       (seller.isLive ? '<div class="flex items-center gap-1"><div class="pulse-dot" style="width:5px;height:5px"></div><span class="text-[9px] font-bold" style="color:var(--trust)">'+__('live')+'</span></div>' : '') +
       '</div>' +
       '<h4 class="text-sm font-bold leading-tight truncate">' + getProductTitle(p) + '</h4>' +
-      '<p class="text-[10px] truncate" style="color:var(--text2)">' + (state.userLang === 'hi' ? p.titleEn || '' : p.titleHi || '') + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
+      '<p class="text-[10px] truncate" style="color:var(--text2)">' + (state.userLang === 'en' ? p.titleHi || '' : p.titleEn || '') + ' — ' + p.unit + ' — ' + seller.distance + '</p>' +
       '</div>' +
       '<div class="flex items-center justify-between mt-2">' +
       '<span class="text-base font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +

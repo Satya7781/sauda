@@ -53,7 +53,7 @@
         <i class="fa-solid fa-language"></i>
         <span id="lang-btn-text">HI</span>
       </button>
-      <div id="lang-menu" class="absolute right-0 top-full mt-1 rounded-xl shadow-lg z-50" style="display:none;background:#fff;border:1px solid #EDE5D5;width:200px;max-height:300px;overflow-y:auto">
+      <div id="lang-menu" class="absolute right-0 top-full mt-1 rounded-xl shadow-lg z-50" style="display:none;background:#fff;border:1px solid #EDE5D5;width:220px;max-height:420px;overflow-y:auto">
       </div>
     </div>
 </header>
@@ -743,18 +743,19 @@
     menu.style.display = isOpen ? 'none' : 'block';
     if (!isOpen) renderLangMenu();
   }
-  function renderLangMenu() {
-    var menu = document.getElementById('lang-menu');
-    menu.innerHTML = '<div class="p-2 text-xs font-bold" style="color:var(--text3);border-bottom:1px solid var(--border)">'+__('lang_select')+'</div>' +
-      LANGUAGES.map(function(l) {
-        var active = (state.userLang || 'hi') === l.code;
-        return '<div class="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50" onclick="setLanguage(\''+l.code+'\')" style="'+(active ? 'background:var(--accent-light);color:var(--accent);font-weight:700' : 'color:var(--text)')+'">' +
-          '<span>' + l.native + '</span>' +
-          '<span style="color:var(--text3)">(' + l.name + ')</span>' +
-          (active ? '<i class="fa-solid fa-check ml-auto" style="color:var(--accent)"></i>' : '') +
-        '</div>';
-      }).join('');
-  }
+   function renderLangMenu() {
+     var menu = document.getElementById('lang-menu');
+     menu.innerHTML = '<div class="p-2 text-xs font-bold" style="color:var(--text3);border-bottom:1px solid var(--border)">'+__('lang_select')+'</div>' +
+       LANGUAGES.map(function(l) {
+         var active = (state.userLang || 'hi') === l.code;
+         return '<div class="flex items-center gap-2 px-3 py-2 text-xs font-medium cursor-pointer hover:bg-gray-50" onclick="setLanguage(\''+l.code+'\')" style="'+(active ? 'background:var(--accent-light);color:var(--accent);font-weight:700' : 'color:var(--text)')+'">' +
+           '<span>' + l.native + '</span>' +
+           '<span style="color:var(--text3)">(' + l.name + ')</span>' +
+           (active ? '<i class="fa-solid fa-check ml-auto" style="color:var(--accent)"></i>' : '') +
+         '</div>';
+       }).join('') +
+       getRTToggleHTML();
+   }
   function setLanguage(code) {
     state.userLang = code;
     localStorage.setItem('sauda_lang', code);
@@ -790,19 +791,47 @@
       if (c.getAttribute('onclick').indexOf("'"+code+"'") !== -1) c.classList.add('selected');
     });
   }
-  function applyLanguage() {
-    var code = state.userLang || 'hi';
-    document.getElementById('lang-btn-text').textContent = code.toUpperCase();
-    document.querySelectorAll('[data-i18n]').forEach(function(el) {
-      var key = el.getAttribute('data-i18n');
-      el.textContent = __(key);
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-      var key = el.getAttribute('data-i18n-placeholder');
-      el.placeholder = __(key);
-    });
-  }
-  renderOnboardLangChips();
+   function applyLanguage() {
+     var code = state.userLang || 'hi';
+     document.getElementById('lang-btn-text').textContent = code.toUpperCase();
+     document.querySelectorAll('[data-i18n]').forEach(function(el) {
+       var key = el.getAttribute('data-i18n');
+       el.textContent = __(key);
+     });
+     document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+       var key = el.getAttribute('data-i18n-placeholder');
+       el.placeholder = __(key);
+     });
+     
+     var rtlLangs = ['ur', 'ks', 'sd'];
+     document.documentElement.dir = rtlLangs.indexOf(code) !== -1 ? 'rtl' : 'ltr';
+     
+     if (typeof applyLanguageRTL === 'function') {
+       applyLanguageRTL();
+     }
+   }
+   
+   function getRTToggleHTML() {
+     var isEnabled = typeof isRealTimeTranslationEnabled === 'function' 
+       ? isRealTimeTranslationEnabled() 
+       : (localStorage.getItem('sauda_rt_translation') === '1');
+     
+     return '<div class="px-3 py-2" style="border-top:1px solid var(--card-border)"><div class="flex items-center justify-between"><span class="text-xs font-medium" style="color:var(--text)">Live Translation</span><button onclick="toggleRTTranslation()" class="text-xs px-2 py-1 rounded-full font-bold" style="background:' + (isEnabled ? 'var(--trust-light);color:var(--trust)' : 'var(--bg2);color:var(--text3)') + '">' + (isEnabled ? 'ON' : 'OFF') + '</button></div></div>';
+   }
+   
+   function toggleRTTranslation() {
+     if (typeof toggleRealTimeTranslation === 'function') {
+       var newState = !isRealTimeTranslationEnabled();
+       toggleRealTimeTranslation(newState);
+       renderLangMenu();
+       if (newState) {
+         showToast('Live translation enabled');
+       } else {
+         showToast('Live translation disabled');
+       }
+     }
+   }
+   renderOnboardLangChips();
   </script>
 </body>
 </html>
