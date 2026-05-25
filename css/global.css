@@ -12,8 +12,8 @@
   --safe-right:env(safe-area-inset-right,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;width:100%;overflow:hidden;touch-action:manipulation}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100%;min-height:-webkit-fill-available}
+html,body{height:100%;width:100%;overflow:hidden;touch-action:pan-y}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100%;min-height:-webkit-fill-available;-webkit-overflow-scrolling:touch}
 h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 .app-shell{background:var(--bg);display:flex;flex-direction:column;height:100%;height:100dvh;height:-webkit-fill-available;position:relative;width:100%;
   padding-top:var(--safe-top);padding-left:var(--safe-left);padding-right:var(--safe-right)}
@@ -35,20 +35,24 @@ h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 }
 
 /* 滚动条 */
-.scroll-area{overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;min-height:0;
-  -ms-overflow-style:none;scrollbar-width:none;padding-bottom:calc(80px + var(--safe-bottom))}
+.scroll-area{overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;min-height:0;max-height:100%;flex:1;
+  -ms-overflow-style:none;scrollbar-width:none;padding-bottom:calc(88px + var(--safe-bottom));height:0}
 .scroll-area::-webkit-scrollbar{display:none;width:0;height:0}
+
+/* Ensure content wrapper properly constrains children */
+.content-wrapper{min-height:0;height:100%;flex:1;display:flex;flex-direction:column;overflow:hidden}
 
 /* Bottom nav spacing for content */
 .pb-nav-safe{padding-bottom:calc(72px + var(--safe-bottom))}
 .pt-safe-top{padding-top:var(--safe-top)}
 
 /* 视图切换 */
-.view{display:none;flex:1;flex-direction:column;min-height:0}.view.active{display:flex;animation:viewIn .3s ease}
+.view{display:none;flex:1;flex-direction:column;min-height:0;max-height:100%;width:100%;position:relative}
+.view.active{display:flex;animation:viewIn .3s ease}
 @keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* 底部导航 */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(64px + var(--safe-bottom));background:rgba(255,255,255,0.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--card-border);display:flex;align-items:flex-start;justify-content:space-around;z-index:50;padding-bottom:var(--safe-bottom);padding-top:6px;
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:calc(64px + var(--safe-bottom));background:rgba(255,255,255,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--card-border);display:flex;align-items:flex-start;justify-content:space-around;z-index:50;padding-bottom:var(--safe-bottom);padding-top:6px;
   padding-left:var(--safe-left);padding-right:var(--safe-right)}
 
 /* Desktop Navigation */

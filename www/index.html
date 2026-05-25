@@ -595,16 +595,23 @@
           </div>
           <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
         </div>
-        <div class="profile-info-item" onclick="openEditProfileModal()">
-          <div class="flex items-center gap-3">
-            <div class="profile-info-icon" style="background:#FEF3C7;color:#92400E"><i class="fa-solid fa-star"></i></div>
-            <div><p class="text-sm font-medium" data-i18n="interests_label">Interests</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="select_categories">Select categories</p></div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
-        </div>
-      </div>
+         <div class="profile-info-item" onclick="openEditProfileModal()">
+           <div class="flex items-center gap-3">
+             <div class="profile-info-icon" style="background:#FEF3C7;color:#92400E"><i class="fa-solid fa-star"></i></div>
+             <div><p class="text-sm font-medium" data-i18n="interests_label">Interests</p><p class="text-[10px]" style="color:var(--text2)" data-i18n="select_categories">Select categories</p></div>
+           </div>
+           <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
+         </div>
+         <div class="profile-info-item" onclick="toggleLangMenu()">
+           <div class="flex items-center gap-3">
+             <div class="profile-info-icon" style="background:#ECFDF5;color:#0D9488"><i class="fa-solid fa-language"></i></div>
+             <div><p class="text-sm font-medium" data-i18n="language">Language</p><p class="text-[10px]" style="color:var(--text2)" id="profile-current-lang">Hindi</p></div>
+           </div>
+           <i class="fa-solid fa-chevron-right text-[10px]" style="color:var(--text3)"></i>
+         </div>
+       </div>
 
-      <!-- VouchChain CTA -->
+       <!-- VouchChain CTA -->
       <div class="profile-card mb-3" onclick="openVouchChainModal()" style="border-color:rgba(13,148,136,0.15);background:linear-gradient(135deg,var(--trust-light),#fff)">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
@@ -759,21 +766,28 @@
        }).join('') +
        getRTToggleHTML();
    }
-  function setLanguage(code) {
-    state.userLang = code;
-    localStorage.setItem('sauda_lang', code);
-    document.getElementById('lang-menu').style.display = 'none';
-    applyLanguage();
-    renderOnboardLangChips();
-    renderProfile();
-    renderLocationChips();
-    if (state.currentView === 'feed') { renderFeed(); renderFilterChips(); }
-    if (state.currentView === 'seller-dashboard') renderSellerDashboard();
-    if (state.currentView === 'categories') { renderCategoryGrid(); if (state.selectedCategory) selectCategory(state.selectedCategory); }
-    if (state.currentView === 'voice') initVoiceSection();
-    renderVouchGraph();
-    renderCategoryCards();
-  }
+   function setLanguage(code) {
+     state.userLang = code;
+     localStorage.setItem('sauda_lang', code);
+     document.getElementById('lang-menu').style.display = 'none';
+     applyLanguage();
+     renderOnboardLangChips();
+     renderProfile();
+     renderLocationChips();
+     
+     var langObj = LANGUAGES.find(function(l) { return l.code === code; });
+     var langDisplayEl = document.getElementById('profile-current-lang');
+     if (langDisplayEl && langObj) {
+       langDisplayEl.textContent = langObj.native + ' (' + langObj.name + ')';
+     }
+     
+     if (state.currentView === 'feed') { renderFeed(); renderFilterChips(); }
+     if (state.currentView === 'seller-dashboard') renderSellerDashboard();
+     if (state.currentView === 'categories') { renderCategoryGrid(); if (state.selectedCategory) selectCategory(state.selectedCategory); }
+     if (state.currentView === 'voice') initVoiceSection();
+     renderVouchGraph();
+     renderCategoryCards();
+   }
   function renderOnboardLangChips() {
     var container = document.getElementById('onboard-lang-chips');
     if (!container) return;
@@ -808,6 +822,12 @@
      
      var rtlLangs = ['ur', 'ks', 'sd'];
      document.documentElement.dir = rtlLangs.indexOf(code) !== -1 ? 'rtl' : 'ltr';
+     
+     var langObj = LANGUAGES.find(function(l) { return l.code === code; });
+     var langDisplayEl = document.getElementById('profile-current-lang');
+     if (langDisplayEl && langObj) {
+       langDisplayEl.textContent = langObj.native + ' (' + langObj.name + ')';
+     }
      
      if (typeof applyLanguageRTL === 'function') {
        applyLanguageRTL();
