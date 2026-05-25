@@ -39,7 +39,7 @@ function selectRole(role, el) {
 function updateNameBtn() {
   var n = document.getElementById('inp-name').value.trim();
   var p = document.getElementById('inp-phone').value.trim();
-  document.getElementById('name-next-btn').disabled = !(n.length >= 2 && p.length >= 8);
+  document.getElementById('name-next-btn').disabled = !(n.length >= 2 && /^\d{10}$/.test(p));
 }
 
 function autoDetectLocation() {
@@ -63,7 +63,7 @@ function renderSellerCatChips() {
   }
   
   c.innerHTML = state.categories.map(function (cat) {
-    return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + cat.name + '</div>';
+    return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + getCategoryName(cat) + '</div>';
   }).join('');
 }
 
@@ -77,7 +77,7 @@ function renderBuyerCatChips() {
   }
   
   c.innerHTML = state.categories.map(function (cat) {
-    return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + cat.name + '</div>';
+    return '<div class="cat-chip" onclick="toggleCatChip(this,\'' + cat.id + '\')"><i class="fa-solid ' + cat.icon + '" style="color:' + cat.color + '"></i>' + getCategoryName(cat) + '</div>';
   }).join('');
 }
 
@@ -91,6 +91,12 @@ function toggleCatChip(el, id) {
 }
 
 function verifyAadhaar() {
+  var val = document.getElementById('inp-aadhaar').value.replace(/\s/g, '');
+  if (!/^\d{12}$/.test(val)) {
+    document.getElementById('aadhaar-error').style.display = 'block';
+    return;
+  }
+  document.getElementById('aadhaar-error').style.display = 'none';
   document.getElementById('aadhaar-before').style.display = 'none';
   document.getElementById('aadhaar-scanning').style.display = 'block';
   setTimeout(function () {
@@ -123,4 +129,10 @@ document.getElementById('inp-phone').addEventListener('input', function () {
 });
 document.getElementById('inp-location').addEventListener('input', function () {
   state.userLocation = document.getElementById('inp-location').value.trim();
+});
+document.getElementById('inp-aadhaar').addEventListener('input', function () {
+  document.getElementById('aadhaar-error').style.display = 'none';
+  var v = this.value.replace(/[^0-9]/g, '').slice(0, 12);
+  var f = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+  this.value = f;
 });

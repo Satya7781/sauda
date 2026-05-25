@@ -152,35 +152,36 @@ function extractFromSpeech(text) {
   else if (t.indexOf('visit') !== -1) unit = 'visit';
 
   var title = 'Product';
+  var titleEn = '';
   var titleHi = '';
   var category = 'kirana';
 
-  if (t.indexOf('saree') !== -1 || t.indexOf('sadi') !== -1) { title = 'Banarasi Silk Saree'; titleHi = 'Banarasi Saree'; category = 'clothes'; price = price || 2500; }
-  else if (t.indexOf('kurta') !== -1) { title = 'Cotton Kurta'; titleHi = 'Suthan Kurta'; category = 'clothes'; price = price || 450; }
-  else if (t.indexOf('suit') !== -1 || t.indexOf('anarkali') !== -1) { title = 'Anarkali Suit'; titleHi = 'Anarkali Suit'; category = 'clothes'; price = price || 1200; }
-  else if (t.indexOf('dupatta') !== -1) { title = 'Designer Dupatta'; titleHi = 'Designar Dupatta'; category = 'clothes'; price = price || 350; }
-  else if (t.indexOf('lehenga') !== -1) { title = 'Designer Lehenga'; titleHi = 'Designar Lehenga'; category = 'clothes'; price = price || 3500; }
-  else if (t.indexOf('blouse') !== -1 || t.indexOf('stitching') !== -1 || t.indexOf('silai') !== -1) { title = 'Custom Blouse Stitching'; titleHi = 'Blouse Silai'; category = 'clothes'; price = price || 250; }
-  else if (t.indexOf('palazzo') !== -1) { title = 'Palazzo Set'; titleHi = 'Palajo Set'; category = 'clothes'; price = price || 600; }
-  else if (t.indexOf('palak') !== -1 || t.indexOf('spinach') !== -1) { title = 'Fresh Palak'; titleHi = 'Taza Palak'; category = 'sabzi'; price = price || 20; }
-  else if (t.indexOf('gobi') !== -1 || t.indexOf('cabbage') !== -1) { title = 'Gobi'; titleHi = 'Bandh Gobi'; category = 'sabzi'; price = price || 40; }
-  else if (t.indexOf('tamatar') !== -1 || t.indexOf('tomato') !== -1) { title = 'Tamatar'; titleHi = 'Desi Tamatar'; category = 'sabzi'; price = price || 30; }
-  else if (t.indexOf('doodh') !== -1 || t.indexOf('milk') !== -1) { title = 'Doodh'; titleHi = 'Taza Doodh'; category = 'dairy'; price = price || 60; }
-  else if (t.indexOf('dahi') !== -1) { title = 'Dahi'; titleHi = 'Makhan Dahi'; category = 'dairy'; price = price || 50; }
-  else if (t.indexOf('paneer') !== -1) { title = 'Paneer'; titleHi = 'Taza Paneer'; category = 'dairy'; price = price || 90; }
-  else if (t.indexOf('atta') !== -1 || t.indexOf('flour') !== -1) { title = 'Atta'; titleHi = 'Aashirvaad Atta'; category = 'kirana'; price = price || 45; }
-  else if (t.indexOf('aam') !== -1 || t.indexOf('mango') !== -1) { title = 'Aam'; titleHi = 'Ratnagiri Aam'; category = 'fruit'; price = price || 80; }
-  else if (t.indexOf('kela') !== -1 || t.indexOf('banana') !== -1) { title = 'Kela'; titleHi = 'Bhuvel Kela'; category = 'fruit'; price = price || 40; }
-  else if (t.indexOf('mobile') !== -1 || t.indexOf('cover') !== -1 || t.indexOf('earphone') !== -1) { title = 'Mobile Accessories'; titleHi = 'Mobile Saman'; category = 'electronics'; price = price || 299; }
-  else if (t.indexOf('mehendi') !== -1 || t.indexOf('facial') !== -1 || t.indexOf('beauty') !== -1) { title = 'Beauty Service'; titleHi = 'Beauty Seva'; category = 'beauty'; price = price || 300; }
-  else if (t.indexOf('repair') !== -1 || t.indexOf('plumbing') !== -1 || t.indexOf('ac') !== -1) { title = 'Repair Service'; titleHi = 'Repair Seva'; category = 'services'; price = price || 500; }
+  if (t.indexOf('saree') !== -1 || t.indexOf('sadi') !== -1) { title = 'Banarasi Silk Saree'; titleEn = 'Banarasi Silk Saree'; titleHi = 'Banarasi Saree'; category = 'clothes'; price = price || 2500; }
+  else if (t.indexOf('kurta') !== -1) { title = 'Cotton Kurta'; titleEn = 'Cotton Kurta'; titleHi = 'Suthan Kurta'; category = 'clothes'; price = price || 450; }
+  else if (t.indexOf('suit') !== -1 || t.indexOf('anarkali') !== -1) { title = 'Anarkali Suit'; titleEn = 'Anarkali Suit'; titleHi = 'Anarkali Suit'; category = 'clothes'; price = price || 1200; }
+  else if (t.indexOf('dupatta') !== -1) { title = 'Designer Dupatta'; titleEn = 'Designer Dupatta'; titleHi = 'Designar Dupatta'; category = 'clothes'; price = price || 350; }
+  else if (t.indexOf('lehenga') !== -1) { title = 'Designer Lehenga'; titleEn = 'Designer Lehenga'; titleHi = 'Designar Lehenga'; category = 'clothes'; price = price || 3500; }
+  else if (t.indexOf('blouse') !== -1 || t.indexOf('stitching') !== -1 || t.indexOf('silai') !== -1) { title = 'Custom Blouse Stitching'; titleEn = 'Custom Blouse Stitching'; titleHi = 'Blouse Silai'; category = 'clothes'; price = price || 250; }
+  else if (t.indexOf('palazzo') !== -1) { title = 'Palazzo Set'; titleEn = 'Palazzo Set'; titleHi = 'Palajo Set'; category = 'clothes'; price = price || 600; }
+  else if (t.indexOf('palak') !== -1 || t.indexOf('spinach') !== -1) { title = 'Fresh Palak'; titleEn = 'Fresh Spinach'; titleHi = 'Taza Palak'; category = 'sabzi'; price = price || 20; }
+  else if (t.indexOf('gobi') !== -1 || t.indexOf('cabbage') !== -1) { title = 'Gobi'; titleEn = 'Cauliflower'; titleHi = 'Bandh Gobi'; category = 'sabzi'; price = price || 40; }
+  else if (t.indexOf('tamatar') !== -1 || t.indexOf('tomato') !== -1) { title = 'Tamatar'; titleEn = 'Tomatoes'; titleHi = 'Desi Tamatar'; category = 'sabzi'; price = price || 30; }
+  else if (t.indexOf('doodh') !== -1 || t.indexOf('milk') !== -1) { title = 'Doodh'; titleEn = 'Milk'; titleHi = 'Taza Doodh'; category = 'dairy'; price = price || 60; }
+  else if (t.indexOf('dahi') !== -1) { title = 'Dahi'; titleEn = 'Yogurt'; titleHi = 'Makhan Dahi'; category = 'dairy'; price = price || 50; }
+  else if (t.indexOf('paneer') !== -1) { title = 'Paneer'; titleEn = 'Paneer'; titleHi = 'Taza Paneer'; category = 'dairy'; price = price || 90; }
+  else if (t.indexOf('atta') !== -1 || t.indexOf('flour') !== -1) { title = 'Atta'; titleEn = 'Aashirvaad Atta'; titleHi = 'Aashirvaad Atta'; category = 'kirana'; price = price || 45; }
+  else if (t.indexOf('aam') !== -1 || t.indexOf('mango') !== -1) { title = 'Aam'; titleEn = 'Mango'; titleHi = 'Ratnagiri Aam'; category = 'fruit'; price = price || 80; }
+  else if (t.indexOf('kela') !== -1 || t.indexOf('banana') !== -1) { title = 'Kela'; titleEn = 'Banana'; titleHi = 'Bhuvel Kela'; category = 'fruit'; price = price || 40; }
+  else if (t.indexOf('mobile') !== -1 || t.indexOf('cover') !== -1 || t.indexOf('earphone') !== -1) { title = 'Mobile Accessories'; titleEn = 'Mobile Accessories'; titleHi = 'Mobile Saman'; category = 'electronics'; price = price || 299; }
+  else if (t.indexOf('mehendi') !== -1 || t.indexOf('facial') !== -1 || t.indexOf('beauty') !== -1) { title = 'Beauty Service'; titleEn = 'Beauty Service'; titleHi = 'Beauty Seva'; category = 'beauty'; price = price || 300; }
+  else if (t.indexOf('repair') !== -1 || t.indexOf('plumbing') !== -1 || t.indexOf('ac') !== -1) { title = 'Repair Service'; titleEn = 'Repair Service'; titleHi = 'Repair Seva'; category = 'services'; price = price || 500; }
   else {
     var words = text.split(/\s+/).filter(function (w) { return !w.match(/[₹\d]/); });
     if (words.length > 0) title = words.slice(0, 2).join(' ');
   }
 
   if (!price) price = Math.floor(Math.random() * 500) + 50;
-  return { title: title, titleHi: titleHi, price: price, unit: unit, category: category, stock: Math.floor(Math.random() * 25) + 5 };
+  return { title: title, titleEn: titleEn || title, titleHi: titleHi, price: price, unit: unit, category: category, stock: Math.floor(Math.random() * 25) + 5 };
 }
 
 // ============================================================
@@ -191,7 +192,7 @@ function initBuyerVoice() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
     buyerRecognition = new SR();
-    buyerRecognition.lang = 'hi-IN';
+    buyerRecognition.lang = state.userLang === 'en' ? 'en-IN' : 'hi-IN';
     buyerRecognition.interimResults = true;
     buyerRecognition.continuous = false;
     buyerRecognition.maxAlternatives = 1;
@@ -284,7 +285,7 @@ function searchByVoice(text) {
 
 function filterProductsByText(text) {
   var t = text.toLowerCase();
-  var all = state.productFeed.length ? state.productFeed : (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []);
+  var all = state.productFeed && state.productFeed.length ? state.productFeed : (typeof PRODUCTS !== 'undefined' ? PRODUCTS : []);
   return all.filter(function (p) {
     var title = (p.title || '').toLowerCase();
     var titleHi = (p.titleHi || '').toLowerCase();
@@ -308,7 +309,7 @@ function showVoiceSearchResults(products, query) {
       var color = catObj ? catObj.color : 'var(--accent)';
       return '<div class="s-card p-4 mb-3 flex items-center gap-4" onclick="openProductDetail(\'' + p.id + '\')">' +
         '<div class="w-14 h-14 rounded-xl flex items-center justify-center text-lg" style="background:var(--accent-light);color:var(--accent)"><i class="fa-solid ' + icon + '"></i></div>' +
-        '<div class="flex-1 min-w-0"><p class="text-sm font-bold truncate">' + p.title + '</p>' +
+        '<div class="flex-1 min-w-0"><p class="text-sm font-bold truncate">' + getProductTitle(p) + '</p>' +
         '<p class="text-xs" style="color:var(--text3)">' + sellerName + '</p></div>' +
         '<div class="text-right"><p class="text-base font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</p>' +
         '<p class="text-[10px]" style="color:var(--text3)">' + (p.unit || 'pcs') + '</p></div></div>';
@@ -448,6 +449,7 @@ document.getElementById('publish-btn').addEventListener('click', function () {
   var unit = pm ? pm[2] : 'pcs';
   publishProductItem({
     title: title.split(' (')[0],
+    titleEn: title.split(' (')[0],
     titleHi: title.indexOf('(') !== -1 ? (title.match(/\(([^)]+)\)/) || [])[1] || '' : '',
     price: price,
     unit: unit,
@@ -518,6 +520,7 @@ function publishProductItem(itemData) {
   state.productFeed.unshift({
     id: Date.now(),
     title: itemData.title,
+    titleEn: itemData.titleEn || itemData.title,
     titleHi: itemData.titleHi || '',
     price: itemData.price,
     unit: itemData.unit,

@@ -15,7 +15,7 @@ function openProductDetail(pid) {
     '<div class="p-5">' +
     '<div class="flex items-center justify-between mb-4">' +
     '<button onclick="closeProductModal()" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)" aria-label="Close"><i class="fa-solid fa-xmark text-sm" style="color:var(--text2)"></i></button>' +
-    '<span class="text-[10px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : p.category) + '</span>' +
+    '<span class="text-[10px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? getCategoryName(cat) : p.category) + '</span>' +
     '<button onclick="toggleSaveSeller(\'' + p.seller + '\')" class="w-8 h-8 rounded-full flex items-center justify-center" style="background:var(--bg2)" aria-label="Save"><i class="' + (state.savedSellers && state.savedSellers.indexOf(p.seller) !== -1 ? 'fa-solid' : 'fa-regular') + ' fa-heart text-sm" style="color:var(--danger)"></i></button>' +
     '</div>' +
 
@@ -31,8 +31,8 @@ function openProductDetail(pid) {
       '</div>') +
     '</div>' +
 
-    '<h2 class="text-xl font-extrabold mb-1" style="font-family:\'Space Grotesk\',sans-serif">' + p.title + '</h2>' +
-    '<p class="text-sm mb-3" style="color:var(--text2)">' + p.titleHi + '</p>' +
+    '<h2 class="text-xl font-extrabold mb-1" style="font-family:\'Space Grotesk\',sans-serif">' + getProductTitle(p) + '</h2>' +
+    '<p class="text-sm mb-3" style="color:var(--text2)">' + (state.userLang === 'hi' ? (p.titleEn || '') : (p.titleHi || '')) + '</p>' +
 
     '<div class="flex items-baseline gap-2 mb-4">' +
     '<span class="text-2xl font-extrabold" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
@@ -135,7 +135,7 @@ function openSellerModal(sid) {
     prods.map(function (p) {
       return '<div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg2);border:1px solid var(--card-border)">' +
         productImageHTMLSmall(p) +
-        '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + p.title + '</p><p class="text-[10px]" style="color:var(--text3)">' + p.titleHi + ' — ' + p.unit + '</p></div>' +
+        '<div class="flex-1 min-w-0"><p class="text-sm font-medium truncate">' + getProductTitle(p) + '</p><p class="text-[10px]" style="color:var(--text3)">' + (state.userLang === 'hi' ? p.titleEn || '' : p.titleHi || '') + ' — ' + p.unit + '</p></div>' +
         '<span class="text-sm font-extrabold flex-shrink-0" style="color:var(--accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
         '<button class="px-3 py-1.5 rounded-lg text-xs font-bold" style="background:var(--trust-light);color:var(--trust);border:none;cursor:pointer" onclick="confirmOrder(\'' + p.id + '\')">' + __('sauda') + '</button>' +
         '</div>';

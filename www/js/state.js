@@ -75,7 +75,7 @@ async function loadState() {
   } else {
     state.productFeed = PRODUCTS.map(function(p) {
       return {
-        id: p.id, title: p.title, titleHi: p.titleHi,
+        id: p.id, title: p.title, titleEn: p.titleEn, titleHi: p.titleHi,
         price: p.price, unit: p.unit, seller: p.seller,
         category: p.category, stock: p.stock
       };

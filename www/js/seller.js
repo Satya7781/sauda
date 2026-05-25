@@ -64,9 +64,9 @@ function renderSellerDashboard() {
         productImageHTML(p, 80, 100) +
         '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
         '<div>' +
-        '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : p.category) + '</span>' +
-        '<h4 class="text-sm font-bold leading-tight truncate">' + p.title + '</h4>' +
-        '<p class="text-[10px] truncate" style="color:var(--text2)">' + p.titleHi + ' — ' + p.unit + '</p>' +
+        '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? getCategoryName(cat) : p.category) + '</span>' +
+        '<h4 class="text-sm font-bold leading-tight truncate">' + getProductTitle(p) + '</h4>' +
+        '<p class="text-[10px] truncate" style="color:var(--text2)">' + getProductTitle(p) + ' — ' + p.unit + '</p>' +
         '</div>' +
         '<div class="flex items-center justify-between mt-2">' +
         '<span class="text-base font-extrabold" style="color:var(--seller-accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
@@ -89,9 +89,9 @@ function renderSellerFeed() {
       productImageHTML(p, 80, 100) +
       '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
       '<div>' +
-      '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? cat.name : p.category) + '</span>' +
-      '<h4 class="text-sm font-bold leading-tight truncate">' + p.title + '</h4>' +
-      '<p class="text-[10px] truncate" style="color:var(--text2)">' + p.titleHi + ' — ' + p.unit + '</p>' +
+      '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? getCategoryName(cat) : p.category) + '</span>' +
+      '<h4 class="text-sm font-bold leading-tight truncate">' + getProductTitle(p) + '</h4>' +
+      '<p class="text-[10px] truncate" style="color:var(--text2)">' + getProductTitle(p) + ' — ' + p.unit + '</p>' +
       '</div>' +
       '<div class="flex items-center justify-between mt-2">' +
       '<span class="text-base font-extrabold" style="color:var(--seller-accent);font-family:\'Space Grotesk\',sans-serif">₹' + p.price + '</span>' +
@@ -193,6 +193,7 @@ function publishQuickVoiceItem() {
   state.productFeed.unshift({
     id: Date.now(),
     title: title,
+    titleEn: title,
     titleHi: titleHi || title,
     price: price,
     unit: unit,
@@ -235,6 +236,7 @@ function publishQuickManualItem() {
   state.productFeed.unshift({
     id: Date.now(),
     title: title,
+    titleEn: title,
     titleHi: titleHi || title,
     price: price,
     unit: unit,

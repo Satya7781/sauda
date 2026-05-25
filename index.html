@@ -183,6 +183,7 @@
       <div class="p-5 rounded-2xl mb-6 text-left" style="background:var(--bg2);border:1px solid var(--card-border)">
         <label class="text-xs font-bold block mb-2" style="color:var(--text2)">AADHAAR NUMBER</label>
         <input class="input-field" id="inp-aadhaar" placeholder="XXXX XXXX XXXX" maxlength="14">
+        <p class="text-[10px] mt-1.5 font-medium" style="color:var(--danger);display:none" id="aadhaar-error">12 digits required</p>
       </div>
       <button class="btn-primary" onclick="verifyAadhaar()">Verify Karein</button>
       <button class="btn-secondary mt-3" onclick="goOnboard(6)" style="font-size:12px;color:var(--text3)">Skip for now</button>
@@ -762,7 +763,7 @@
     renderOnboardLangChips();
     renderProfile();
     renderLocationChips();
-    if (state.currentView === 'feed') renderFeed();
+    if (state.currentView === 'feed') { renderFeed(); renderFilterChips(); }
     if (state.currentView === 'seller-dashboard') renderSellerDashboard();
     if (state.currentView === 'categories') { renderCategoryGrid(); if (state.selectedCategory) selectCategory(state.selectedCategory); }
     if (state.currentView === 'voice') initVoiceSection();

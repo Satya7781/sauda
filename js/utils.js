@@ -5,7 +5,7 @@
 function getCategoryVisual(catId) {
   var cat = CATEGORIES.find(function (c) { return c.id === catId; });
   if (!cat) cat = CATEGORIES[0];
-  return { icon: cat.icon, color: cat.color, bg: cat.bg, name: cat.name };
+  return { icon: cat.icon, color: cat.color, bg: cat.bg, name: getCategoryName(cat) };
 }
 
 function productImageHTML(item, width, height) {
