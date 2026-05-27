@@ -3,6 +3,10 @@
 // ============================================================
 
 function navigateTo(view) {
+  if (view === 'voice') {
+    openVoiceOverlay();
+    return;
+  }
   state.currentView = view;
   document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('active'); });
   document.getElementById('view-' + view).classList.add('active');
@@ -15,17 +19,26 @@ function navigateTo(view) {
   if (view === 'categories') renderCategoryGrid();
   if (view === 'seller-dashboard') renderSellerDashboard();
   if (view === 'profile') renderProfile();
-  if (view === 'voice') initVoiceSection();
 }
 
 function setupNav() {
   var navItems = document.querySelectorAll('.nav-item, .desktop-link');
   navItems.forEach(function (item) {
     item.addEventListener('click', function () {
+      if (item.dataset.view === 'voice') {
+        openVoiceOverlay(item.dataset.show);
+        return;
+      }
       navigateTo(item.dataset.view);
     });
     item.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') navigateTo(item.dataset.view);
+      if (e.key === 'Enter') {
+        if (item.dataset.view === 'voice') {
+          openVoiceOverlay(item.dataset.show);
+          return;
+        }
+        navigateTo(item.dataset.view);
+      }
     });
   });
 }

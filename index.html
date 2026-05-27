@@ -330,92 +330,102 @@
     </div>
   </div>
 
-  <!-- ===== VOICE VIEW ===== -->
+  <!-- ===== VOICE VIEW (minimal launch page) ===== -->
   <div id="view-voice" class="view">
-    <!-- ===== SELLER VOICE (Listing Creation) ===== -->
-    <div id="voice-seller-section">
-      <header class="px-5 pt-5 pb-2">
-        <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;">Naya Listing Banao</h2>
-        <p class="text-xs" style="color:var(--text2)">Bol ke ya likhakar</p>
-        <div class="flex gap-2 mt-4">
-          <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--accent-light);color:var(--accent);border:2px solid var(--accent);cursor:pointer" id="mode-voice-btn" onclick="switchMode('voice')"><i class="fa-solid fa-microphone mr-1"></i>Bol ke Becho</button>
-          <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--card);color:var(--text2);border:2px solid transparent;cursor:pointer" id="mode-manual-btn" onclick="switchMode('manual')"><i class="fa-solid fa-keyboard mr-1"></i>Likhakar</button>
-        </div>
-      </header>
-      <div id="voice-mode" class="flex-1 flex flex-col" style="display:flex">
-        <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
-          <canvas id="waveform-canvas" width="300" height="300"></canvas>
-          <button class="mic-btn" id="mic-btn" aria-label="Voice record"><i class="fa-solid fa-microphone"></i></button>
-          <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="mic-hint">Mic tap karein — Hindi mein bolein</p>
-        </div>
-        <div class="px-5 mb-2" id="transcription-area" style="display:none">
-          <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
-            <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
-            <p class="text-sm leading-relaxed" id="transcription-text"></p>
-          </div>
-        </div>
-        <div class="px-5 mb-2" id="ai-status" style="display:none">
-          <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
-            <p class="text-sm font-semibold" style="color:var(--accent)" id="ai-status-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
-          </div>
-        </div>
-        <div class="px-5 pb-4" id="generated-listing" style="display:none">
-          <div class="s-card p-5">
-            <div class="listing-field" data-delay="0"><span class="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold mb-3" style="background:var(--accent-light);color:var(--accent)" id="gen-category">—</span></div>
-            <div class="listing-field" data-delay="100"><h3 class="text-lg font-bold mb-1" id="gen-title">—</h3></div>
-            <div class="listing-field" data-delay="200"><p class="text-2xl font-extrabold" style="color:var(--accent);font-family:'Space Grotesk',sans-serif" id="gen-price">—</p></div>
-            <div class="listing-field" data-delay="300"><div class="flex items-center gap-2 mt-3 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="gen-stock">—</span></div></div>
-            <div class="listing-field" data-delay="400"><button class="w-full mt-4 py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-btn">Listing Publish Karein</button></div>
-          </div>
-        </div>
-        <div class="px-5 pb-5 text-center">
-          <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="demo-voice-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Hindi Voice Simulation</button>
-        </div>
+    <div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+      <div class="w-20 h-20 rounded-full flex items-center justify-center mb-5" style="background:var(--accent-light);color:var(--accent)">
+        <i class="fa-solid fa-microphone text-3xl"></i>
       </div>
-      <div id="manual-mode" class="flex-1 flex flex-col" style="display:none">
-        <div class="scroll-area flex-1 px-5 pt-4 pb-4">
-          <div class="space-y-4">
-            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (TITLE)</label><input type="text" class="input-field" id="manual-title" placeholder="e.g. Banarasi Silk Saree" style="width:100%"></div>
-            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">ITEM NAME (HINDI)</label><input type="text" class="input-field" id="manual-title-hi" placeholder="e.g. Banarasi Saree" style="width:100%"></div>
-            <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">CATEGORY</label><select class="input-field" id="manual-category" style="width:100%"><option value="">Select Category</option><option value="clothes">Clothes</option><option value="sabzi">Sabzi (Vegetables)</option><option value="fruit">Fruit</option><option value="dairy">Dairy</option><option value="kirana">Kirana</option><option value="electronics">Electronics</option><option value="beauty">Beauty</option><option value="services">Services</option></select></div>
-            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">PRICE (₹)</label><input type="number" class="input-field" id="manual-price" placeholder="e.g. 500" style="width:100%"></div>
-            <div><label class="text-xs font-bold block mb-2" style="color:var(--text2)">UNIT</label><select class="input-field" id="manual-unit" style="width:100%"><option value="pcs">Piece(s)</option><option value="kg">Kilogram (kg)</option><option value="litre">Litre</option><option value="dozen">Dozen</option><option value="set">Set</option><option value="gaddi">Bundle</option><option value="session">Session</option></select></div>
-            <div><label class="text-xs font-bold block mb-1" style="color:var(--text2)">STOCK AVAILABLE</label><input type="number" class="input-field" id="manual-stock" placeholder="e.g. 10" style="width:100%" value="10"></div>
-          </div>
-        </div>
-        <div class="px-5 pb-5"><button class="w-full py-3.5 rounded-xl text-sm font-bold" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2)" id="publish-manual-btn">Listing Publish Karein</button></div>
-      </div>
+      <h2 class="text-xl font-extrabold mb-2" style="font-family:'Space Grotesk',sans-serif;" data-i18n="bol_ke_kharido">Bol ke Kharido</h2>
+      <p class="text-sm mb-6" style="color:var(--text2)" data-i18n="voice_buy_subtitle">Jo chahiye, boliye — hum dhundh denge</p>
+      <button class="px-8 py-4 rounded-xl text-base font-bold flex items-center gap-3" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 24px rgba(184,104,15,0.3)" onclick="openVoiceOverlay()">
+        <i class="fa-solid fa-microphone"></i>
+        <span data-i18n="bolein">Bolein</span>
+      </button>
     </div>
+  </div>
 
-    <!-- ===== BUYER VOICE (Voice Search / Bol ke Kharido) ===== -->
-    <div id="voice-buyer-section" style="display:none">
-      <header class="px-5 pt-5 pb-2">
-        <h2 class="text-lg font-extrabold" style="font-family:'Space Grotesk',sans-serif;" data-i18n="bol_ke_kharido">Bol ke Kharido</h2>
-        <p class="text-xs" style="color:var(--text2)" data-i18n="voice_buy_subtitle">Jo chahiye, boliye — hum dhundh denge</p>
-      </header>
-      <div class="flex-1 flex flex-col">
-        <div class="flex-1 flex flex-col items-center justify-center px-5 relative" style="min-height:380px">
-          <canvas id="buyer-waveform" width="300" height="300"></canvas>
-          <button class="mic-btn" id="buyer-mic-btn"><i class="fa-solid fa-microphone"></i></button>
-          <p class="text-xs mt-5 font-semibold" style="color:var(--text3)" id="buyer-mic-hint" data-i18n="mic_hint">Mic tap karein — Hindi mein bolein</p>
+  <!-- ===== VOICE OVERLAY (floating mic overlay) ===== -->
+  <div class="voice-overlay" id="voice-overlay">
+    <div class="voice-overlay-sheet" onclick="event.stopPropagation()">
+      <div class="voice-overlay-header">
+        <span class="text-xs font-bold" style="color:var(--text3)" id="voice-ol-title-label" data-i18n="bol_ke_kharido">Bol ke Kharido</span>
+        <button class="voice-ol-close-btn" id="voice-ol-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- SELLER SECTION -->
+      <div id="voice-ol-seller" class="voice-ol-content" style="display:none">
+        <div class="flex gap-2 mb-3">
+          <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--accent-light);color:var(--accent);border:2px solid var(--accent);cursor:pointer" id="voice-ol-mode-btn"><i class="fa-solid fa-microphone mr-1"></i>Bol ke Becho</button>
+          <button class="flex-1 px-3 py-2 rounded-lg text-xs font-bold" style="background:var(--card);color:var(--text2);border:2px solid transparent;cursor:pointer" id="voice-ol-manual-btn"><i class="fa-solid fa-keyboard mr-1"></i>Likhakar</button>
         </div>
-        <div class="px-5 mb-2" id="buyer-transcription-area" style="display:none">
-          <div class="p-4 rounded-2xl" style="background:var(--bg2);border:1px solid var(--card-border)">
-            <p class="text-[10px] font-extrabold mb-2 uppercase tracking-wider" style="color:var(--accent)">Aapki Aawaz</p>
-            <p class="text-sm leading-relaxed" id="buyer-transcription-text"></p>
+
+        <!-- Voice Mode -->
+        <div id="voice-ol-mode">
+          <div class="voice-ol-mic-area">
+            <canvas id="voice-ol-wave" class="voice-ol-wave"></canvas>
+            <button class="voice-ol-mic-btn" id="voice-ol-mic-btn"><i class="fa-solid fa-microphone"></i></button>
+            <p class="voice-ol-hint" id="voice-ol-hint" data-i18n="mic_hint">Mic tap karein</p>
+          </div>
+          <div class="voice-ol-section" id="voice-ol-ta" style="display:none">
+            <div class="voice-ol-card">
+              <p class="voice-ol-label" data-i18n="aapki_aawaz">Aapki Aawaz</p>
+              <p class="voice-ol-tt" id="voice-ol-tt"></p>
+            </div>
+          </div>
+          <div class="voice-ol-section" id="voice-ol-ai" style="display:none">
+            <div class="voice-ol-card voice-ol-shimmer">
+              <p class="text-sm font-semibold" style="color:var(--accent)" id="voice-ol-ai-text">Samajh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+            </div>
+          </div>
+          <div class="voice-ol-section" id="voice-ol-gen" style="display:none">
+            <div class="s-card p-4">
+              <div class="voice-ol-field" data-delay="0"><span class="voice-ol-cat-badge" id="voice-ol-gen-cat">—</span></div>
+              <div class="voice-ol-field" data-delay="100"><h3 class="text-base font-bold mb-1" id="voice-ol-gen-title">—</h3></div>
+              <div class="voice-ol-field" data-delay="200"><p class="text-xl font-extrabold voice-ol-price" id="voice-ol-gen-price">—</p></div>
+              <div class="voice-ol-field" data-delay="300"><div class="flex items-center gap-2 mt-2 text-xs" style="color:var(--text2)"><i class="fa-solid fa-boxes-stacked"></i><span id="voice-ol-gen-stock">—</span></div></div>
+              <div class="voice-ol-field" data-delay="400"><button class="voice-ol-publish-btn" id="voice-ol-publish-btn">Listing Publish Karein</button></div>
+            </div>
           </div>
         </div>
-        <div class="px-5 mb-2" id="buyer-ai-status" style="display:none">
-          <div class="p-4 rounded-2xl shimmer" style="background:var(--accent-light);border:1px solid rgba(184,104,15,0.12)">
-            <p class="text-sm font-semibold" style="color:var(--accent)" id="buyer-ai-status-text" data-i18n="searching_products">Dhundh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+
+        <!-- Manual Mode -->
+        <div id="voice-ol-manual" style="display:none">
+          <div class="voice-ol-scroll">
+            <div class="space-y-3">
+              <div><label class="voice-ol-field-label">ITEM NAME</label><input type="text" class="input-field" id="voice-ol-manual-title" placeholder="e.g. Banarasi Silk Saree"></div>
+              <div><label class="voice-ol-field-label">ITEM NAME (HINDI)</label><input type="text" class="input-field" id="voice-ol-manual-title-hi" placeholder="e.g. Banarasi Saree"></div>
+              <div><label class="voice-ol-field-label">CATEGORY</label><select class="input-field" id="voice-ol-manual-cat"><option value="">Select</option><option value="clothes">Clothes</option><option value="sabzi">Sabzi</option><option value="fruit">Fruit</option><option value="dairy">Dairy</option><option value="kirana">Kirana</option><option value="electronics">Electronics</option><option value="beauty">Beauty</option><option value="services">Services</option></select></div>
+              <div><label class="voice-ol-field-label">PRICE</label><input type="number" class="input-field" id="voice-ol-manual-price" placeholder="e.g. 500"></div>
+              <div><label class="voice-ol-field-label">UNIT</label><select class="input-field" id="voice-ol-manual-unit"><option value="pcs">Piece(s)</option><option value="kg">Kilogram</option><option value="litre">Litre</option><option value="dozen">Dozen</option><option value="set">Set</option><option value="gaddi">Bundle</option></select></div>
+              <div><label class="voice-ol-field-label">STOCK</label><input type="number" class="input-field" id="voice-ol-manual-stock" value="10"></div>
+            </div>
+          </div>
+          <button class="voice-ol-publish-btn mt-3" id="voice-ol-publish-manual-btn">Listing Publish Karein</button>
+        </div>
+      </div>
+
+      <!-- BUYER SECTION -->
+      <div id="voice-ol-buyer" class="voice-ol-content" style="display:none">
+        <div class="voice-ol-mic-area">
+          <canvas id="voice-ol-buyer-wave" class="voice-ol-wave"></canvas>
+          <button class="voice-ol-mic-btn" id="voice-ol-buyer-mic-btn" style="background:linear-gradient(135deg,#0D9488,#14B8A6)"><i class="fa-solid fa-microphone"></i></button>
+          <p class="voice-ol-hint" id="voice-ol-buyer-hint" data-i18n="mic_hint">Mic tap karein</p>
+        </div>
+        <div class="voice-ol-section" id="voice-ol-buyer-ta" style="display:none">
+          <div class="voice-ol-card">
+            <p class="voice-ol-label" data-i18n="aapki_aawaz">Aapki Aawaz</p>
+            <p class="voice-ol-tt" id="voice-ol-buyer-tt"></p>
           </div>
         </div>
-        <div class="px-5 pb-4" id="buyer-search-results" style="display:none">
-          <p class="text-xs font-bold mb-3" style="color:var(--text2)" data-i18n="search_results">Search Results</p>
-          <div id="buyer-results-list"></div>
+        <div class="voice-ol-section" id="voice-ol-buyer-ai" style="display:none">
+          <div class="voice-ol-card voice-ol-shimmer">
+            <p class="text-sm font-semibold" style="color:var(--accent)" id="voice-ol-buyer-ai-text" data-i18n="searching_products">Dhundh raha hoon<span class="thinking-dot">.</span><span class="thinking-dot">.</span><span class="thinking-dot">.</span></p>
+          </div>
         </div>
-        <div class="px-5 pb-5 text-center">
-          <button class="text-xs font-semibold px-4 py-2.5 rounded-full" style="background:var(--bg2);border:1.5px solid var(--card-border);color:var(--text3);cursor:pointer" id="buyer-demo-btn"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Demo: Search by Voice</button>
+        <div class="voice-ol-section" id="voice-ol-buyer-results" style="display:none">
+          <p class="text-xs font-bold mb-2" style="color:var(--text2)" data-i18n="search_results">Search Results</p>
+          <div id="voice-ol-buyer-list"></div>
         </div>
       </div>
     </div>

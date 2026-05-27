@@ -3,6 +3,10 @@
 // ============================================================
 
 function navigateTo(view) {
+  if (view === 'voice') {
+    openVoiceOverlay();
+    return;
+  }
   state.currentView = view;
   document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('active'); });
   document.getElementById('view-' + view).classList.add('active');
@@ -15,7 +19,6 @@ function navigateTo(view) {
   if (view === 'categories') renderCategoryGrid();
   if (view === 'seller-dashboard') renderSellerDashboard();
   if (view === 'profile') renderProfile();
-  if (view === 'voice') initVoiceSection();
 }
 
 function setupNav() {
