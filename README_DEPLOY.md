@@ -12,8 +12,8 @@ This file contains concise instructions for deploying the backend to Render and 
 - Env vars to set:
   - `ENV=production`
   - `DATABASE_URL` — set to your managed Postgres URL (e.g. `postgres://USER:PASS@HOST:PORT/DB`). If you use Render Postgres, Render provides this.
-  - `ALLOWED_ORIGINS` — set space/comma-separated origins (e.g. `https://your-frontend.vercel.app,https://your-service.onrender.com`), or `*` for development.
-  - Persistent DB: do NOT use SQLite in production. Use Render Postgres and set `DATABASE_URL`.
+  - `ALLOWED_ORIGINS` — include `capacitor://localhost`, `ionic://localhost`, and any web origins you deploy from. For development you can use `*`.
+  - Persistent DB: prefer Render Postgres for production. SQLite is acceptable for quick testing but data will reset on container redeploys.
 
   - NOTE: This repository supports local SQLite for development by default. To use SQLite in containers, set `DATABASE_URL=sqlite:///./sauda.db` and make sure the container's working directory is writable or mount a host volume to persist `sauda.db` across restarts. SQLite is not suitable for multi-instance production deployments.
 
@@ -40,3 +40,4 @@ Files of interest:
 4) Quick notes
 - CORS: backend uses `ALLOWED_ORIGINS` env var. Set it appropriately.
 - Database migrations: this repo uses simple `Base.metadata.create_all` in `database.init_db()`. For production consider adding Alembic migrations.
+- APK builds: the web client resolves its API base URL from `js/runtime-config.js` and defaults to the Render backend at `https://sauda-backend.onrender.com/api`. If you use a different Render service URL, update that file or override `window.__SAUDA_CONFIG__.apiBaseUrl` before building `www/`.

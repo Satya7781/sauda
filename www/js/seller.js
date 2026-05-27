@@ -52,7 +52,7 @@ function renderSellerDashboard() {
     '<div class="flex items-center justify-between px-1 mb-2">' +
     '<p class="text-xs font-bold uppercase tracking-wider" style="color:var(--text3)">'+__('meri_listings')+'</p>' +
     '<div class="flex gap-1">' +
-    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="openVoiceOverlay(\'seller\')"><i class="fa-solid fa-microphone mr-1"></i>'+__('voice')+'</button>' +
+    '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="navigateTo(\'voice\')"><i class="fa-solid fa-microphone mr-1"></i>'+__('voice')+'</button>' +
     '<button class="text-[10px] font-bold px-3 py-1.5 rounded-full" style="background:var(--seller-accent-light);color:var(--seller-accent);border:none;cursor:pointer" onclick="openQuickManualModal()"><i class="fa-solid fa-pen mr-1"></i>'+__('manual')+'</button>' +
     '</div>' +
     '</div>' +
@@ -160,9 +160,21 @@ function switchQuickMode(mode) {
 }
 
 function startQuickVoiceListing() {
-  var modal = document.getElementById('quick-add-modal');
-  if (modal) modal.style.display = 'none';
-  openVoiceOverlay('seller');
+  // Simulate voice recording - in production would use Web Speech API
+  var result = document.getElementById('quick-voice-result');
+  var parsed = document.getElementById('quick-voice-parsed');
+  document.getElementById('quick-voice-text').textContent = '"3 kilo aloo, 80 rupee kilo"';
+  
+  // Pre-fill with parsed values
+  document.getElementById('quick-voice-title').value = 'Aloo';
+  document.getElementById('quick-voice-title-hi').value = 'आलू';
+  document.getElementById('quick-voice-category').value = 'sabzi';
+  document.getElementById('quick-voice-price').value = '80';
+  document.getElementById('quick-voice-unit').value = 'kg';
+  document.getElementById('quick-voice-stock').value = '50';
+  
+  result.style.display = 'block';
+  showToast(__('voice_item_detected'));
 }
 
 function publishQuickVoiceItem() {

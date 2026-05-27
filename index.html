@@ -366,6 +366,9 @@
             <canvas id="voice-ol-wave" class="voice-ol-wave"></canvas>
             <button class="voice-ol-mic-btn" id="voice-ol-mic-btn"><i class="fa-solid fa-microphone"></i></button>
             <p class="voice-ol-hint" id="voice-ol-hint" data-i18n="mic_hint">Mic tap karein</p>
+            <div class="voice-ol-actions">
+              <button class="voice-ol-cancel-btn" id="voice-ol-cancel-btn" type="button"><i class="fa-solid fa-circle-xmark"></i> Cancel</button>
+            </div>
           </div>
           <div class="voice-ol-section" id="voice-ol-ta" style="display:none">
             <div class="voice-ol-card">
@@ -411,6 +414,9 @@
           <canvas id="voice-ol-buyer-wave" class="voice-ol-wave"></canvas>
           <button class="voice-ol-mic-btn" id="voice-ol-buyer-mic-btn" style="background:linear-gradient(135deg,#0D9488,#14B8A6)"><i class="fa-solid fa-microphone"></i></button>
           <p class="voice-ol-hint" id="voice-ol-buyer-hint" data-i18n="mic_hint">Mic tap karein</p>
+          <div class="voice-ol-actions">
+            <button class="voice-ol-cancel-btn" id="voice-ol-buyer-cancel-btn" type="button"><i class="fa-solid fa-circle-xmark"></i> Cancel</button>
+          </div>
         </div>
         <div class="voice-ol-section" id="voice-ol-buyer-ta" style="display:none">
           <div class="voice-ol-card">
@@ -742,6 +748,7 @@
 <div class="toast" id="toast"></div>
 </div>
 
+  <script src="js/runtime-config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/data.js"></script>

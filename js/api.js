@@ -6,10 +6,26 @@
 var locPort = window.location.port;
 var locHost = window.location.hostname;
 var isLocalDev = (locHost === 'localhost' || locHost === '127.0.0.1') && (locPort === '8080' || locPort === '8000' || locPort === '3000');
-var isRender = locHost.includes('onrender.com');
+var defaultProductionApiBaseUrl = 'https://sauda-backend.onrender.com/api';
 
-// If local DEV server, use local API. Otherwise (Capacitor/APK or Production), use Render URL.
-var API_BASE_URL = isLocalDev ? ('http://' + locHost + ':8000/api') : 'https://sauda-backend.onrender.com/api';
+function resolveApiBaseUrl() {
+  if (isLocalDev) {
+    return 'http://' + locHost + ':8000/api';
+  }
+
+  if (typeof window.getSaudaApiBaseUrl === 'function') {
+    return window.getSaudaApiBaseUrl();
+  }
+
+  if (window.__SAUDA_CONFIG__ && window.__SAUDA_CONFIG__.apiBaseUrl) {
+    return window.__SAUDA_CONFIG__.apiBaseUrl;
+  }
+
+  return defaultProductionApiBaseUrl;
+}
+
+var API_BASE_URL = resolveApiBaseUrl();
+window.SAUDA_API_BASE_URL = API_BASE_URL;
 
 const API = {
   async fetchCategories() {

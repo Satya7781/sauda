@@ -115,6 +115,38 @@ h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 .mic-btn.recording{animation:micPulse 1.5s ease infinite;box-shadow:0 4px 50px rgba(184,104,15,0.4)}
 @keyframes micPulse{0%,100%{box-shadow:0 4px 30px rgba(184,104,15,0.3)}50%{box-shadow:0 4px 60px rgba(184,104,15,0.5)}}
 
+/* Voice Overlay */
+.voice-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.voice-overlay.show{display:flex;animation:fadeIn .2s ease}
+.voice-overlay-sheet{width:min(100%,440px);max-width:440px;max-height:84vh;background:var(--bg);border-radius:24px 24px 0 0;overflow-y:auto;animation:slideUp .35s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;margin:0 auto}
+@media(min-width:768px){.voice-overlay{align-items:center;padding:2rem}.voice-overlay-sheet{border-radius:28px;max-height:82vh;animation:zoomIn .3s cubic-bezier(.16,1,.3,1)}}
+.voice-overlay-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;position:sticky;top:0;background:var(--bg);z-index:2;border-radius:24px 24px 0 0}
+.voice-ol-close-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--bg2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s}
+.voice-ol-close-btn:active{transform:scale(.9)}
+.voice-ol-content{padding:8px 20px 20px;flex:1;display:flex;flex-direction:column;min-height:0}
+.voice-ol-mic-area{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;position:relative;padding-bottom:8px}
+.voice-ol-wave{width:200px;height:200px;position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
+.voice-ol-mic-btn{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-size:30px;cursor:pointer;position:relative;z-index:2;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(184,104,15,0.25)}
+.voice-ol-mic-btn:active{transform:scale(.9)}
+.voice-ol-mic-btn.recording{animation:micPulse 1.5s ease infinite;box-shadow:0 4px 40px rgba(184,104,15,0.4)}
+.voice-ol-hint{text-align:center;font-size:12px;font-weight:600;margin-top:8px;color:var(--text3);position:relative;z-index:1}
+.voice-ol-actions{display:flex;justify-content:center;gap:8px;margin-top:10px;position:relative;z-index:1}
+.voice-ol-cancel-btn{padding:8px 14px;border-radius:999px;border:1px solid var(--card-border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.voice-ol-cancel-btn:active{transform:scale(.96)}
+.voice-ol-section{margin-bottom:8px}
+.voice-ol-card{background:var(--bg2);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px}
+.voice-ol-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;color:var(--accent)}
+.voice-ol-tt{font-size:13px;line-height:1.6;color:var(--text)}
+.voice-ol-shimmer{background:linear-gradient(90deg,transparent,rgba(184,104,15,0.06),transparent);background-size:200% 100%;animation:shimmer 1.5s ease infinite}
+.voice-ol-cat-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;margin-bottom:8px}
+.voice-ol-price{color:var(--accent);font-family:'Space Grotesk',sans-serif}
+.voice-ol-publish-btn{width:100%;padding:14px;border-radius:12px;font-size:13px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2);transition:transform .15s}
+.voice-ol-publish-btn:active{transform:scale(.97)}
+.voice-ol-scroll{overflow-y:auto;flex:1;min-height:0}
+.voice-ol-field-label{display:block;font-size:10px;font-weight:700;margin-bottom:4px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.voice-ol-field{opacity:0;transform:translateY(8px);transition:all .4s ease}
+.voice-ol-field.visible{opacity:1;transform:translateY(0)}
+
 /* Shimmer */
 .shimmer{background:linear-gradient(90deg,transparent,rgba(184,104,15,0.06),transparent);background-size:200% 100%;animation:shimmer 1.5s ease infinite}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -237,35 +269,6 @@ h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 .seller-order .order-status.new{background:#FEF3C7;color:#92400E}
 .seller-order .order-status.confirmed{background:var(--trust-light);color:var(--trust)}
 .seller-order .order-status.delivered{background:#ECFDF5;color:#0D9488}
-
-/* Voice Overlay */
-.voice-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:none;align-items:flex-end;justify-content:center}
-.voice-overlay.show{display:flex;animation:fadeIn .2s ease}
-.voice-overlay-sheet{width:100%;max-width:420px;max-height:92vh;background:var(--bg);border-radius:24px 24px 0 0;overflow-y:auto;animation:slideUp .35s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
-@media(min-width:768px){.voice-overlay{align-items:center}.voice-overlay-sheet{border-radius:28px;max-height:85vh;animation:zoomIn .3s cubic-bezier(.16,1,.3,1)}}
-.voice-overlay-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;position:sticky;top:0;background:var(--bg);z-index:2;border-radius:24px 24px 0 0}
-.voice-ol-close-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--bg2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .15s}
-.voice-ol-close-btn:active{transform:scale(.9)}
-.voice-ol-content{padding:8px 20px 20px;flex:1;display:flex;flex-direction:column;min-height:0}
-.voice-ol-mic-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:240px;position:relative}
-.voice-ol-wave{width:200px;height:200px;position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
-.voice-ol-mic-btn{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-size:30px;cursor:pointer;position:relative;z-index:2;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 24px rgba(184,104,15,0.25)}
-.voice-ol-mic-btn:active{transform:scale(.9)}
-.voice-ol-mic-btn.recording{animation:micPulse 1.5s ease infinite;box-shadow:0 4px 40px rgba(184,104,15,0.4)}
-.voice-ol-hint{text-align:center;font-size:12px;font-weight:600;margin-top:8px;color:var(--text3);position:relative;z-index:1}
-.voice-ol-section{margin-bottom:8px}
-.voice-ol-card{background:var(--bg2);border:1px solid var(--card-border);border-radius:14px;padding:12px 14px}
-.voice-ol-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;color:var(--accent)}
-.voice-ol-tt{font-size:13px;line-height:1.6;color:var(--text)}
-.voice-ol-shimmer{background:linear-gradient(90deg,transparent,rgba(184,104,15,0.06),transparent);background-size:200% 100%;animation:shimmer 1.5s ease infinite}
-.voice-ol-cat-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;margin-bottom:8px}
-.voice-ol-price{color:var(--accent);font-family:'Space Grotesk',sans-serif}
-.voice-ol-publish-btn{width:100%;padding:14px;border-radius:12px;font-size:13px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(184,104,15,0.2);transition:transform .15s}
-.voice-ol-publish-btn:active{transform:scale(.97)}
-.voice-ol-scroll{overflow-y:auto;flex:1;min-height:0}
-.voice-ol-field-label{display:block;font-size:10px;font-weight:700;margin-bottom:4px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-.voice-ol-field{opacity:0;transform:translateY(8px);transition:all .4s ease}
-.voice-ol-field.visible{opacity:1;transform:translateY(0)}
 
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 

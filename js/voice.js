@@ -21,6 +21,177 @@ function getVoiceMode() {
   return overlay ? overlay.getAttribute('data-voice-mode') || state.userRole || 'buyer' : state.userRole || 'buyer';
 }
 
+function getVoicePrefix(mode) {
+  return mode === 'buyer' ? 'voice-ol-buyer-' : 'voice-ol-';
+}
+
+function getVoiceElement(mode, name) {
+  return document.getElementById(getVoicePrefix(mode) + name);
+}
+
+function getNativeSpeechRecognition() {
+  return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SpeechRecognition ? window.Capacitor.Plugins.SpeechRecognition : null;
+}
+
+function clearNativeSpeechListeners() {
+  var plugin = getNativeSpeechRecognition();
+  if (plugin && plugin.removeAllListeners) {
+    try { plugin.removeAllListeners(); } catch (e) {}
+  }
+}
+
+function setVoiceHint(mode, key) {
+  var hintEl = getVoiceElement(mode, 'hint');
+  if (hintEl) hintEl.textContent = __(key);
+}
+
+function setVoiceRecordingUI(mode, isRecording) {
+  var btn = getVoiceElement(mode, 'mic-btn');
+  if (!btn) return;
+  if (isRecording) {
+    btn.classList.add('recording');
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
+  } else {
+    btn.classList.remove('recording');
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+  }
+}
+
+function clearVoiceSections(mode) {
+  var taEl = getVoiceElement(mode, 'ta');
+  if (taEl) taEl.style.display = 'none';
+  var aiEl = getVoiceElement(mode, 'ai');
+  if (aiEl) aiEl.style.display = 'none';
+  var genEl = getVoiceElement(mode, 'gen');
+  if (genEl) genEl.style.display = 'none';
+  var resultsEl = getVoiceElement(mode, 'results');
+  if (resultsEl) resultsEl.style.display = 'none';
+  var transcriptEl = getVoiceElement(mode, 'tt');
+  if (transcriptEl) transcriptEl.textContent = '';
+}
+
+function updateVoiceTranscript(mode, text) {
+  var transcriptEl = getVoiceElement(mode, 'tt');
+  if (transcriptEl) transcriptEl.textContent = text;
+  var taEl = getVoiceElement(mode, 'ta');
+  if (taEl) taEl.style.display = 'block';
+}
+
+function getVoiceTranscript(mode) {
+  var transcriptEl = getVoiceElement(mode, 'tt');
+  return transcriptEl ? transcriptEl.textContent.trim() : '';
+}
+
+function startVoiceWaveform(mode) {
+  if (mode === 'buyer') startBuyerWaveform();
+  else startWaveform();
+}
+
+function stopVoiceWaveform(mode) {
+  if (mode === 'buyer') stopBuyerWaveform();
+  else stopWaveform();
+}
+
+function resetVoiceRecordingState(mode) {
+  state.isRecording = false;
+  setVoiceRecordingUI(mode, false);
+  setVoiceHint(mode, 'mic_hint');
+  stopVoiceWaveform(mode);
+}
+
+function abortVoiceCapture(mode) {
+  resetVoiceRecordingState(mode);
+  if (mode === 'seller' && recognition) {
+    try { recognition.abort(); } catch (e) {}
+  }
+  if (mode === 'buyer' && buyerRecognition) {
+    try { buyerRecognition.abort(); } catch (e) {}
+  }
+  var plugin = getNativeSpeechRecognition();
+  if (plugin && plugin.stop) {
+    try { plugin.stop(); } catch (e) {}
+  }
+  clearNativeSpeechListeners();
+  clearVoiceSections(mode);
+}
+
+async function startNativeSpeechRecognition(mode) {
+  var plugin = getNativeSpeechRecognition();
+  if (!plugin || !plugin.start) return false;
+  try {
+    if (plugin.checkPermissions) {
+      var permission = await plugin.checkPermissions();
+      if (!permission || permission.speechRecognition !== 'granted') {
+        if (plugin.requestPermissions) {
+          await plugin.requestPermissions();
+        }
+      }
+    } else if (plugin.requestPermissions) {
+      await plugin.requestPermissions();
+    }
+    clearNativeSpeechListeners();
+    if (plugin.addListener) {
+      plugin.addListener('partialResults', function (data) {
+        if (!state.isRecording || getVoiceMode() !== mode) return;
+        var matches = data && Array.isArray(data.matches) ? data.matches.filter(Boolean) : [];
+        if (matches.length) {
+          updateVoiceTranscript(mode, matches.join(' ').trim());
+        }
+      });
+    }
+    await plugin.start({
+      language: getSpeechLanguageCode(),
+      maxResults: 5,
+      prompt: __('sun_raha_hoon'),
+      popup: false,
+      partialResults: true
+    });
+    return true;
+  } catch (e) {
+    console.warn('Native speech recognition unavailable, falling back to web speech API:', e);
+    clearNativeSpeechListeners();
+    return false;
+  }
+}
+
+function stopNativeSpeechRecognition() {
+  var plugin = getNativeSpeechRecognition();
+  if (plugin && plugin.stop) {
+    try { plugin.stop(); } catch (e) {}
+  }
+  clearNativeSpeechListeners();
+}
+
+function startWebSpeechRecognition(mode) {
+  var sr = mode === 'buyer' ? buyerRecognition : recognition;
+  if (!sr) return false;
+  sr.lang = getSpeechLanguageCode();
+  try {
+    sr.start();
+    return true;
+  } catch (e) {
+    try {
+      if (mode === 'buyer') initBuyerVoice();
+      else initVoice();
+    } catch (e2) {}
+    return false;
+  }
+}
+
+function finalizeVoiceCapture(mode) {
+  var text = getVoiceTranscript(mode);
+  if (!text) {
+    var hintEl = getVoiceElement(mode, 'hint');
+    if (hintEl) hintEl.textContent = __('bol_kuchh');
+    return;
+  }
+  if (mode === 'buyer') {
+    searchByVoice(text);
+  } else {
+    processWithAI(text);
+  }
+}
+
 function openVoiceOverlay(role) {
   var overlay = document.getElementById('voice-overlay');
   if (!overlay) return;
@@ -49,43 +220,18 @@ function closeVoiceOverlay() {
   document.body.style.overflow = '';
   if (recognition) { try { recognition.abort(); } catch(e) {} recognition = null; }
   if (buyerRecognition) { try { buyerRecognition.abort(); } catch(e) {} buyerRecognition = null; }
+  clearNativeSpeechListeners();
 }
 
 function resetVoiceOverlayUI(mode) {
-  state.isRecording = false;
+  resetVoiceRecordingState(mode);
+  clearVoiceSections(mode);
   if (mode === 'seller') {
-    var micBtn = document.getElementById('voice-ol-mic-btn');
-    if (micBtn) { micBtn.classList.remove('recording'); micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>'; }
-    var hintEl = document.getElementById('voice-ol-hint');
-    if (hintEl) hintEl.textContent = __('mic_hint');
-    var taEl = document.getElementById('voice-ol-ta');
-    if (taEl) taEl.style.display = 'none';
-    var aiEl = document.getElementById('voice-ol-ai');
-    if (aiEl) aiEl.style.display = 'none';
-    var genEl = document.getElementById('voice-ol-gen');
-    if (genEl) genEl.style.display = 'none';
-    var tEl = document.getElementById('voice-ol-tt');
-    if (tEl) tEl.textContent = '';
-    stopWaveform();
     var modeVoice = document.getElementById('voice-ol-mode');
     var modeManual = document.getElementById('voice-ol-manual');
     if (modeVoice) modeVoice.style.display = 'flex';
     if (modeManual) modeManual.style.display = 'none';
     document.querySelectorAll('.voice-ol-field').forEach(function(f) { f.classList.remove('visible'); });
-  } else {
-    var micBtn = document.getElementById('voice-ol-buyer-mic-btn');
-    if (micBtn) { micBtn.classList.remove('recording'); micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>'; }
-    var hintEl = document.getElementById('voice-ol-buyer-hint');
-    if (hintEl) hintEl.textContent = __('mic_hint');
-    var taEl = document.getElementById('voice-ol-buyer-ta');
-    if (taEl) taEl.style.display = 'none';
-    var aiEl = document.getElementById('voice-ol-buyer-ai');
-    if (aiEl) aiEl.style.display = 'none';
-    var srEl = document.getElementById('voice-ol-buyer-results');
-    if (srEl) srEl.style.display = 'none';
-    var tEl = document.getElementById('voice-ol-buyer-tt');
-    if (tEl) tEl.textContent = '';
-    stopBuyerWaveform();
   }
 }
 
@@ -99,18 +245,19 @@ function initVoice() {
     recognition = new SR();
     recognition.lang = getSpeechLanguageCode();
     recognition.interimResults = true;
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.maxAlternatives = 1;
     recognition.onresult = function (e) {
       var t = '';
       for (var i = 0; i < e.results.length; i++) {
-        t += e.results[i][0].transcript;
+        if (e.results[i] && e.results[i][0] && e.results[i][0].transcript) {
+          t += e.results[i][0].transcript;
+        }
       }
-      var el = document.getElementById('voice-ol-tt');
-      if (el) el.textContent = t;
+      if (t.trim()) updateVoiceTranscript('seller', t.trim());
     };
     recognition.onend = function () {
-      if (state.isRecording) {
+      if (state.isRecording && getVoiceMode() === 'seller') {
         state.isRecording = false;
         stopRecording();
       }
@@ -148,18 +295,19 @@ function initBuyerVoice() {
     buyerRecognition = new SR();
     buyerRecognition.lang = getSpeechLanguageCode();
     buyerRecognition.interimResults = true;
-    buyerRecognition.continuous = false;
+    buyerRecognition.continuous = true;
     buyerRecognition.maxAlternatives = 1;
     buyerRecognition.onresult = function (e) {
       var t = '';
       for (var i = 0; i < e.results.length; i++) {
-        t += e.results[i][0].transcript;
+        if (e.results[i] && e.results[i][0] && e.results[i][0].transcript) {
+          t += e.results[i][0].transcript;
+        }
       }
-      var el = document.getElementById('voice-ol-buyer-tt');
-      if (el) el.textContent = t;
+      if (t.trim()) updateVoiceTranscript('buyer', t.trim());
     };
     buyerRecognition.onend = function () {
-      if (state.isRecording) {
+      if (state.isRecording && getVoiceMode() === 'buyer') {
         state.isRecording = false;
         stopBuyerRecording();
       }
@@ -187,24 +335,15 @@ function initBuyerVoice() {
   }
 }
 
-function startRecording() {
+async function startRecording() {
   state.isRecording = true;
-  var btn = document.getElementById('voice-ol-mic-btn');
-  if (btn) {
-    btn.classList.add('recording');
-    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  }
-  var hintEl = document.getElementById('voice-ol-hint');
-  if (hintEl) hintEl.textContent = __('sun_raha_hoon');
-  var taEl = document.getElementById('voice-ol-ta');
-  if (taEl) taEl.style.display = 'none';
-  var aiEl = document.getElementById('voice-ol-ai');
-  if (aiEl) aiEl.style.display = 'none';
-  var genEl = document.getElementById('voice-ol-gen');
-  if (genEl) genEl.style.display = 'none';
-  var tEl = document.getElementById('voice-ol-tt');
-  if (tEl) tEl.textContent = '';
-  startWaveform();
+  setVoiceRecordingUI('seller', true);
+  setVoiceHint('seller', 'sun_raha_hoon');
+  clearVoiceSections('seller');
+  startVoiceWaveform('seller');
+  var nativeStarted = await startNativeSpeechRecognition('seller');
+  if (nativeStarted) return;
+  if (!recognition) initVoice();
   if (recognition) {
     try { recognition.start(); } catch (e) {
       initVoice();
@@ -217,44 +356,23 @@ function startRecording() {
 
 function stopRecording() {
   state.isRecording = false;
-  var btn = document.getElementById('voice-ol-mic-btn');
-  if (btn) {
-    btn.classList.remove('recording');
-    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  }
-  var hintEl = document.getElementById('voice-ol-hint');
-  if (hintEl) hintEl.textContent = __('mic_hint');
-  stopWaveform();
+  setVoiceRecordingUI('seller', false);
+  setVoiceHint('seller', 'mic_hint');
+  stopVoiceWaveform('seller');
   if (recognition) { try { recognition.stop(); } catch(e) {} }
-  var tEl = document.getElementById('voice-ol-tt');
-  var t = tEl ? tEl.textContent.trim() : '';
-  if (t) {
-    var taEl = document.getElementById('voice-ol-ta');
-    if (taEl) taEl.style.display = 'block';
-    processWithAI(t);
-  } else {
-    if (hintEl) hintEl.textContent = __('bol_kuchh');
-  }
+  stopNativeSpeechRecognition();
+  finalizeVoiceCapture('seller');
 }
 
-function startBuyerRecording() {
+async function startBuyerRecording() {
   state.isRecording = true;
-  var btn = document.getElementById('voice-ol-buyer-mic-btn');
-  if (btn) {
-    btn.classList.add('recording');
-    btn.innerHTML = '<i class="fa-solid fa-stop"></i>';
-  }
-  var hintEl = document.getElementById('voice-ol-buyer-hint');
-  if (hintEl) hintEl.textContent = __('sun_raha_hoon');
-  var taEl = document.getElementById('voice-ol-buyer-ta');
-  if (taEl) taEl.style.display = 'none';
-  var aiEl = document.getElementById('voice-ol-buyer-ai');
-  if (aiEl) aiEl.style.display = 'none';
-  var srEl = document.getElementById('voice-ol-buyer-results');
-  if (srEl) srEl.style.display = 'none';
-  var tEl = document.getElementById('voice-ol-buyer-tt');
-  if (tEl) tEl.textContent = '';
-  startBuyerWaveform();
+  setVoiceRecordingUI('buyer', true);
+  setVoiceHint('buyer', 'sun_raha_hoon');
+  clearVoiceSections('buyer');
+  startVoiceWaveform('buyer');
+  var nativeStarted = await startNativeSpeechRecognition('buyer');
+  if (nativeStarted) return;
+  if (!buyerRecognition) initBuyerVoice();
   if (buyerRecognition) {
     try { buyerRecognition.start(); } catch (e) {
       initBuyerVoice();
@@ -267,24 +385,12 @@ function startBuyerRecording() {
 
 function stopBuyerRecording() {
   state.isRecording = false;
-  var btn = document.getElementById('voice-ol-buyer-mic-btn');
-  if (btn) {
-    btn.classList.remove('recording');
-    btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-  }
-  var hintEl = document.getElementById('voice-ol-buyer-hint');
-  if (hintEl) hintEl.textContent = __('mic_hint');
-  stopBuyerWaveform();
+  setVoiceRecordingUI('buyer', false);
+  setVoiceHint('buyer', 'mic_hint');
+  stopVoiceWaveform('buyer');
   if (buyerRecognition) { try { buyerRecognition.stop(); } catch(e) {} }
-  var tEl = document.getElementById('voice-ol-buyer-tt');
-  var t = tEl ? tEl.textContent.trim() : '';
-  if (t) {
-    var taEl = document.getElementById('voice-ol-buyer-ta');
-    if (taEl) taEl.style.display = 'block';
-    searchByVoice(t);
-  } else {
-    if (hintEl) hintEl.textContent = __('bol_kuchh');
-  }
+  stopNativeSpeechRecognition();
+  finalizeVoiceCapture('buyer');
 }
 
 function processWithAI(t) {
@@ -605,6 +711,11 @@ function setupVoiceOverlayEvents() {
     state.isRecording ? stopRecording() : startRecording();
   });
 
+  var cancelBtn = document.getElementById('voice-ol-cancel-btn');
+  if (cancelBtn) cancelBtn.addEventListener('click', function () {
+    abortVoiceCapture('seller');
+  });
+
   var publishBtn = document.getElementById('voice-ol-publish-btn');
   if (publishBtn) publishBtn.addEventListener('click', function () {
     var titleEl = document.getElementById('voice-ol-gen-title');
@@ -626,6 +737,11 @@ function setupVoiceOverlayEvents() {
   var buyerMicBtn = document.getElementById('voice-ol-buyer-mic-btn');
   if (buyerMicBtn) buyerMicBtn.addEventListener('click', function () {
     state.isRecording ? stopBuyerRecording() : startBuyerRecording();
+  });
+
+  var buyerCancelBtn = document.getElementById('voice-ol-buyer-cancel-btn');
+  if (buyerCancelBtn) buyerCancelBtn.addEventListener('click', function () {
+    abortVoiceCapture('buyer');
   });
 
   var modeVoiceBtn = document.getElementById('voice-ol-mode-btn');

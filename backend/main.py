@@ -11,11 +11,31 @@ import database as db_mod
 
 app = FastAPI(title="Sauda API")
 
-allowed_origins = os.environ.get("ALLOWED_ORIGINS", "*").split(",")
+def _parse_allowed_origins():
+    raw_origins = os.environ.get("ALLOWED_ORIGINS")
+    if raw_origins:
+        origins = [origin.strip() for origin in raw_origins.replace(";", ",").split(",") if origin.strip()]
+    else:
+        origins = [
+            "capacitor://localhost",
+            "ionic://localhost",
+            "http://localhost",
+            "https://localhost",
+            "http://127.0.0.1",
+            "https://127.0.0.1",
+        ]
+
+    if "*" in origins:
+        return ["*"], False
+
+    return origins, True
+
+
+allowed_origins, allow_credentials = _parse_allowed_origins()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_credentials=True,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -32,6 +52,11 @@ def startup_event():
     db_mod.init_db()
     from seed import seed_data
     seed_data()
+
+
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok"}
 
 # ── CATEGORIES ──
 @app.get("/api/categories", response_model=List[dict])
