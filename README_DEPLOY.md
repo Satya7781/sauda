@@ -11,15 +11,18 @@ This file contains concise instructions for deploying the backend to Render and 
 - Start command (non-Docker): `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 - Env vars to set:
   - `ENV=production`
-  - `DATABASE_URL` — set to your managed Postgres URL (e.g. `postgres://USER:PASS@HOST:PORT/DB`). If you use Render Postgres, Render provides this.
+  - `DATABASE_URL` — set this in Render to your Railway MySQL connection string (use `MYSQL_PUBLIC_URL` from Railway). Example format: `mysql://USER:PASSWORD@HOST:PORT/DB`.
+    - The backend auto-normalizes `mysql://` into SQLAlchemy format (`mysql+pymysql://...`).
+    - If you prefer, you can skip `DATABASE_URL` and set `MYSQL_PUBLIC_URL` directly in Render env vars.
   - `ALLOWED_ORIGINS` — include `capacitor://localhost`, `ionic://localhost`, and any web origins you deploy from. For development you can use `*`.
-  - Persistent DB: prefer Render Postgres for production. SQLite is acceptable for quick testing but data will reset on container redeploys.
+  - Persistent DB: Railway MySQL is fine for production. Avoid SQLite for production because data resets on redeploys.
 
   - NOTE: This repository supports local SQLite for development by default. To use SQLite in containers, set `DATABASE_URL=sqlite:///./sauda.db` and make sure the container's working directory is writable or mount a host volume to persist `sauda.db` across restarts. SQLite is not suitable for multi-instance production deployments.
 
 Files of interest:
 - `backend/main.py` — FastAPI app; static folders (`/css`, `/js`, `/images`) are mounted automatically.
-- `backend/requirements.txt` — server dependencies (ensure `psycopg2-binary` is present for Postgres).
+- `backend/database.py` — resolves DB URL from `DATABASE_URL` / `MYSQL_PUBLIC_URL` / Railway MySQL part variables.
+- `backend/requirements.txt` — server dependencies (`psycopg2-binary` for Postgres, `PyMySQL` for MySQL).
 
 2) Docker (optional)
 - Build locally: `docker build -t sauda-app:latest .`
@@ -41,3 +44,9 @@ Files of interest:
 - CORS: backend uses `ALLOWED_ORIGINS` env var. Set it appropriately.
 - Database migrations: this repo uses simple `Base.metadata.create_all` in `database.init_db()`. For production consider adding Alembic migrations.
 - APK builds: the web client resolves its API base URL from `js/runtime-config.js` and defaults to the Render backend at `https://sauda-backend.onrender.com/api`. If you use a different Render service URL, update that file or override `window.__SAUDA_CONFIG__.apiBaseUrl` before building `www/`.
+
+Railway → Render quick mapping
+------------------------------
+- In Render backend service, set `DATABASE_URL` to Railway `MYSQL_PUBLIC_URL` value.
+- Do not commit raw DB credentials in code, YAML, or git history.
+- Keep APK pointed to Render backend URL (`https://sauda-backend.onrender.com/api`) so app traffic goes through your backend, which then talks to Railway MySQL.

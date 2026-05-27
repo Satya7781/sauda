@@ -7,7 +7,7 @@ services:
       - key: ENV
         value: production
       - key: DATABASE_URL
-        value: sqlite:///./sauda.db
+        sync: false
       - key: ALLOWED_ORIGINS
         value: "capacitor://localhost,ionic://localhost,http://localhost,https://localhost,http://127.0.0.1,https://127.0.0.1"
 
