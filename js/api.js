@@ -24,16 +24,23 @@ function resolveApiBaseUrl() {
   return defaultProductionApiBaseUrl;
 }
 
+// Note: API_BASE_URL is set once on page load. To change it, call window.setSaudaApiBaseUrl()
 var API_BASE_URL = resolveApiBaseUrl();
 window.SAUDA_API_BASE_URL = API_BASE_URL;
+console.log('[API] Base URL initialized:', API_BASE_URL);
 
 const API = {
   async fetchCategories() {
     try {
-      const resp = await fetch(`${API_BASE_URL}/categories`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/categories`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+      const data = await resp.json();
+      console.log('[API] fetchCategories success:', data.length, 'items');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch categories:', e);
+      console.error('[API] fetchCategories failed:', e.message);
       return [];
     }
   },
@@ -41,75 +48,109 @@ const API = {
   async fetchProducts(params = {}) {
     try {
       const query = new URLSearchParams(params).toString();
-      const resp = await fetch(`${API_BASE_URL}/products?${query}`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/products?${query}`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+      const data = await resp.json();
+      console.log('[API] fetchProducts success:', data.length, 'items');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch products:', e);
+      console.error('[API] fetchProducts failed:', e.message);
       return [];
     }
   },
 
   async fetchSeller(id) {
     try {
-      const resp = await fetch(`${API_BASE_URL}/sellers/${id}`);
+      const url = `${API_BASE_URL}/sellers/${id}`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
       if (!resp.ok) throw new Error('Seller not found');
-      return await resp.json();
+      const data = await resp.json();
+      console.log('[API] fetchSeller success:', id);
+      return data;
     } catch (e) {
-      console.error('Failed to fetch seller:', e);
+      console.error('[API] fetchSeller failed:', id, e.message);
       return null;
     }
   },
 
   async fetchVouchChain() {
     try {
-      const resp = await fetch(`${API_BASE_URL}/vouchchain`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/vouchchain`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] fetchVouchChain success:', data.length, 'items');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch vouchchain:', e);
+      console.error('[API] fetchVouchChain failed:', e.message);
       return [];
     }
   },
 
   async placeOrder(productId, userId = 'you') {
     try {
-      const resp = await fetch(`${API_BASE_URL}/orders`, {
+      const url = `${API_BASE_URL}/orders`;
+      console.log('[API] POST', url);
+      const resp = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, userId })
       });
-      return await resp.json();
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] placeOrder success:', productId);
+      return data;
     } catch (e) {
-      console.error('Failed to place order:', e);
+      console.error('[API] placeOrder failed:', e.message);
       return { error: true };
     }
   },
 
   async fetchUserOrders(userId = 'you') {
     try {
-      const resp = await fetch(`${API_BASE_URL}/orders/${userId}`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/orders/${userId}`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] fetchUserOrders success');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch orders:', e);
+      console.error('[API] fetchUserOrders failed:', e.message);
       return [];
     }
   },
 
   async fetchSellers() {
     try {
-      const resp = await fetch(`${API_BASE_URL}/sellers`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/sellers`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] fetchSellers success:', data.length, 'items');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch sellers:', e);
+      console.error('[API] fetchSellers failed:', e.message);
       return [];
     }
   },
 
   async fetchUsers() {
     try {
-      const resp = await fetch(`${API_BASE_URL}/users`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/users`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] fetchUsers success:', data.length, 'items');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch users:', e);
+      console.error('[API] fetchUsers failed:', e.message);
       return [];
     }
   },
@@ -117,35 +158,49 @@ const API = {
   async fetchDirectory(params = {}) {
     try {
       const query = new URLSearchParams(params).toString();
-      const resp = await fetch(`${API_BASE_URL}/directory?${query}`);
-      return await resp.json();
+      const url = `${API_BASE_URL}/directory?${query}`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] fetchDirectory success:', data.length, 'items');
+      return data;
     } catch (e) {
-      console.error('Failed to fetch directory:', e);
+      console.error('[API] fetchDirectory failed:', e.message);
       return [];
     }
   },
 
   async fetchPlaces(query) {
     try {
-      const resp = await fetch(`${API_BASE_URL}/places/search?q=${encodeURIComponent(query)}`);
+      const url = `${API_BASE_URL}/places/search?q=${encodeURIComponent(query)}`;
+      console.log('[API] GET', url);
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
+      console.log('[API] fetchPlaces success');
       return data.places || [];
     } catch (e) {
-      console.error('Failed to fetch places:', e);
+      console.error('[API] fetchPlaces failed:', e.message);
       return [];
     }
   },
 
   async onboard(userData) {
     try {
-      const resp = await fetch(`${API_BASE_URL}/onboard`, {
+      const url = `${API_BASE_URL}/onboard`;
+      console.log('[API] POST', url);
+      const resp = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
-      return await resp.json();
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      console.log('[API] onboard success');
+      return data;
     } catch (e) {
-      console.error('Failed to onboard:', e);
+      console.error('[API] onboard failed:', e.message);
       return { error: true };
     }
   }
