@@ -12,7 +12,7 @@ function confirmOrder(pid) {
   if (!prod) prod = state.productFeed.find(function (p) { return p.id == pid; });
   if (!prod) return;
 
-  var seller = SELLERS[prod.seller];
+  var seller = getSellerRecord(prod.seller);
   var total = prod.price * qty;
   addOrder(prod, seller, qty, total);
 

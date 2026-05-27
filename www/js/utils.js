@@ -2,9 +2,50 @@
 // UTILITIES — Sauda
 // ============================================================
 
+function getCategoryRecord(catId) {
+  var categories = (state && state.categories && state.categories.length) ? state.categories : (typeof CATEGORIES !== 'undefined' ? CATEGORIES : []);
+  var cat = categories.find(function (c) { return c.id === catId; });
+  return cat || (categories.length ? categories[0] : { id: catId || 'unknown', name: catId || 'Unknown', icon: 'fa-box', color: 'var(--text3)', bg: 'var(--bg2)' });
+}
+
+function getSellerRecord(sellerId) {
+  var sellers = typeof SELLERS !== 'undefined' ? SELLERS : {};
+  var seller = sellers[sellerId];
+  if (seller) return seller;
+  return {
+    id: sellerId || 'unknown',
+    name: 'Unknown Seller',
+    shop: 'Unknown Seller',
+    initials: 'U',
+    color: '#9CA3AF',
+    locality: state && state.userLocation ? state.userLocation : '',
+    yearsActive: 0,
+    aadhaarVerified: false,
+    trustedNeighbors: 0,
+    vouchedBy: 'you',
+    vouchRelation: '',
+    category: 'services',
+    isLive: false,
+    distance: ''
+  };
+}
+
+function getUserRecord(userId) {
+  var users = typeof USERS !== 'undefined' ? USERS : {};
+  var user = users[userId];
+  if (user) return user;
+  return {
+    id: userId || 'unknown',
+    name: 'Unknown',
+    initials: 'U',
+    color: '#9CA3AF',
+    locality: state && state.userLocation ? state.userLocation : '',
+    relation: ''
+  };
+}
+
 function getCategoryVisual(catId) {
-  var cat = CATEGORIES.find(function (c) { return c.id === catId; });
-  if (!cat) cat = CATEGORIES[0];
+  var cat = getCategoryRecord(catId);
   return { icon: cat.icon, color: cat.color, bg: cat.bg, name: getCategoryName(cat) };
 }
 
@@ -59,10 +100,10 @@ function toggleSaveSeller(sid) {
   var idx = state.savedSellers.indexOf(sid);
   if (idx === -1) {
     state.savedSellers.push(sid);
-    showToast(SELLERS[sid].shop + __('saved_tost'));
+    showToast(getSellerRecord(sid).shop + __('saved_tost'));
   } else {
     state.savedSellers.splice(idx, 1);
-    showToast(SELLERS[sid].shop + __('removed_saved_tost'));
+    showToast(getSellerRecord(sid).shop + __('removed_saved_tost'));
   }
 }
 
@@ -85,6 +126,7 @@ function addOrder(product, seller, qty, total) {
   if (!state.orders) state.orders = [];
   qty = qty || 1;
   total = total || product.price;
+  seller = seller || getSellerRecord(product.seller);
   state.orders.unshift({
     id: Date.now(),
     productId: product.id,
@@ -175,9 +217,9 @@ function openSavedSellers() {
   var saved = state.savedSellers || [];
   var sheet = document.getElementById('saved-sheet');
   var items = saved.length ? saved.map(function (sid) {
-    var s = SELLERS[sid];
+    var s = getSellerRecord(sid);
     if (!s) return '';
-    var v = USERS[s.vouchedBy];
+    var v = getUserRecord(s.vouchedBy);
     var ts = Math.min(95, 30 + (s.aadhaarVerified ? 15 : 0) + s.yearsActive * 3 + s.trustedNeighbors * 1.2);
     return '<div class="s-card p-3 flex items-center gap-3 mb-2 cursor-pointer" onclick="closeSavedModal();setTimeout(function(){openSellerModal(\'' + sid + '\')},200)">' +
       '<div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold" style="background:' + s.color + '15;color:' + s.color + '">' + s.initials + '</div>' +

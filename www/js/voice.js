@@ -267,12 +267,12 @@ function initVoice() {
       if (state.isRecording) {
         state.isRecording = false;
         stopRecording();
-        var hintEl = document.getElementById('voice-ol-hint');
-        if (e.error === 'not-allowed') {
+        var hintEl = getVoiceElement('seller', 'hint') || document.getElementById('voice-ol-hint');
+        if (e && e.error === 'not-allowed') {
           if (hintEl) hintEl.textContent = __('mic_denied');
-        } else if (e.error === 'no-speech') {
+        } else if (e && e.error === 'no-speech') {
           if (hintEl) hintEl.textContent = __('mic_no_speech');
-        } else if (e.error === 'aborted') {
+        } else if (e && e.error === 'aborted') {
           return;
         } else {
           if (hintEl) hintEl.textContent = __('mic_error');
@@ -280,7 +280,7 @@ function initVoice() {
       }
     };
   } else {
-    var hintEl = document.getElementById('voice-ol-hint');
+    var hintEl = getVoiceElement('seller', 'hint') || document.getElementById('voice-ol-hint');
     if (hintEl) hintEl.textContent = __('mic_not_supported');
   }
 }
@@ -317,12 +317,12 @@ function initBuyerVoice() {
       if (state.isRecording) {
         state.isRecording = false;
         stopBuyerRecording();
-        var hintEl = document.getElementById('voice-ol-buyer-hint');
-        if (e.error === 'not-allowed') {
+        var hintEl = getVoiceElement('buyer', 'hint') || document.getElementById('voice-ol-buyer-hint');
+        if (e && e.error === 'not-allowed') {
           if (hintEl) hintEl.textContent = __('mic_denied');
-        } else if (e.error === 'no-speech') {
+        } else if (e && e.error === 'no-speech') {
           if (hintEl) hintEl.textContent = __('mic_no_speech');
-        } else if (e.error === 'aborted') {
+        } else if (e && e.error === 'aborted') {
           return;
         } else {
           if (hintEl) hintEl.textContent = __('mic_error');
@@ -330,7 +330,7 @@ function initBuyerVoice() {
       }
     };
   } else {
-    var hintEl = document.getElementById('voice-ol-buyer-hint');
+    var hintEl = getVoiceElement('buyer', 'hint') || document.getElementById('voice-ol-buyer-hint');
     if (hintEl) hintEl.textContent = __('mic_not_supported');
   }
 }
@@ -411,7 +411,7 @@ function showGeneratedListing(t) {
   var catEl = document.getElementById('voice-ol-gen-cat');
   if (catEl) {
     catEl.textContent = ext.category.toUpperCase();
-    var catObj = CATEGORIES.find(function (c) { return c.id === ext.category; }) || {};
+    var catObj = getCategoryRecord(ext.category) || {};
     catEl.style.background = catObj.bg || 'var(--accent-light)';
     catEl.style.color = catObj.color || 'var(--accent)';
   }
@@ -503,9 +503,9 @@ function showVoiceSearchResults(products, query) {
     container.innerHTML = '<div class="p-6 text-center"><p class="text-sm" style="color:var(--text3)">' + __('koi_listing_nahi') + '</p></div>';
   } else {
     container.innerHTML = products.map(function (p) {
-      var sellerName = 'Seller';
-      if (typeof SELLERS !== 'undefined' && SELLERS[p.seller]) sellerName = SELLERS[p.seller].name || p.seller;
-      var catObj = typeof CATEGORIES !== 'undefined' ? CATEGORIES.find(function (c) { return c.id === p.category; }) : null;
+      var sellerRec = getSellerRecord(p.seller);
+      var sellerName = sellerRec ? (sellerRec.name || p.seller) : (p.seller || 'Seller');
+      var catObj = getCategoryRecord(p.category) || null;
       var icon = catObj ? catObj.icon : 'fa-solid fa-box';
       var color = catObj ? catObj.color : 'var(--accent)';
       return '<div class="s-card p-4 mb-3 flex items-center gap-4" onclick="closeVoiceOverlay();openProductDetail(\'' + p.id + '\')">' +

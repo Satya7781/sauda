@@ -6,9 +6,9 @@ function openProductDetail(pid) {
   var p = PRODUCTS.find(function (pr) { return pr.id == pid; });
   if (!p) p = state.productFeed.find(function (pr) { return pr.id == pid; });
   if (!p) return;
-  var s = SELLERS[p.seller];
-  var v = USERS[s.vouchedBy];
-  var cat = CATEGORIES.find(function (c) { return c.id === p.category; });
+  var s = getSellerRecord(p.seller);
+  var v = getUserRecord(s.vouchedBy);
+  var cat = getCategoryRecord(p.category);
   var ts = Math.min(95, 30 + (s.aadhaarVerified ? 15 : 0) + s.yearsActive * 3 + s.trustedNeighbors * 1.2);
 
   document.getElementById('product-sheet').innerHTML =
@@ -96,10 +96,10 @@ document.getElementById('product-modal').addEventListener('click', function (e) 
 
 function openSellerModal(sid) {
   state.selectedSeller = sid;
-  var s = SELLERS[sid];
-  var v = USERS[s.vouchedBy];
+  var s = getSellerRecord(sid);
+  var v = getUserRecord(s.vouchedBy);
   var ts = Math.min(95, 30 + (s.aadhaarVerified ? 15 : 0) + s.yearsActive * 3 + s.trustedNeighbors * 1.2);
-  var cat = CATEGORIES.find(function (c) { return c.id === s.category; });
+  var cat = getCategoryRecord(s.category);
   var prods = PRODUCTS.filter(function (p) { return p.seller === sid; });
 
   document.getElementById('seller-sheet').innerHTML =
@@ -160,7 +160,7 @@ function animateTrustPath(sid) {
   canvas.height = canvas.clientHeight * dpr;
   ctx.scale(dpr, dpr);
   var W = canvas.clientWidth, H = canvas.clientHeight;
-  var s = SELLERS[sid], v = USERS[s.vouchedBy];
+  var s = getSellerRecord(sid), v = getUserRecord(s.vouchedBy);
 
   var nodes = [
     { x: W * 0.15, y: H * 0.5, label: __('you'), sub: __('you'), color: '#B8680F', r: 22 },

@@ -122,7 +122,7 @@ function matchLocalityFromQuery(q) {
 }
 
 function renderDirectoryCard(entry) {
-  var cat = state.categories.find(function (c) { return c.id === entry.category; });
+  var cat = getCategoryRecord(entry.category);
   var osmBadge = '';
 
   if (entry.osmUrl) {
@@ -168,9 +168,9 @@ function renderFeed() {
     if (results.products.length) {
       var i = 0;
       results.products.forEach(function (p) {
-        var seller = SELLERS[p.seller];
-        var voucher = USERS[seller.vouchedBy];
-        var cat = state.categories.find(function (c) { return c.id === p.category; });
+        var seller = getSellerRecord(p.seller);
+        var voucher = getUserRecord(seller.vouchedBy);
+        var cat = getCategoryRecord(p.category);
         html.push('<div class="s-card flex overflow-hidden cursor-pointer feed-card" onclick="openProductDetail(' + p.id + ')" role="button" tabindex="0" style="animation-delay:' + (i * 0.06) + 's">' +
           productImageHTML(p, 100, 120) +
           '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
@@ -215,7 +215,7 @@ function renderFeed() {
   }
 
   if (state.activeLocation && state.activeLocation !== 'all') {
-    filtered = filtered.filter(function (p) { return SELLERS[p.seller] && SELLERS[p.seller].locality === state.activeLocation; });
+    filtered = filtered.filter(function (p) { return getSellerRecord(p.seller).locality === state.activeLocation; });
   }
 
   if (!filtered.length) {
@@ -224,9 +224,9 @@ function renderFeed() {
   }
 
   container.innerHTML = filtered.map(function (p, i) {
-    var seller = SELLERS[p.seller];
-    var voucher = USERS[seller.vouchedBy];
-    var cat = state.categories.find(function (c) { return c.id === p.category; });
+    var seller = getSellerRecord(p.seller);
+    var voucher = getUserRecord(seller.vouchedBy);
+    var cat = getCategoryRecord(p.category);
 
     return '<div class="s-card flex overflow-hidden cursor-pointer feed-card" onclick="openProductDetail(' + p.id + ')" role="button" tabindex="0" style="animation-delay:' + (i * 0.06) + 's">' +
       productImageHTML(p, 100, 120) +

@@ -14,7 +14,7 @@ function renderSellerDashboard() {
   if (!container) return;
 
   var sellerId = state.sellerId || 'neeta';
-  var seller = SELLERS[sellerId];
+  var seller = getSellerRecord(sellerId);
   var sellerProds = getSellerProducts();
   var totalProducts = sellerProds.length;
   var todayOrders = Math.floor(Math.random() * 5) + 1;
@@ -84,12 +84,12 @@ function renderSellerFeed() {
 
   var sellerProds = getSellerProducts();
   sf.innerHTML = sellerProds.map(function (p) {
-    var cat = CATEGORIES.find(function (c) { return c.id === p.category; });
+    var cat = getCategoryRecord(p.category);
     return '<div class="s-card flex overflow-hidden">' +
       productImageHTML(p, 80, 100) +
       '<div class="flex-1 p-3 flex flex-col justify-between min-w-0">' +
       '<div>' +
-      '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + (cat ? cat.color : 'var(--text3)') + '">' + (cat ? getCategoryName(cat) : p.category) + '</span>' +
+      '<span class="text-[9px] font-extrabold uppercase tracking-wider" style="color:' + cat.color + '">' + getCategoryName(cat) + '</span>' +
       '<h4 class="text-sm font-bold leading-tight truncate">' + getProductTitle(p) + '</h4>' +
       '<p class="text-[10px] truncate" style="color:var(--text2)">' + getProductTitle(p) + ' — ' + p.unit + '</p>' +
       '</div>' +

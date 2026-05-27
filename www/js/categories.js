@@ -4,7 +4,7 @@
 
 function renderCategoryGrid() {
   var c = document.getElementById('category-grid');
-  c.innerHTML = CATEGORIES.map(function (cat) {
+  c.innerHTML = (state.categories.length ? state.categories : CATEGORIES).map(function (cat) {
     var isSelected = state.selectedCategory === cat.id;
     var itemCount = state.productFeed.filter(function (p) { return p.category === cat.id; }).length || PRODUCTS.filter(function (p) { return p.category === cat.id; }).length;
     return '<div class="s-card p-4 cursor-pointer flex flex-col items-center gap-3" onclick="selectCategory(\'' + cat.id + '\')" style="' + (isSelected ? 'border-color:' + cat.color + ';background:' + cat.bg : '') + '">' +
@@ -17,7 +17,7 @@ function renderCategoryGrid() {
 
 function selectCategory(catId) {
   state.selectedCategory = catId;
-  var cat = CATEGORIES.find(function (c) { return c.id === catId; });
+  var cat = getCategoryRecord(catId);
   var prods = PRODUCTS.filter(function (p) { return p.category === catId; });
   var sellerIds = [];
   prods.forEach(function (p) {
@@ -33,8 +33,8 @@ function selectCategory(catId) {
     '<div><h3 class="text-base font-bold">' + getCategoryName(cat) + '</h3><p class="text-[10px]" style="color:var(--text3)">' + sellersCount + __('sellers_count') + prods.length + __('products_count') + '</p></div>' +
     '</div></div>' +
     prods.map(function (p) {
-      var s = SELLERS[p.seller];
-      var v = USERS[s.vouchedBy];
+      var s = getSellerRecord(p.seller);
+      var v = getUserRecord(s.vouchedBy);
       return '<div class="s-card flex overflow-hidden mb-2 cursor-pointer" onclick="openProductDetail(' + p.id + ')">' +
         productImageHTML(p, 80, 100) +
         '<div class="flex-1 p-3 flex flex-col justify-between">' +

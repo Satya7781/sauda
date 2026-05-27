@@ -52,14 +52,16 @@ function renderVouchGraph() {
 
   firstDegree.forEach(function (uid, i) {
     var a = (i / firstDegree.length) * Math.PI * 2 - Math.PI / 2;
-    gNodes.push({ id: uid, x: cx + Math.cos(a) * innerR, y: cy + Math.sin(a) * innerR, r: 20, label: USERS[uid].name.split(' ')[0], color: USERS[uid].color, degree: 1 });
+    var u = getUserRecord(uid);
+    gNodes.push({ id: uid, x: cx + Math.cos(a) * innerR, y: cy + Math.sin(a) * innerR, r: 20, label: u.name.split(' ')[0], color: u.color, degree: 1 });
   });
 
   Object.values(SELLERS).forEach(function (s) {
     var vn = gNodes.find(function (n) { return n.id === s.vouchedBy; });
     if (!vn) return;
     var a = Math.atan2(vn.y - cy, vn.x - cx);
-    gNodes.push({ id: s.id, x: cx + Math.cos(a) * outerR, y: cy + Math.sin(a) * outerR, r: 18, label: s.name.split(' ')[0], color: s.color, degree: 2 });
+    var gr = getSellerRecord(s.id);
+    gNodes.push({ id: s.id, x: cx + Math.cos(a) * outerR, y: cy + Math.sin(a) * outerR, r: 18, label: gr.name.split(' ')[0], color: gr.color, degree: 2 });
   });
 
   var edges = [];
