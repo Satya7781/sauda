@@ -5,6 +5,13 @@ def seed_data():
     db = SessionLocal()
     init_db()
 
+    def commit_stage(stage_name):
+        try:
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise RuntimeError(f"Seeding failed during stage: {stage_name}")
+
     # ── Categories ──
     categories_data = [
         {"id": "clothes", "name": "Kapde", "name_en": "Clothes", "icon": "fa-shirt", "color": "#BE123C", "bg": "#FFF1F2", "count": 7},
@@ -19,6 +26,7 @@ def seed_data():
     for cat in categories_data:
         if not db.query(Category).filter(Category.id == cat["id"]).first():
             db.add(Category(**cat))
+    commit_stage("categories")
 
     # ── Users (buyers + sellers) ──
     users_data = [
@@ -44,6 +52,7 @@ def seed_data():
     for u in users_data:
         if not db.query(User).filter(User.id == u["id"]).first():
             db.add(User(**u))
+    commit_stage("users")
 
     # ── Sellers ──
     sellers_data = [
@@ -62,6 +71,7 @@ def seed_data():
     for s in sellers_data:
         if not db.query(Seller).filter(Seller.id == s["id"]).first():
             db.add(Seller(**s))
+    commit_stage("sellers")
 
     # ── Products ──
     products_data = [
@@ -100,6 +110,7 @@ def seed_data():
     for p in products_data:
         if not db.query(Product).filter(Product.id == p["id"]).first():
             db.add(Product(**p))
+    commit_stage("products")
 
     # ── Vouches ──
     vouches_data = [
@@ -122,6 +133,7 @@ def seed_data():
     for v in vouches_data:
         if not db.query(Vouch).filter(Vouch.from_user_id == v["from_user_id"], Vouch.to_user_id == v["to_user_id"]).first():
             db.add(Vouch(**v))
+    commit_stage("vouches")
 
     # ── Seller Directory (all known shops, registered + unregistered) ──
     directory_data = [
@@ -225,7 +237,7 @@ def seed_data():
         if not db.query(SellerEntry).filter(SellerEntry.locality == d["locality"], SellerEntry.shop == d["shop"]).first():
             db.add(SellerEntry(**d))
 
-    db.commit()
+    commit_stage("seller_directory")
     db.close()
     print("Database seeded successfully with real localities and seller directory!")
 
