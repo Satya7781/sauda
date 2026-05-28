@@ -84,24 +84,37 @@ fi
 
 # Step 4: Check Android SDK
 print_step "Step 4: Checking Android SDK..."
-if [ -z "$ANDROID_HOME" ]; then
-    print_warning "ANDROID_HOME not set"
-    print_step "Attempting to auto-detect Android SDK..."
-    
-    if [ -d "$HOME/Android/Sdk" ]; then
-        export ANDROID_HOME="$HOME/Android/Sdk"
-        print_success "Found Android SDK at $ANDROID_HOME"
-    else
-        print_error "Android SDK not found. Please install Android SDK and set ANDROID_HOME"
-        exit 1
+ANDROID_SDK_CANDIDATES=(
+    "$ANDROID_HOME"
+    "$ANDROID_SDK_ROOT"
+    "$HOME/Android/Sdk"
+    "/home/$USER/Android/Sdk"
+    "/usr/lib/android-sdk"
+)
+
+if [ -f "$PROJECT_ROOT/android/local.properties" ]; then
+    LOCAL_SDK_DIR=$(grep -E '^sdk\.dir=' "$PROJECT_ROOT/android/local.properties" | head -1 | cut -d'=' -f2-)
+    if [ -n "$LOCAL_SDK_DIR" ]; then
+        ANDROID_SDK_CANDIDATES=("$LOCAL_SDK_DIR" "${ANDROID_SDK_CANDIDATES[@]}")
     fi
-else
-    print_success "ANDROID_HOME is set to $ANDROID_HOME"
 fi
 
-# Verify SDK exists
-if [ ! -d "$ANDROID_HOME" ]; then
-    print_error "ANDROID_HOME directory not found: $ANDROID_HOME"
+FOUND_ANDROID_SDK=""
+for CANDIDATE in "${ANDROID_SDK_CANDIDATES[@]}"; do
+    if [ -n "$CANDIDATE" ] && [ -d "$CANDIDATE" ]; then
+        FOUND_ANDROID_SDK="$CANDIDATE"
+        break
+    fi
+done
+
+if [ -n "$FOUND_ANDROID_SDK" ]; then
+    export ANDROID_HOME="$FOUND_ANDROID_SDK"
+    export ANDROID_SDK_ROOT="$FOUND_ANDROID_SDK"
+    export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
+    print_success "Found Android SDK at $ANDROID_HOME"
+else
+    print_error "Android SDK not found. Checked: ${ANDROID_SDK_CANDIDATES[*]}"
+    print_error "Set ANDROID_HOME or ANDROID_SDK_ROOT to your SDK path, or update android/local.properties"
     exit 1
 fi
 
