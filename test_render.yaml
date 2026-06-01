@@ -1,3 +1,0 @@
-services:
-  - type: static_site
-    name: mysite
